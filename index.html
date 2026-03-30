@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes" name="viewport" />
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
     <title>TMAX Quotation App (Light Theme)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&amp;display=swap"
@@ -1868,10 +1868,10 @@
             position: fixed;
             inset: 0;
             z-index: 9999;
-            background: rgba(15, 23, 42, 0.96);
+            background: rgba(15, 23, 42, 0.92);
             display: none;
             flex-direction: column;
-            padding: max(8px, env(safe-area-inset-top)) 8px max(8px, env(safe-area-inset-bottom));
+            padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
         }
 
         .mobile-preview-overlay.active {
@@ -1882,32 +1882,28 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 8px;
-            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         .mobile-preview-title {
             color: #fff;
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 700;
-            line-height: 1.2;
         }
 
         .mobile-preview-actions {
             display: flex;
             gap: 8px;
-            flex-wrap: wrap;
         }
 
         .mobile-preview-btn {
             border: none;
             border-radius: 12px;
-            padding: 9px 12px;
-            font-size: 0.9rem;
+            padding: 10px 14px;
+            font-size: 0.92rem;
             font-weight: 700;
             cursor: pointer;
-            white-space: nowrap;
         }
 
         .mobile-preview-btn.secondary {
@@ -1925,20 +1921,17 @@
             flex: 1;
             min-height: 0;
             overflow: auto;
-            -webkit-overflow-scrolling: touch;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 0 0 8px;
+            padding: 4px 0 20px;
         }
 
         .mobile-preview-page-wrap {
             width: 100%;
-            min-height: 100%;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 0;
         }
 
         .mobile-preview-page {
@@ -1946,28 +1939,8 @@
             min-height: 297mm;
             background: #fff;
             color: #000;
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
-            transform-origin: top left;
-            margin: 0;
-            border-radius: 2px;
-        }
-
-        body.mobile-preview-open {
-            overflow: hidden;
-        }
-
-        @media (max-width: 767px) {
-            .mobile-preview-overlay {
-                padding: max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom));
-            }
-
-            .mobile-preview-toolbar {
-                margin-bottom: 6px;
-            }
-
-            .mobile-preview-stage {
-                padding-bottom: 8px;
-            }
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+            transform-origin: top center;
         }
 
         @media (min-width: 768px) {
@@ -4858,17 +4831,27 @@
             page.style.marginBottom = '0px';
             wrap.style.width = '100%';
             wrap.style.minHeight = '100%';
+            wrap.style.overflow = 'hidden';
+            stage.scrollTop = 0;
+            stage.scrollLeft = 0;
 
             const pageWidth = page.offsetWidth || 794;
             const pageHeight = page.offsetHeight || Math.round(pageWidth * 1.4142);
+
             const stageWidth = Math.max(stage.clientWidth, 280);
-            const availableWidth = Math.max(stageWidth - 2, 260);
-            const scale = Math.min(availableWidth / pageWidth, 1);
+            const stageHeight = Math.max(stage.clientHeight, 320);
+
+            const availableWidth = Math.max(stageWidth - 4, 240);
+            const availableHeight = Math.max(stageHeight - 4, 260);
+
+            const scaleByWidth = availableWidth / pageWidth;
+            const scaleByHeight = availableHeight / pageHeight;
+            const scale = Math.min(scaleByWidth, scaleByHeight, 1);
 
             page.style.transform = `scale(${scale})`;
             wrap.style.width = `${pageWidth * scale}px`;
             wrap.style.minHeight = `${Math.max(pageHeight * scale, stage.clientHeight)}px`;
-            page.style.marginBottom = `${Math.max(pageHeight * scale - pageHeight, 0) + 8}px`;
+            page.style.marginBottom = '0px';
         }
 
         function openMobilePrintPreview() {
@@ -4882,7 +4865,6 @@
 
             page.innerHTML = activeTemplate.innerHTML;
             previewOverlay.classList.add('active');
-            document.body.classList.add('mobile-preview-open');
             document.body.style.overflow = 'hidden';
 
             requestAnimationFrame(() => {
@@ -4893,7 +4875,6 @@
         function closeMobilePrintPreview() {
             const previewOverlay = document.getElementById('mobile-preview-overlay');
             if (previewOverlay) previewOverlay.classList.remove('active');
-            document.body.classList.remove('mobile-preview-open');
             document.body.style.overflow = '';
         }
 
