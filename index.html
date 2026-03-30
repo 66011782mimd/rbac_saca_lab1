@@ -2218,6 +2218,29 @@
                 margin-right: 2px;
             }
         }
+
+/* ===== FIX SCALE A4 ===== */
+@media print {
+  .app-container {
+    zoom: 0.81;
+  }
+}
+
+@media print {
+  .app-container {
+    transform: scale(0.81);
+    transform-origin: top center;
+  }
+}
+
+/* ===== FIX MOBILE VIEW ===== */
+@media screen and (max-width: 768px) {
+  .app-container {
+    transform: scale(0.81);
+    transform-origin: top center;
+    width: 123%;
+  }
+}
     </style>
 </head>
 
@@ -3896,7 +3919,6 @@
             }
             setSafeText('sum-total', document.getElementById('qty-total')?.value || '0');
         }
-
         function updateUI() {
             const appContainer = document.getElementById('app-container');
             if (!appContainer) return;
