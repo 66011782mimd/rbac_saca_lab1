@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport" />
+    <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0, user-scalable=yes" name="viewport" />
     <title>TMAX Quotation App (Light Theme)</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&amp;display=swap"
@@ -1925,10 +1925,11 @@
             flex: 1;
             min-height: 0;
             overflow: auto;
+            -webkit-overflow-scrolling: touch;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 0 0 12px;
+            padding: 0 0 8px;
         }
 
         .mobile-preview-page-wrap {
@@ -1937,6 +1938,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            padding: 0;
         }
 
         .mobile-preview-page {
@@ -1945,9 +1947,13 @@
             background: #fff;
             color: #000;
             box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
-            transform-origin: top center;
-            margin: 0 auto;
+            transform-origin: top left;
+            margin: 0;
             border-radius: 2px;
+        }
+
+        body.mobile-preview-open {
+            overflow: hidden;
         }
 
         @media (max-width: 767px) {
@@ -4845,18 +4851,24 @@
         function refreshMobilePrintPreviewScale() {
             const stage = document.getElementById('mobile-preview-stage');
             const page = document.getElementById('mobile-preview-page');
-            if (!stage || !page || !page.innerHTML.trim()) return;
+            const wrap = page ? page.parentElement : null;
+            if (!stage || !page || !wrap || !page.innerHTML.trim()) return;
 
             page.style.transform = 'scale(1)';
             page.style.marginBottom = '0px';
+            wrap.style.width = '100%';
+            wrap.style.minHeight = '100%';
 
             const pageWidth = page.offsetWidth || 794;
+            const pageHeight = page.offsetHeight || Math.round(pageWidth * 1.4142);
             const stageWidth = Math.max(stage.clientWidth, 280);
-            const availableWidth = Math.max(stageWidth - 4, 260);
+            const availableWidth = Math.max(stageWidth - 2, 260);
             const scale = Math.min(availableWidth / pageWidth, 1);
 
             page.style.transform = `scale(${scale})`;
-            page.style.marginBottom = '12px';
+            wrap.style.width = `${pageWidth * scale}px`;
+            wrap.style.minHeight = `${Math.max(pageHeight * scale, stage.clientHeight)}px`;
+            page.style.marginBottom = `${Math.max(pageHeight * scale - pageHeight, 0) + 8}px`;
         }
 
         function openMobilePrintPreview() {
@@ -4870,6 +4882,7 @@
 
             page.innerHTML = activeTemplate.innerHTML;
             previewOverlay.classList.add('active');
+            document.body.classList.add('mobile-preview-open');
             document.body.style.overflow = 'hidden';
 
             requestAnimationFrame(() => {
@@ -4880,6 +4893,7 @@
         function closeMobilePrintPreview() {
             const previewOverlay = document.getElementById('mobile-preview-overlay');
             if (previewOverlay) previewOverlay.classList.remove('active');
+            document.body.classList.remove('mobile-preview-open');
             document.body.style.overflow = '';
         }
 
