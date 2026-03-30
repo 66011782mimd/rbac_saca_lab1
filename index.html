@@ -1924,7 +1924,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding: 4px 0 20px;
+            padding: 6px 8px 14px;
         }
 
         .mobile-preview-page-wrap {
@@ -1932,6 +1932,7 @@
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            padding: 0 4px;
         }
 
         .mobile-preview-page {
@@ -1941,6 +1942,7 @@
             color: #000;
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
             transform-origin: top center;
+            margin: 0 auto;
         }
 
         @media (min-width: 768px) {
@@ -4831,7 +4833,6 @@
             page.style.marginBottom = '0px';
             wrap.style.width = '100%';
             wrap.style.minHeight = '100%';
-            wrap.style.overflow = 'hidden';
             stage.scrollTop = 0;
             stage.scrollLeft = 0;
 
@@ -4841,17 +4842,20 @@
             const stageWidth = Math.max(stage.clientWidth, 280);
             const stageHeight = Math.max(stage.clientHeight, 320);
 
-            const availableWidth = Math.max(stageWidth - 4, 240);
-            const availableHeight = Math.max(stageHeight - 4, 260);
+            const sideSafeGap = 20;
+            const topBottomSafeGap = 12;
+
+            const availableWidth = Math.max(stageWidth - sideSafeGap, 220);
+            const availableHeight = Math.max(stageHeight - topBottomSafeGap, 240);
 
             const scaleByWidth = availableWidth / pageWidth;
             const scaleByHeight = availableHeight / pageHeight;
             const scale = Math.min(scaleByWidth, scaleByHeight, 1);
 
             page.style.transform = `scale(${scale})`;
-            wrap.style.width = `${pageWidth * scale}px`;
-            wrap.style.minHeight = `${Math.max(pageHeight * scale, stage.clientHeight)}px`;
-            page.style.marginBottom = '0px';
+            wrap.style.width = `${pageWidth * scale + 8}px`;
+            wrap.style.minHeight = `${Math.max(pageHeight * scale + 8, stage.clientHeight)}px`;
+            page.style.marginBottom = '8px';
         }
 
         function openMobilePrintPreview() {
