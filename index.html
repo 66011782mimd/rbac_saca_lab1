@@ -862,6 +862,30 @@
             border-left: 6px solid var(--dim-color);
         }
 
+        /* Perpendicular Tick Marks for Arrows */
+        .arrow-t::after, .arrow-b::after, .arrow-l::after, .arrow-r::after {
+            content: '';
+            position: absolute;
+            background-color: var(--dim-color);
+        }
+
+        .arrow-t::after, .arrow-b::after {
+            width: 14px;
+            height: 1.5px;
+            left: -7px;
+        }
+
+        .arrow-l::after, .arrow-r::after {
+            width: 1.5px;
+            height: 14px;
+            top: -7px;
+        }
+
+        .arrow-t::after { top: 0px; }
+        .arrow-b::after { bottom: 0px; }
+        .arrow-l::after { left: 0px; }
+        .arrow-r::after { right: 0px; }
+
         .dim-text {
             position: absolute;
             color: var(--text-main);
@@ -2109,6 +2133,13 @@
                 border-left-color: #ea580c !important;
             }
 
+            .print-drawing-box .arrow-t::after,
+            .print-drawing-box .arrow-b::after,
+            .print-drawing-box .arrow-l::after,
+            .print-drawing-box .arrow-r::after {
+                background-color: #ea580c !important;
+            }
+
             /* Plate specifics */
             .print-drawing-box .plate-wrapper {
                 width: 100% !important;
@@ -2524,6 +2555,38 @@
                                     style="width: 36px; height: 36px; font-size: 1.5rem;">+</button>
                             </div>
                         </div>
+
+                        <!-- Fasteners (Accessories) Box -->
+                        <div class="panel-card" id="fasteners-box"
+                            style="margin-top: 15px; margin-bottom: 0; display: none; background: #f8fafc; border-color: #cbd5e1; padding: 15px;">
+                            <div style="font-weight: 700; color: var(--text-main); margin-bottom: 15px; text-align: center; border-bottom: 1px dashed rgba(0,0,0,0.1); padding-bottom: 10px;">อุปกรณ์เสริม (จำนวนต่อ 1 ชุด)</div>
+                            <div style="display: flex; flex-direction: column; gap: 12px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 0.95rem; font-weight: 600;">- น็อตตัวเมีย (Nut)</span>
+                                    <div class="qty-controls">
+                                        <button class="qty-btn" onclick="updateQty('qty-nut', -1)">-</button>
+                                        <input class="qty-input" id="qty-nut" min="0" style="width: 45px;" type="number" value="0" />
+                                        <button class="qty-btn" onclick="updateQty('qty-nut', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 0.95rem; font-weight: 600;">- แหวนอีแปะ (Washer)</span>
+                                    <div class="qty-controls">
+                                        <button class="qty-btn" onclick="updateQty('qty-washer', -1)">-</button>
+                                        <input class="qty-input" id="qty-washer" min="0" style="width: 45px;" type="number" value="0" />
+                                        <button class="qty-btn" onclick="updateQty('qty-washer', 1)">+</button>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 0.95rem; font-weight: 600;">- แหวนสปริง (Spring)</span>
+                                    <div class="qty-controls">
+                                        <button class="qty-btn" onclick="updateQty('qty-spring', -1)">-</button>
+                                        <input class="qty-input" id="qty-spring" min="0" style="width: 45px;" type="number" value="0" />
+                                        <button class="qty-btn" onclick="updateQty('qty-spring', 1)">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2610,16 +2673,16 @@
             style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 15px; font-weight: bold;">
             <div style="width: 48%;">
                 <div style="display: flex; align-items: baseline; margin-bottom: 15px;"><span
-                        style="width: 80px;">ชื่อลูกค้า :</span><span class="print-line flex-1" id="p-name"></span>
+                        style="width: 80px;">ชื่อลูกค้า :</span><span class="print-line flex-1" id="p-name" style="text-align: left; padding-left: 5px;"></span>
                 </div>
                 <div style="display: flex; align-items: baseline;"><span style="width: 80px;">Tel/Fax :</span><span
-                        class="print-line flex-1" id="p-tel"></span></div>
+                        class="print-line flex-1" id="p-tel" style="text-align: left; padding-left: 5px;"></span></div>
             </div>
             <div style="width: 48%;">
                 <div style="display: flex; align-items: baseline; margin-bottom: 15px;"><span
-                        style="width: 60px;">บริษัท :</span><span class="print-line flex-1" id="p-company"></span></div>
+                        style="width: 60px;">บริษัท :</span><span class="print-line flex-1" id="p-company" style="text-align: left; padding-left: 5px;"></span></div>
                 <div style="display: flex; align-items: baseline;"><span style="width: 60px;">E-mail :</span><span
-                        class="print-line flex-1" id="p-email"></span></div>
+                        class="print-line flex-1" id="p-email" style="text-align: left; padding-left: 5px;"></span></div>
             </div>
         </div>
 
@@ -2627,13 +2690,13 @@
             <div style="width: 46%; font-size: 15px; display: flex; flex-direction: column;">
                 <div style="font-weight: bold; margin-bottom: 6px; font-size: 16px;">1.1 เกรดเหล็ก</div>
                 <div style="line-height: 1.6; margin-bottom: 10px;">
-                    <div><span class="print-chk" id="p-chk-ss400">(....)</span> SS400 (A36) เกรดธรรมดา 4.6</div>
-                    <div><span class="print-chk" id="p-chk-s45c">(....)</span> S45C (A307) เกรดเหล็กแข็ง</div>
-                    <div><span class="print-chk" id="p-chk-scm440">(....)</span> SCM440 (A325) เกรดเหล็กแข็ง</div>
-                    <div><span class="print-chk" id="p-chk-ss304">(....)</span> Stainless SS304 (A2)</div>
-                    <div><span class="print-chk" id="p-chk-ss316">(....)</span> Stainless SS316 (A4)</div>
+                    <div><span class="print-chk" id="p-chk-ss400">(&nbsp;&nbsp;)</span> SS400 (A36) เกรดธรรมดา 4.6</div>
+                    <div><span class="print-chk" id="p-chk-s45c">(&nbsp;&nbsp;)</span> S45C (A307) เกรดเหล็กแข็ง</div>
+                    <div><span class="print-chk" id="p-chk-scm440">(&nbsp;&nbsp;)</span> SCM440 (A325) เกรดเหล็กแข็ง</div>
+                    <div><span class="print-chk" id="p-chk-ss304">(&nbsp;&nbsp;)</span> Stainless SS304 (A2)</div>
+                    <div><span class="print-chk" id="p-chk-ss316">(&nbsp;&nbsp;)</span> Stainless SS316 (A4)</div>
                     <div id="print-mat-other-row" style="display:none;"><span class="print-chk"
-                            id="p-chk-mat-other">(.....)</span> อื่นๆ <span class="print-line" id="p-mat-other"
+                            id="p-chk-mat-other">(&nbsp;&nbsp;)</span> อื่นๆ <span class="print-line" id="p-mat-other"
                             style="width: 120px;"></span></div>
                 </div>
 
@@ -2655,11 +2718,11 @@
 
                 <div style="font-weight: bold; margin-bottom: 6px; font-size: 16px;">1.4 ลักษณะการชุบ</div>
                 <div style="line-height: 1.6; margin-bottom: 10px;">
-                    <div><span class="print-chk" id="p-chk-black">(....)</span> ไม่ชุบ (Black)</div>
-                    <div><span class="print-chk" id="p-chk-zinc">(....)</span> ชุบขาว หนา 5 ไมครอน (Zinc)</div>
-                    <div><span class="print-chk" id="p-chk-hdg">(....)</span> ชุบฮอทดิบ หนา 50 ไมครอน<br><span
+                    <div><span class="print-chk" id="p-chk-black">(&nbsp;&nbsp;)</span> ไม่ชุบ (Black)</div>
+                    <div><span class="print-chk" id="p-chk-zinc">(&nbsp;&nbsp;)</span> ชุบขาว หนา 5 ไมครอน (Zinc)</div>
+                    <div><span class="print-chk" id="p-chk-hdg">(&nbsp;&nbsp;)</span> ชุบฮอทดิบ หนา 50 ไมครอน<br><span
                             style="margin-left: 32px;">(Hot Dipped Galvanised)</span></div>
-                    <div><span class="print-chk" id="p-chk-other">(.....)</span> อื่นๆ <span class="print-line"
+                    <div><span class="print-chk" id="p-chk-other">(&nbsp;&nbsp;)</span> อื่นๆ <span class="print-line"
                             id="p-coat-other" style="width: 120px;"></span></div>
                     <div style="margin-top: 5px; line-height: 1.5; font-size: 14px;">
                         ** สำหรับ การชุบ Hot Dipped Galvanised<br> หากต้องการความหนาพิเศษต้องระบุ <span
@@ -2678,7 +2741,7 @@
                         style="width:30px;"></span> ) ตัว
                 </div>
 
-                <div style="font-size: 15px; line-height: 1.6; padding-right: 15px;">
+                <div id="ibolt-remarks-view" style="font-size: 15px; line-height: 1.6; white-space: nowrap; display: none;">
                     <div style="font-weight: bold; margin-bottom: 4px; font-size: 15px;">หมายเหตุ :
                         ระยะเวลาในการผลิตงานสั่งทำ</div>
                     <div style="margin-left: 6px;">* ไม่ชุบ และ สแตนเลส ใช้ระยะเวลาผลิตประมาณ 3-5 วัน</div>
@@ -2694,16 +2757,38 @@
                 <div class="print-drawing-box" id="p-svg-container"></div>
 
                 <!-- Signatures -->
-                <div
-                    style="width: 100%; font-size: 15.5px; margin-top: 8px; padding-left: 20px; box-sizing: border-box; page-break-inside: avoid;">
+                <div id="ibolt-sign-view"
+                    style="width: 100%; font-size: 15.5px; margin-top: auto; padding-top: 15px; padding-left: 55px; box-sizing: border-box; page-break-inside: avoid; display: none;">
                     <div style="display: flex; align-items: baseline; margin-bottom: 12px;">
                         <span style="font-weight: bold; width: 85px; white-space: nowrap;">พนักงานขาย</span>
-                        <span class="print-line flex-1" style="min-width: 200px; border-bottom-style: dotted;"></span>
+                        <span class="print-line flex-1" style="min-width: 165px; border-bottom-style: dotted;"></span>
                     </div>
                     <div style="display: flex; align-items: baseline;">
                         <span style="font-weight: bold; width: 40px; white-space: nowrap;">สาขา</span>
-                        <span class="print-line flex-1" style="min-width: 245px; border-bottom-style: dotted;"></span>
+                        <span class="print-line flex-1" style="min-width: 210px; border-bottom-style: dotted;"></span>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Standard Remarks and Signatures (For everything except I-Bolt) -->
+        <div id="standard-footer-view"
+            style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 25px; position: relative; z-index: 10; page-break-inside: avoid;">
+            <div style="width: 65%; font-size: 15px; line-height: 1.6;">
+                <div style="font-weight: bold; margin-bottom: 4px; font-size: 15px;">หมายเหตุ :
+                    ระยะเวลาในการผลิตงานสั่งทำ</div>
+                <div style="margin-left: 6px;">* ไม่ชุบ และ สแตนเลส ใช้ระยะเวลาผลิตประมาณ 3-5 วัน</div>
+                <div style="margin-left: 6px;">* ชุบขาว (Zinc) ระยะเวลาผลิตประมาณ 5-7 วัน</div>
+                <div style="margin-left: 6px;">* Hot Dipped Galvanised ระยะเวลาผลิตประมาณ 15 วัน</div>
+            </div>
+            <div style="width: 320px; font-size: 15.5px;">
+                <div style="display: flex; align-items: baseline; margin-bottom: 12px;">
+                    <span style="font-weight: bold; width: 85px; white-space: nowrap;">พนักงานขาย</span>
+                    <span class="print-line flex-1" style="min-width: 200px; border-bottom-style: dotted;"></span>
+                </div>
+                <div style="display: flex; align-items: baseline;">
+                    <span style="font-weight: bold; width: 40px; white-space: nowrap;">สาขา</span>
+                    <span class="print-line flex-1" style="min-width: 245px; border-bottom-style: dotted;"></span>
                 </div>
             </div>
         </div>
@@ -2750,17 +2835,17 @@
             style="display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 15px; font-weight: bold;">
             <div style="width: 48%;">
                 <div style="display: flex; align-items: baseline; margin-bottom: 15px;"><span
-                        style="width: 80px;">ชื่อลูกค้า :</span><span class="print-line flex-1" id="p2-name"></span>
+                        style="width: 80px;">ชื่อลูกค้า :</span><span class="print-line flex-1" id="p2-name" style="text-align: left; padding-left: 5px;"></span>
                 </div>
                 <div style="display: flex; align-items: baseline;"><span style="width: 80px;">Tel/Fax :</span><span
-                        class="print-line flex-1" id="p2-tel"></span></div>
+                        class="print-line flex-1" id="p2-tel" style="text-align: left; padding-left: 5px;"></span></div>
             </div>
             <div style="width: 48%;">
                 <div style="display: flex; align-items: baseline; margin-bottom: 15px;"><span
-                        style="width: 60px;">บริษัท :</span><span class="print-line flex-1" id="p2-company"></span>
+                        style="width: 60px;">บริษัท :</span><span class="print-line flex-1" id="p2-company" style="text-align: left; padding-left: 5px;"></span>
                 </div>
                 <div style="display: flex; align-items: baseline;"><span style="width: 60px;">E-mail :</span><span
-                        class="print-line flex-1" id="p2-email"></span></div>
+                        class="print-line flex-1" id="p2-email" style="text-align: left; padding-left: 5px;"></span></div>
             </div>
         </div>
 
@@ -2768,13 +2853,13 @@
             <div style="width: 46%; font-size: 15px; display: flex; flex-direction: column;">
                 <div style="font-weight: bold; margin-bottom: 6px; font-size: 16px;">1.1 เกรดเหล็ก</div>
                 <div style="line-height: 1.6; margin-bottom: 10px;">
-                    <div><span class="print-chk" id="p2-chk-ss400">(....)</span> SS400 (A36) เกรดธรรมดา 4.6</div>
-                    <div><span class="print-chk" id="p2-chk-s45c">(....)</span> S45C (A307) เกรดเหล็กแข็ง</div>
-                    <div><span class="print-chk" id="p2-chk-scm440">(....)</span> SCM440 (A325) เกรดเหล็กแข็ง</div>
-                    <div><span class="print-chk" id="p2-chk-ss304">(....)</span> Stainless SS304 (A2)</div>
-                    <div><span class="print-chk" id="p2-chk-ss316">(....)</span> Stainless SS316 (A4)</div>
+                    <div><span class="print-chk" id="p2-chk-ss400">(&nbsp;&nbsp;)</span> SS400 (A36) เกรดธรรมดา 4.6</div>
+                    <div><span class="print-chk" id="p2-chk-s45c">(&nbsp;&nbsp;)</span> S45C (A307) เกรดเหล็กแข็ง</div>
+                    <div><span class="print-chk" id="p2-chk-scm440">(&nbsp;&nbsp;)</span> SCM440 (A325) เกรดเหล็กแข็ง</div>
+                    <div><span class="print-chk" id="p2-chk-ss304">(&nbsp;&nbsp;)</span> Stainless SS304 (A2)</div>
+                    <div><span class="print-chk" id="p2-chk-ss316">(&nbsp;&nbsp;)</span> Stainless SS316 (A4)</div>
                     <div id="p2-print-mat-other-row" style="display:none;"><span class="print-chk"
-                            id="p2-chk-mat-other">(.....)</span> อื่นๆ <span class="print-line" id="p2-mat-other"
+                            id="p2-chk-mat-other">(&nbsp;&nbsp;)</span> อื่นๆ <span class="print-line" id="p2-mat-other"
                             style="width: 120px;"></span></div>
                 </div>
 
@@ -2787,11 +2872,11 @@
 
                 <div style="font-weight: bold; margin-bottom: 6px; font-size: 16px;">1.4 ลักษณะการชุบ</div>
                 <div style="line-height: 1.6; margin-bottom: 10px;">
-                    <div><span class="print-chk" id="p2-chk-black">(....)</span> ไม่ชุบ (Black)</div>
-                    <div><span class="print-chk" id="p2-chk-zinc">(....)</span> ชุบขาว หนา 5 ไมครอน (Zinc)</div>
-                    <div><span class="print-chk" id="p2-chk-hdg">(....)</span> ชุบฮอทดิบ หนา 50 ไมครอน</div>
+                    <div><span class="print-chk" id="p2-chk-black">(&nbsp;&nbsp;)</span> ไม่ชุบ (Black)</div>
+                    <div><span class="print-chk" id="p2-chk-zinc">(&nbsp;&nbsp;)</span> ชุบขาว หนา 5 ไมครอน (Zinc)</div>
+                    <div><span class="print-chk" id="p2-chk-hdg">(&nbsp;&nbsp;)</span> ชุบฮอทดิบ หนา 50 ไมครอน</div>
                     <div style="margin-left: 36px;">(Hot Dipped Galvanised)</div>
-                    <div id="p2-print-coat-other-row"><span class="print-chk" id="p2-chk-coat-other">(.....)</span>
+                    <div id="p2-print-coat-other-row"><span class="print-chk" id="p2-chk-coat-other">(&nbsp;&nbsp;)</span>
                         อื่นๆ <span class="print-line" id="p2-coat-other" style="width: 120px;"></span></div>
                     <div style="margin-top: 5px; line-height: 1.5; font-size: 14px;">
                         ** สำหรับ การชุบ Hot Dipped Galvanised<br> หากต้องการความหนาพิเศษต้องระบุ <span
@@ -2852,13 +2937,15 @@
                             style="display: flex; justify-content: flex-start; position: relative; padding-left: 60px;">
                             <svg width="270" height="216" viewBox="0 0 280 240">
                                 <defs>
-                                    <marker id="arr-s1" markerWidth="8" markerHeight="6" refX="0" refY="3"
+                                    <marker id="arr-s1" markerWidth="8" markerHeight="14" refX="0" refY="7"
                                         orient="auto">
-                                        <polygon points="8,0 0,3 8,6" fill="black" />
+                                        <polygon points="8,4 0,7 8,10" fill="black" />
+                                        <line x1="0" y1="0" x2="0" y2="14" stroke="black" stroke-width="1.2" />
                                     </marker>
-                                    <marker id="arr-e1" markerWidth="8" markerHeight="6" refX="8" refY="3"
+                                    <marker id="arr-e1" markerWidth="8" markerHeight="14" refX="8" refY="7"
                                         orient="auto">
-                                        <polygon points="0,0 8,3 0,6" fill="black" />
+                                        <polygon points="0,4 8,7 0,10" fill="black" />
+                                        <line x1="8" y1="0" x2="8" y2="14" stroke="black" stroke-width="1.2" />
                                     </marker>
                                 </defs>
                                 <rect x="50" y="40" width="160" height="160" fill="none" stroke="black"
@@ -2928,13 +3015,15 @@
                         <div style="display: flex; justify-content: flex-start; padding-left: 60px;">
                             <svg width="270" height="216" viewBox="0 0 280 240">
                                 <defs>
-                                    <marker id="arr-s2" markerWidth="8" markerHeight="6" refX="0" refY="3"
+                                    <marker id="arr-s2" markerWidth="8" markerHeight="14" refX="0" refY="7"
                                         orient="auto">
-                                        <polygon points="8,0 0,3 8,6" fill="black" />
+                                        <polygon points="8,4 0,7 8,10" fill="black" />
+                                        <line x1="0" y1="0" x2="0" y2="14" stroke="black" stroke-width="1.2" />
                                     </marker>
-                                    <marker id="arr-e2" markerWidth="8" markerHeight="6" refX="8" refY="3"
+                                    <marker id="arr-e2" markerWidth="8" markerHeight="14" refX="8" refY="7"
                                         orient="auto">
-                                        <polygon points="0,0 8,3 0,6" fill="black" />
+                                        <polygon points="0,4 8,7 0,10" fill="black" />
+                                        <line x1="8" y1="0" x2="8" y2="14" stroke="black" stroke-width="1.2" />
                                     </marker>
                                 </defs>
                                 <rect x="50" y="40" width="160" height="160" fill="none" stroke="black"
@@ -3173,6 +3262,7 @@
                     document.documentElement.style.setProperty('--hardware-color', '#cbd5e1');
                 }
             }
+            if (typeof window.drawCanvasBolt === 'function') window.drawCanvasBolt();
         }
 
         window.updatePlateType = function () {
@@ -3308,6 +3398,7 @@
             }
 
             updateBoltScale();
+            if (typeof window.drawCanvasBolt === 'function') window.drawCanvasBolt();
         };
 
         window.updateFill = function (el) {
@@ -3317,6 +3408,91 @@
             const val = parseFloat(el.value) || 0;
             const percent = ((val - min) / (max - min)) * 100;
             el.style.background = `linear-gradient(to right, var(--primary) ${percent}%, #e2e8f0 ${percent}%)`;
+        };
+
+        window.drawCanvasBolt = function(targetContainer) {
+            if (!currentProduct || currentProduct.formPrefix !== 'JBS') return;
+            const canvas = targetContainer 
+                ? targetContainer.querySelector('#bolt-canvas') 
+                : document.getElementById('bolt-canvas');
+            if (!canvas) return;
+
+            const style = getComputedStyle(canvas);
+            const l = parseFloat(style.getPropertyValue('--l')) || 264;
+            const t = parseFloat(style.getPropertyValue('--t')) || 94;
+            const dStr = style.getPropertyValue('--d');
+            const d = parseFloat(dStr) || 30;
+            const cStr = style.getPropertyValue('--c');
+            const c = (parseFloat(cStr) || 80); // L2
+            const angleStr = style.getPropertyValue('--angle');
+            const angleDeg = parseFloat(angleStr) || 45;
+
+            // Canvas size and padding to fit all bendings
+            const pad = Math.max(d * 2.5, c + d * 2); 
+            const width = Math.max(400, d*3 + c*2.5);
+            const height = l + Math.max(d*3, c*1.5) + pad;
+            
+            const dpi = window.devicePixelRatio || 2; // high res
+            canvas.width = width * dpi;
+            canvas.height = height * dpi;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+            canvas.style.top = -pad + 'px';
+            canvas.style.left = '50%';
+            canvas.style.transform = 'translateX(-50%)';
+            canvas.style.position = 'absolute';
+            canvas.style.zIndex = '2';
+
+            const ctx = canvas.getContext('2d');
+            ctx.scale(dpi, dpi);
+            ctx.clearRect(0, 0, width, height);
+
+            // Origin of bolt center
+            const ox = width / 2;
+            const oy = pad; // Y = 0 of the logical bolt
+
+            // Bending Radius Logic (Inner/Outer radius with arcTo)
+            let bendRadius = d * 1.0; 
+            bendRadius = Math.min(bendRadius, c - d/2); // Safety for short L2
+            if (bendRadius < 0) bendRadius = 0;
+
+            const bendAngleRad = (angleDeg) * Math.PI / 180;
+            
+            const cornerX = ox;
+            const cornerY = oy + l;
+
+            const endX = cornerX + c * Math.sin(bendAngleRad);
+            const endY = cornerY - c * Math.cos(bendAngleRad);
+
+            const boltColor = style.getPropertyValue('--bolt-color').trim() || '#cbd5e1';
+
+            // Custom Path Drawing
+            ctx.beginPath();
+            ctx.moveTo(ox, oy + t - 2); // Start drawing slightly inside the threaded zone to hide the rounded butt
+            ctx.arcTo(cornerX, cornerY, endX, endY, bendRadius);
+            ctx.lineTo(endX, endY);
+            
+            ctx.strokeStyle = boltColor;
+            ctx.lineWidth = d;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Shadow
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+            ctx.shadowBlur = 12;
+            ctx.shadowOffsetY = 8;
+            ctx.stroke();
+
+            // Highlight gradient
+            ctx.shadowColor = 'transparent';
+            ctx.globalCompositeOperation = 'source-atop';
+            
+            ctx.strokeStyle = 'rgba(0,0,0,0.05)';
+            ctx.lineWidth = d + 2;
+            ctx.stroke();
+
+            // Clean up
+            ctx.globalCompositeOperation = 'source-over';
         };
 
         /* ===== CSS HTML SHAPES ===== */
@@ -3349,9 +3525,10 @@
             } else if (type === 'j-bolt-snake') {
                 return `<div class="bolt-drawing-wrapper"><div class="bolt-container j-bolt-snake">${basePlateHtml}
                     <div class="nut"></div><div class="washer"></div><div class="spring-washer"></div><div class="threads"></div>
-                    <div class="shaft"></div><div class="snake-joint"></div>
+                    <div class="shaft" style="display:none;"></div><div class="snake-joint" style="display:none;"></div>
+                    <canvas id="bolt-canvas" class="bolt-shaft-canvas" style="position: absolute; top: 0; left: 0; pointer-events: none; z-index: 2; width: 100%; height: 100%;"></canvas>
                     <div class="leg-wrapper">
-                        <div class="snake-tip"></div>
+                        <div class="snake-tip" style="display:none;"></div>
                         <!-- Parallel L2 Label (Refined Drafting Style) -->
                         <div class="dim dim-v-parallel" style="position: absolute; left: -50px; top: 0; height: var(--c); width: 1.5px; background: var(--dim-color);">
                             <div class="arrow-t" style="position: absolute; top: -1px; left: 50%; width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-bottom: 8px solid var(--dim-color); transform: translateX(-50%);"></div>
@@ -3558,9 +3735,16 @@
             }
         }
 
-        window.updateAngleArc = function () {
+        window.updateAngleArc = function(targetContainer) {
             if (!currentProduct || currentProduct.formPrefix !== 'JBS') return;
-            const style = getComputedStyle(document.documentElement);
+            const container = targetContainer || document.documentElement;
+            const svg = targetContainer 
+                ? targetContainer.querySelector('#angle-svg') 
+                : document.getElementById('angle-svg');
+            
+            if (!svg) return;
+
+            const style = getComputedStyle(svg);
             const angleStr = style.getPropertyValue('--angle');
             let angle = parseFloat(angleStr);
             if (isNaN(angle)) angle = 45;
@@ -3569,12 +3753,19 @@
             let d = parseFloat(dStr);
             if (isNaN(d)) d = 30;
 
-            const pathEl = document.getElementById('dynamic-angle-arc');
-            const textEl = document.getElementById('dynamic-angle-text');
+            const pathEl = svg.querySelector('#dynamic-angle-arc') || document.getElementById('dynamic-angle-arc');
+            const textEl = svg.querySelector('#dynamic-angle-text') || document.getElementById('dynamic-angle-text');
 
             if (pathEl && textEl) {
-                // คำนวณรัศมีให้เส้นโค้งอยู่ด้านนอกแกนเหล็กเสมอ
-                const R = (d / 2) + 35;
+                // คำนวณรัศมีให้อยู่ในระยะของ L2 เพื่อไม่ให้เส้นองศายื่นออกไปนอกตัวเหล็ก L2
+                const cStr = style.getPropertyValue('--c');
+                let c = parseFloat(cStr);
+                if (isNaN(c)) c = 80;
+
+                let R = (d / 2) + 25; // Base radius inside the corner
+                R = Math.min(R, c * 0.75); // Clamp so it never extends past 75% of L2 length
+                if (R < (d / 2) + 5) R = (d / 2) + 5; // Minimum safety boundary
+
                 const startAngle = 0;
                 const endAngle = angle;
 
@@ -3694,13 +3885,19 @@
 
                 html += `
                 <div style="margin-bottom: 2px;">
-                    <svg width="100%" height="96" viewBox="0 0 350 96" preserveAspectRatio="xMidYMid meet">
+                    <svg width="100%" height="86" viewBox="0 0 350 96" preserveAspectRatio="xMidYMid meet">
                         <defs>
                             <pattern id="ibolt-thread-refined" patternUnits="userSpaceOnUse" width="3.5" height="${boltH}">
                                 <line x1="0" y1="0" x2="0" y2="${boltH}" stroke="#000" stroke-width="0.8"/>
                             </pattern>
-                            <marker id="arr-L-sm" markerWidth="5" markerHeight="5" refX="0" refY="2.5" orient="auto"><polygon points="5,0 0,2.5 5,5" fill="black"/></marker>
-                            <marker id="arr-R-sm" markerWidth="5" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0,0 5,2.5 0,5" fill="black"/></marker>
+                            <marker id="arr-L-sm" markerWidth="5" markerHeight="15" refX="0" refY="7.5" orient="auto">
+                                <polygon points="5,5 0,7.5 5,10" fill="black"/>
+                                <line x1="0" y1="0" x2="0" y2="15" stroke="black" stroke-width="1.2"/>
+                            </marker>
+                            <marker id="arr-R-sm" markerWidth="5" markerHeight="15" refX="5" refY="7.5" orient="auto">
+                                <polygon points="0,5 5,7.5 0,10" fill="black"/>
+                                <line x1="5" y1="0" x2="5" y2="15" stroke="black" stroke-width="1.2"/>
+                            </marker>
                         </defs>
                         <!-- Checkbox -->
                         <rect x="10" y="32" width="16" height="16" fill="none" stroke="#000" stroke-width="1.5"/>
@@ -3711,8 +3908,10 @@
                         <line stroke="#000" stroke-width="0.8" x1="55" x2="55" y1="${boltY}" y2="${boltEnd}"/>
                         <!-- Top Arrow Tip (Points UP) -->
                         <polygon points="55,${boltY} 52,${boltY + 4} 58,${boltY + 4}" fill="black"/>
+                        <line x1="48" y1="${boltY}" x2="62" y2="${boltY}" stroke="black" stroke-width="1.2"/>
                         <!-- Bottom Arrow Tip (Points DOWN) -->
                         <polygon points="55,${boltEnd} 52,${boltEnd - 4} 58,${boltEnd - 4}" fill="black"/>
+                        <line x1="48" y1="${boltEnd}" x2="62" y2="${boltEnd}" stroke="black" stroke-width="1.2"/>
                         
                         ${boltSvg}
                         ${dimsSvg}
@@ -3901,7 +4100,7 @@
 
                 sumDimsContainer.innerHTML = html;
             }
-            setSafeText('sum-total', document.getElementById('qty-total')?.value || '0');
+            setSafeText('sum-total', Number(document.getElementById('qty-total')?.value || 0).toLocaleString());
         }
         function updateUI() {
             const appContainer = document.getElementById('app-container');
@@ -3951,6 +4150,9 @@
         function setupProductForm(type) {
             const p = PRODUCTS[type];
             if (!p) return;
+
+            const fastenersBox = document.getElementById('fasteners-box');
+            if (fastenersBox) fastenersBox.style.display = p.isPlate ? 'none' : 'block';
 
             const date = new Date();
             const yy = String(date.getFullYear()).slice(-2);
@@ -4307,6 +4509,7 @@
                     if (currentProduct && currentProduct.isPlate) window.updatePlateCalculations();
                     updateBoltScale();
                     if (typeof window.updateAngleArc === 'function') window.updateAngleArc();
+                    if (typeof window.drawCanvasBolt === 'function') window.drawCanvasBolt();
                 };
 
                 const isLinkedL2 = d.key === 'l2' && currentProduct && currentProduct.formPrefix === 'UBL';
@@ -4407,6 +4610,7 @@
             window.updateColors();
             updateBoltScale(true);
             if (typeof window.updateAngleArc === 'function') window.updateAngleArc();
+            if (typeof window.drawCanvasBolt === 'function') window.drawCanvasBolt();
         }
 
         /* ===== PRINT POPULATION ===== */
@@ -4467,6 +4671,23 @@
             setSafeText('p-qty-note', isUB ? '(มาตรฐาน 1 set มี 2Nuts)' : '');
             setSafeHTML('p-hdg-note-2', '');
 
+            // Toggle Layout based on I-Bolt
+            const iboltRemarks = document.getElementById('ibolt-remarks-view');
+            const iboltSign = document.getElementById('ibolt-sign-view');
+            const stdFooter = document.getElementById('standard-footer-view');
+            
+            if (iboltRemarks && iboltSign && stdFooter) {
+                if (currentProduct.formPrefix === 'IBL' || currentProduct.formPrefix === 'UBL' || currentProduct.formPrefix === 'UBS') {
+                    iboltRemarks.style.display = 'block';
+                    iboltSign.style.display = 'block';
+                    stdFooter.style.display = 'none';
+                } else {
+                    iboltRemarks.style.display = 'none';
+                    iboltSign.style.display = 'none';
+                    stdFooter.style.display = 'flex';
+                }
+            }
+
             const vMm = document.getElementById('dim-d-mm')?.value.trim() || '';
             const vInch = document.getElementById('dim-d-inch')?.value.trim() || '';
 
@@ -4495,18 +4716,18 @@
                 const selectedType = document.getElementById('ibolt-type-select')?.value || 'single';
 
                 dimHtml = dimHtmlTop + `
-                    <div style="display: flex; align-items: baseline; margin-bottom: 10px; font-size: 15px;">
+                    <div style="display: flex; align-items: baseline; margin-bottom: 4px; font-size: 15px;">
                         <span style="width: 30px; text-align: left;">L1</span>
                         <span class="print-line flex-1" style="margin: 0 10px; text-align:center;">${vL1}</span>
                         <span style="width: 30px; text-align: left;">มม.</span>
                     </div>
-                    <div style="display: flex; align-items: baseline; margin-bottom: 12px; font-size: 15px;">
+                    <div style="display: flex; align-items: baseline; margin-bottom: 6px; font-size: 15px;">
                         <span style="width: 30px; text-align: left;">LT</span>
                         <span class="print-line flex-1" style="margin: 0 10px; text-align:center;">${vLt}</span>
                         <span style="width: 30px; text-align: left;">มม.</span>
                     </div>
                 `;
-                iboltTypesHtml = window.generateIBoltPrintRows(selectedType, vL1, vLt);
+                iboltTypesHtml = '<div style="margin-top: 4px;">' + window.generateIBoltPrintRows(selectedType, vL1, vLt) + '</div>';
                 if (printDrawingBox) printDrawingBox.style.display = 'none';
 
             } else if (isUBRound) {
@@ -4626,9 +4847,10 @@
                         if (d.key === 'angle') { label = 'องศา'; unit = 'องศา'; }
                         if (d.key === 'r') { label = 'R'; unit = 'มม.'; }
 
+                        let lWidth = currentProduct.formPrefix === 'LBL' ? '30px' : labelWidth;
                         dimHtml += `
                             <div style="display: flex; align-items: baseline; padding-right: 30px; font-size: 15px; margin-bottom: 10px;">
-                                <span style="width: ${labelWidth}; text-align: left;">${label}</span>
+                                <span style="width: ${lWidth}; text-align: left;">${label}</span>
                                 <span class="print-line" style="width: 150px; margin: 0 10px; text-align: center;">${val}</span>
                                 <span style="width: 30px; text-align: left;">${unit}</span>
                             </div>
@@ -4708,9 +4930,12 @@
                         if (currentProduct.formPrefix.includes('UB')) {
                             printScale = 0.85;
                             printMarginTop = '90px';
-                        } else if (currentProduct.formPrefix === 'JBL' || currentProduct.formPrefix === 'JBS') {
+                        } else if (currentProduct.formPrefix === 'JBL') {
                             printScale = 0.80;
                             printMarginTop = '45px';
+                        } else if (currentProduct.formPrefix === 'JBS') {
+                            printScale = 0.95;
+                            printMarginTop = '70px';
                         } else if (currentProduct.formPrefix === 'LBL') {
                             printScale = 0.80;
                             printMarginTop = '45px';
@@ -4722,17 +4947,34 @@
 
                         const badges = clone.querySelectorAll('.dim-text, .dim-dia-label');
                         badges.forEach(badge => {
-                            badge.style.boxShadow = 'none';
-                            if (!badge.style.backgroundColor) badge.style.backgroundColor = 'white';
-                            badge.style.border = 'none';
-                            if (!badge.style.color) badge.style.color = '#000';
-                            badge.style.borderRadius = '0px';
-                            badge.style.padding = '2px 4px';
+                            badge.style.setProperty('box-shadow', 'none', 'important');
+                            badge.style.setProperty('border', 'none', 'important');
+                            badge.style.setProperty('border-radius', '0px', 'important');
+                            badge.style.setProperty('background', '#ffffff', 'important');
+                            badge.style.setProperty('color', '#000000', 'important');
+                            badge.style.setProperty('font-weight', '600', 'important');
+                            badge.style.padding = '0px 4px';
                         });
 
                         clone.classList.remove('show-plate');
 
                         printDrawingBox.appendChild(clone);
+
+                        if (currentProduct.formPrefix === 'JBS') {
+                            clone.style.setProperty('--angle', '60', 'important');
+                            if (typeof window.drawCanvasBolt === 'function') window.drawCanvasBolt(clone);
+                            
+                            // Hide the angle arc from the printed document
+                            const angleSvg = clone.querySelector('#angle-svg');
+                            if (angleSvg) angleSvg.style.display = 'none';
+                            
+                            // Adjust L1 line specifically for JBS print view to be closer
+                            const dims = Array.from(clone.querySelectorAll('.dim.dim-v'));
+                            const l1Dim = dims.find(el => el.textContent.includes('L1'));
+                            if (l1Dim) {
+                                l1Dim.style.setProperty('left', 'calc(50% - (var(--d)/2) - 35px)', 'important');
+                            }
+                        }
                     }
                 }
             } else {
@@ -4740,13 +4982,13 @@
             }
 
             const totalQty = document.getElementById('qty-total')?.value || '0';
-            setSafeText('p-qty', totalQty);
-            setSafeText('p-price-qty-set', totalQty);
-            setSafeText('p-price-qty-piece', totalQty);
+            setSafeText('p-qty', Number(totalQty).toLocaleString());
+            setSafeText('p-price-qty-set', Number(totalQty).toLocaleString());
+            setSafeText('p-price-qty-piece', Number(totalQty).toLocaleString());
 
-            setSafeText('p-qty-nut', document.getElementById('qty-nut')?.value || '0');
-            setSafeText('p-qty-washer', document.getElementById('qty-washer')?.value || '0');
-            setSafeText('p-qty-spring', document.getElementById('qty-spring')?.value || '0');
+            setSafeText('p-qty-nut', Number(document.getElementById('qty-nut')?.value || 0).toLocaleString());
+            setSafeText('p-qty-washer', Number(document.getElementById('qty-washer')?.value || 0).toLocaleString());
+            setSafeText('p-qty-spring', Number(document.getElementById('qty-spring')?.value || 0).toLocaleString());
 
             applyPrintCheckboxes('p-');
         }
@@ -4762,7 +5004,7 @@
             let dStr = reqDateObj ? `${reqDateObj.getDate().toString().padStart(2, '0')}/${(reqDateObj.getMonth() + 1).toString().padStart(2, '0')}/${reqDateObj.getFullYear() + 543}` : '';
             setSafeText('p2-date', dStr);
 
-            setSafeText('p2-qty', document.getElementById('qty-total')?.value || '0');
+            setSafeText('p2-qty', Number(document.getElementById('qty-total')?.value || 0).toLocaleString());
 
             const plateType = document.getElementById('plate-type-select')?.value || 'type1';
 
@@ -4786,11 +5028,11 @@
             const type1Chk = document.getElementById('p2-type1-chk');
             const type2Chk = document.getElementById('p2-type2-chk');
             if (plateType === 'type2') {
-                if (type1Chk) type1Chk.innerHTML = '<span style="font-family: monospace; letter-spacing: 1px;">(....)</span>';
+                if (type1Chk) type1Chk.innerHTML = '<span style="font-family: monospace; letter-spacing: 1px;">(&nbsp;&nbsp;)</span>';
                 if (type2Chk) type2Chk.innerHTML = '<span style="font-family: monospace; letter-spacing: 1px;">(&#10003;)</span>';
             } else {
                 if (type1Chk) type1Chk.innerHTML = '<span style="font-family: monospace; letter-spacing: 1px;">(&#10003;)</span>';
-                if (type2Chk) type2Chk.innerHTML = '<span style="font-family: monospace; letter-spacing: 1px;">(....)</span>';
+                if (type2Chk) type2Chk.innerHTML = '<span style="font-family: monospace; letter-spacing: 1px;">(&nbsp;&nbsp;)</span>';
             }
 
             const holesGroup = document.getElementById('p2-svg-holes-group');
@@ -4803,7 +5045,7 @@
 
         function applyPrintCheckboxes(prefix) {
             const checkMarkHTML = '<span style="font-family: monospace; font-weight: bold; font-size: 16px; margin-right: 2px;">(&#10003;)</span>';
-            const uncheckMarkHTML = '<span style="font-family: monospace; font-size: 16px; margin-right: 2px;">(....)</span>';
+            const uncheckMarkHTML = '<span style="font-family: monospace; font-size: 16px; margin-right: 2px;">(&nbsp;&nbsp;)</span>';
 
             const matValue = document.querySelector('select#grade-select')?.value || '';
             const matMap = { "ss400": "chk-ss400", "s45c": "chk-s45c", "scm440": "chk-scm440", "sus304": "chk-ss304", "sus316": "chk-ss316" };
