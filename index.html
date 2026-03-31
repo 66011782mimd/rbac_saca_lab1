@@ -3,1128 +3,954 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Part Fastener Generator</title>
+    <title>แบบสำรวจความพึงพอใจของลูกค้า - TMAX</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700&display=swap');
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #f0f9ff; /* sky-50 พื้นหลังหลักสีฟ้าอ่อน/ขาว */
-            color: #0f172a;
+            background-color: #f3f4f6;
+            color: #000;
+            -webkit-print-color-adjust: exact;
+            font-weight: 400;
         }
-        .canvas-container {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.08); /* เงาสีน้ำเงินอ่อน */
-            border: 1px solid #bfdbfe; /* blue-200 */
-            overflow: hidden;
-            background-image: 
-                linear-gradient(rgba(37,99,235,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(37,99,235,0.05) 1px, transparent 1px);
-            background-size: 20px 20px;
+        
+        /* สไตล์สำหรับ A4 */
+        .a4-container {
+            width: 210mm;
+            min-width: 210mm; /* บังคับขนาดให้เลื่อนดูบนมือถือได้ */
+            min-height: 297mm;
+            margin: 20px auto;
+            background: white;
+            padding: 8mm 15mm 10mm 15mm; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-sizing: border-box;
         }
-        .input-field {
-            @apply w-full px-3 py-2 bg-slate-50 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-sm text-slate-800 shadow-sm;
+        .input-line {
+            border: none;
+            border-bottom: 1px dotted #000;
+            background: transparent;
+            outline: none;
+            padding: 0 4px;
         }
-        .label-text {
-            @apply block text-xs font-bold text-blue-800 uppercase tracking-wider mb-1;
+        .input-line:focus {
+            border-bottom: 1px solid #000;
+            background-color: #f9fafb;
+        }
+        .a4-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            table-layout: fixed; 
+        }
+        .a4-table th, .a4-table td {
+            border: 1px solid #000;
+            padding: 4px 6px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            font-weight: 400;
+        }
+        .a4-table th {
+            text-align: center;
+            background-color: #fcfcfc;
+            padding: 12px 6px; 
+        }
+        .score-input {
+            width: 100%;
+            text-align: center;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+            font-size: 14px;
+        }
+        .score-input:focus {
+            background-color: #f0fdf4;
+        }
+        .text-input-table {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: inherit;
+        }
+        .no-border-cell {
+            border: none !important;
+        }
+
+        /* เอาลูกศรขึ้นลงของช่อง number ออก */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* ซ่อนส่วนอื่นๆ เวลาสั่งพิมพ์ */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0;
+            }
+            body {
+                background-color: white;
+            }
+            #web-form-view {
+                display: none !important;
+            }
+            #a4-print-view {
+                display: block !important;
+                padding: 0 !important;
+                background: white !important;
+            }
+            .a4-container {
+                margin: 0 !important;
+                padding: 8mm 15mm 10mm 15mm;
+                box-shadow: none !important;
+                width: 210mm;
+                height: 297mm;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .input-line {
+                border-bottom: 1px dotted #000;
+            }
+            .overflow-x-auto {
+                overflow: visible !important;
+            }
         }
     </style>
 </head>
-<body class="p-4 md:p-8 flex flex-col min-h-screen">
-    <div class="max-w-7xl mx-auto w-full flex-1 flex flex-col">
-        <!-- Header -->
-        <header class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-blue-200 pb-4">
-            <div>
-                <h1 class="text-2xl font-bold text-blue-900">Smart Fastener Generator</h1>
-                <p class="text-sm text-blue-600">เลื่อนเลือกประเภทชิ้นงานที่ต้องการและระบุขนาด</p>
-            </div>
-            <button onclick="App.downloadImage()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium text-sm transition shadow-lg shadow-blue-500/30 flex items-center gap-2 shrink-0">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                บันทึกรูปภาพ (PNG)
-            </button>
-        </header>
+<body class="overflow-x-hidden">
 
-        <!-- Main Workspace -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 flex-1">
-            <!-- Sidebar Controls (Dynamic Forms) -->
-            <div class="lg:col-span-3 space-y-4">
+    <!-- ========================================== -->
+    <!-- VIEW 1: WEB FORM (หน้าเว็บสำหรับกรอกข้อมูล) -->
+    <!-- ========================================== -->
+    <div id="web-form-view" class="min-h-screen bg-slate-50 py-3 sm:py-10 px-2 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto space-y-3 sm:space-y-6">
+            
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-8 border-t-4 border-t-indigo-500">
+                <h1 class="text-base sm:text-2xl font-bold text-slate-800 mb-1 sm:mb-2">ระบบกรอกข้อมูลแบบสำรวจความพึงพอใจลูกค้า</h1>
+                <p class="text-slate-500 text-[11px] sm:text-sm">กรุณากรอกข้อมูลในแบบฟอร์มด้านล่าง ระบบจะนำข้อมูลไปสร้างเป็นเอกสาร A4 (FM-SA-003) ให้อัตโนมัติ</p>
+            </div>
+
+            <!-- ข้อมูลลูกค้า -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-8">
+                <h2 class="text-sm sm:text-lg font-bold text-slate-800 mb-3 sm:mb-5 pb-2 sm:pb-3 border-b border-slate-100">1. ข้อมูลทั่วไป</h2>
                 
-                <!-- Product Selector (Dropdown) -->
-                <div class="bg-white border border-blue-100 p-5 rounded-xl shadow-lg shadow-blue-100/50">
-                    <label for="productSelect" class="block text-sm font-bold text-blue-900 mb-3">เลือกประเภทชิ้นงาน:</label>
-                    <div class="relative">
-                        <select id="productSelect" onchange="App.selectProduct(this.value)" class="w-full appearance-none bg-slate-50 border border-blue-200 text-blue-900 py-2.5 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium cursor-pointer shadow-sm">
-                            <!-- Options will be injected here by JS -->
-                        </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-blue-500">
-                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 mb-3 sm:mb-6">
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-1 sm:mb-1.5">ชื่อบริษัทลูกค้า</label>
+                        <input type="text" id="w_company" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
+                    </div>
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-1.5 sm:mb-3">ประเภทธุรกิจ</label>
+                        <div class="flex flex-wrap gap-x-3 gap-y-2 sm:gap-5 text-[12px] sm:text-base">
+                            <label class="flex items-center gap-1.5 sm:gap-2 cursor-pointer text-slate-700"><input type="checkbox" id="w_type_1" class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"> งานระบบ</label>
+                            <label class="flex items-center gap-1.5 sm:gap-2 cursor-pointer text-slate-700"><input type="checkbox" id="w_type_2" class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"> โรงหล่อคอนกรีต</label>
+                            <label class="flex items-center gap-1.5 sm:gap-2 cursor-pointer text-slate-700"><input type="checkbox" id="w_type_3" class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"> งานสถาปัตย์</label>
+                            <label class="flex items-center gap-1.5 sm:gap-2 cursor-pointer text-slate-700"><input type="checkbox" id="w_type_4" class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"> งานโครงสร้าง</label>
+                            <label class="flex items-center gap-1.5 sm:gap-2 cursor-pointer text-slate-700"><input type="checkbox" id="w_type_5" class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500"> ร้านฮาร์ดแวร์</label>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white border border-blue-100 p-5 rounded-xl shadow-lg shadow-blue-100/50">
-                    <h2 class="text-sm font-bold text-blue-800 mb-4 border-b border-blue-100 pb-2 flex justify-between items-center">
-                        <span>กำหนดขนาด (มม.)</span>
-                        <span id="currentTypeLabel" class="text-blue-600 font-normal text-xs bg-blue-50 px-2 py-1 rounded-full"></span>
-                    </h2>
-                    
-                    <div id="formContainer" class="space-y-4">
-                        <!-- Input fields will be injected here by JS -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-6 mb-3 sm:mb-6 p-2.5 sm:p-5 bg-slate-50 rounded-lg sm:rounded-xl border border-slate-100">
+                    <div>
+                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-1 sm:mb-1.5">ชื่อผู้สำรวจ</label>
+                        <input type="text" id="w_surveyor_name" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-1 sm:mb-1.5">เบอร์โทรศัพท์ (ผู้สำรวจ)</label>
+                        <input type="text" id="w_surveyor_tel" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-1 sm:mb-1.5">E-mail (ผู้สำรวจ)</label>
+                        <input type="email" id="w_surveyor_email" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-6 p-2.5 sm:p-5 bg-indigo-50/50 rounded-lg sm:rounded-xl border border-indigo-100/60">
+                    <div>
+                        <label class="block text-[11px] sm:text-sm font-semibold text-indigo-900 mb-1 sm:mb-1.5">ชื่อพนักงานขาย</label>
+                        <input type="text" id="w_respondent_name" class="w-full border border-indigo-200 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] sm:text-sm font-semibold text-indigo-900 mb-1 sm:mb-1.5">เบอร์โทรศัพท์ (พนักงานขาย)</label>
+                        <input type="text" id="w_respondent_tel" class="w-full border border-indigo-200 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] sm:text-sm font-semibold text-indigo-900 mb-1 sm:mb-1.5">E-mail (พนักงานขาย)</label>
+                        <input type="email" id="w_respondent_email" class="w-full border border-indigo-200 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
                     </div>
                 </div>
             </div>
 
-            <!-- Canvas Display -->
-            <div class="lg:col-span-9 flex flex-col">
-                <div class="canvas-container flex-1 flex justify-center items-center w-full min-h-[600px] relative">
-                    <canvas id="drawingCanvas" width="800" height="750" class="max-w-full h-auto"></canvas>
+            <!-- ตารางประเมิน -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 sm:mb-5 pb-2 sm:pb-3 border-b border-slate-100 gap-2 sm:gap-3">
+                    <h2 class="text-sm sm:text-lg font-bold text-slate-800">2. การประเมินความพึงพอใจ</h2>
+                    <div class="text-right text-[11px] sm:text-sm w-full sm:w-auto">
+                        <div class="bg-indigo-100/80 text-indigo-800 px-3 sm:px-4 py-1.5 rounded-lg font-semibold shadow-sm border border-indigo-200/50 flex justify-between sm:inline-block">
+                            <span>คะแนนรวม: <span id="w_total_score">0</span> / <span id="w_total_max">0</span> (<span id="w_total_pct">-</span>)</span>
+                            <span class="sm:ml-2">Grade <span id="w_total_grade" class="font-bold text-rose-600">-</span></span>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="overflow-x-auto rounded-xl border border-slate-200 hide-scrollbar pb-2 sm:pb-0">
+                    <table class="w-full text-[11px] sm:text-sm text-left border-collapse min-w-[550px] sm:min-w-[800px]">
+                        <thead>
+                            <tr class="bg-slate-100/80 text-slate-700">
+                                <th class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 font-semibold w-[20%] sm:w-[15%] whitespace-nowrap">หัวข้อ</th>
+                                <th class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 font-semibold w-[45%]">รายละเอียดการประเมิน</th>
+                                <th class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 w-[15%] text-center font-semibold">คะแนนเต็ม</th>
+                                <th class="p-1.5 sm:p-3.5 border-b border-slate-200 w-[20%] text-center bg-indigo-50/50 font-semibold text-indigo-900 whitespace-nowrap">ให้คะแนน (ดาว)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="web-score-body">
+                            <!-- 1. คุณภาพสินค้า -->
+                            <tr>
+                                <td rowspan="4" class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 font-semibold bg-slate-50/50 align-top text-slate-800 whitespace-nowrap">1. คุณภาพสินค้า</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">1.1 Specification สินค้าเป็นไปตามต้องการ</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s1_1" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="10"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s1_1" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s1_1" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">1.2 มีการรับรองคุณภาพ</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s1_2" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s1_2" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s1_2" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">1.3 สภาพการบรรจุหีบห่อ</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s1_3" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s1_3" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s1_3" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">1.4 การแก้ไขและป้องกันปัญหา</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s1_4" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s1_4" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s1_4" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+
+                            <!-- 2. การส่งมอบ -->
+                            <tr>
+                                <td rowspan="3" class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 font-semibold bg-slate-50/50 align-top text-slate-800 whitespace-nowrap">2. การส่งมอบ</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">2.1 ความรวดเร็ว และตรงเวลาในการจัดส่ง</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s2_1" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s2_1" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s2_1" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">2.2 การแต่งกายและความสุภาพของพนักงานจัดส่งสินค้า</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s2_2" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s2_2" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s2_2" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">2.3 ความถูกต้องของสินค้าและเอกสารในการส่งมอบ</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s2_3" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s2_3" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s2_3" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+
+                            <!-- 3. การบริการ -->
+                            <tr>
+                                <td rowspan="4" class="p-1.5 sm:p-3.5 border-r border-slate-200 font-semibold bg-slate-50/50 align-top text-slate-800 whitespace-nowrap">3. การบริการ</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">3.1 ความสะดวกในการติดต่อสื่อสาร</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s3_1" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s3_1" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s3_1" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">3.2 การตอบสนองข้อร้องเรียนและการให้ข้อมูลที่ร้องขอ</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s3_2" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s3_2" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s3_2" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-slate-600">3.3 ความรวดเร็วในการแก้ไขปัญหา</td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-r border-slate-200 text-center"><input type="number" id="w_max_s3_3" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 border-b border-slate-200 text-center bg-indigo-50/30">
+                                    <div id="star_container_s3_3" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s3_3" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="p-1.5 sm:p-3.5 border-r border-slate-200 text-slate-600">3.4 การเสนอราคามีความรวดเร็ว</td>
+                                <td class="p-1.5 sm:p-3.5 border-r border-slate-200 text-center"><input type="number" id="w_max_s3_4" class="w-full text-center bg-transparent outline-none w-score-max font-medium text-slate-700" value="5"></td>
+                                <td class="p-1.5 sm:p-3.5 text-center bg-indigo-50/30">
+                                    <div id="star_container_s3_4" class="flex flex-nowrap justify-center gap-0.5 sm:gap-1"></div>
+                                    <input type="hidden" id="w_s3_4" class="w-score-val" value="0">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ข้อเสนอแนะ -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-8 mb-3 sm:mb-6">
+                <h2 class="text-sm sm:text-lg font-bold text-slate-800 mb-2 sm:mb-4 pb-2 sm:pb-3 border-b border-slate-100">3. ข้อเสนอแนะเพิ่มเติม</h2>
+                <textarea id="w_suggestions" rows="2" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-3 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none resize-none text-sm sm:text-base text-slate-700" placeholder="พิมพ์ข้อเสนอแนะที่นี่"></textarea>
+            </div>
+
+            <!-- สรุปผลประเมินก่อนพิมพ์ -->
+            <div class="bg-gradient-to-br from-indigo-50/80 to-blue-50/80 rounded-2xl sm:rounded-3xl shadow-sm border border-indigo-100/60 p-4 sm:p-10 mb-4 sm:mb-10">
+                <div class="text-center mb-4 sm:mb-8">
+                    <h3 class="text-base sm:text-2xl font-bold text-indigo-900 mb-0.5 sm:mb-2">สรุปผลการประเมิน</h3>
+                    <p class="text-indigo-600/80 text-[10px] sm:text-sm">ขอบคุณที่สละเวลาให้คะแนนและข้อเสนอแนะกับเรา</p>
+                </div>
+                
+                <!-- เปลี่ยนกลับเป็น grid-cols-3 เพื่อให้เรียงติดกันแนวนอน 3 อันบนมือถือ -->
+                <div class="grid grid-cols-3 gap-2 sm:gap-5 mb-5 sm:mb-10">
+                    <!-- Card 1: คะแนนรวม -->
+                    <div class="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-6 border border-indigo-50 shadow-sm flex flex-col items-center justify-center transition-transform hover:-translate-y-1 hover:shadow-md duration-300">
+                        <div class="flex items-center gap-1 sm:gap-2 text-indigo-400 mb-1 sm:mb-3">
+                            <svg class="w-3 h-3 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            <span class="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-center leading-tight hidden sm:block">คะแนนรวม</span>
+                            <span class="text-[9px] font-bold uppercase tracking-wider text-center leading-tight block sm:hidden">คะแนน<br>รวม</span>
+                        </div>
+                        <div class="text-lg sm:text-4xl font-black text-indigo-700 tracking-tight flex items-baseline">
+                            <span id="w_bottom_score">0</span>
+                            <span class="text-xs sm:text-2xl text-indigo-300 mx-0.5 sm:mx-1 font-medium">/</span>
+                            <span id="w_bottom_max" class="text-xs sm:text-2xl text-indigo-500">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: เปอร์เซ็นต์ -->
+                    <div class="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-6 border border-blue-50 shadow-sm flex flex-col items-center justify-center transition-transform hover:-translate-y-1 hover:shadow-md duration-300">
+                        <div class="flex items-center gap-1 sm:gap-2 text-blue-400 mb-1 sm:mb-3">
+                            <svg class="w-3 h-3 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                            <span class="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-center leading-tight hidden sm:block">คิดเป็นเปอร์เซ็นต์</span>
+                            <span class="text-[9px] font-bold uppercase tracking-wider text-center leading-tight block sm:hidden">คิดเป็น<br>%</span>
+                        </div>
+                        <div class="text-lg sm:text-4xl font-black text-blue-600 tracking-tight" id="w_bottom_pct">-</div>
+                    </div>
+
+                    <!-- Card 3: เกรดที่ได้ -->
+                    <div class="bg-gradient-to-b from-white to-rose-50/50 rounded-xl sm:rounded-2xl p-2 sm:p-6 border border-rose-100 shadow-sm flex flex-col items-center justify-center relative overflow-hidden transition-transform hover:-translate-y-1 hover:shadow-md duration-300">
+                        <!-- ลายน้ำดาวตกแต่งพื้นหลัง -->
+                        <div class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 text-rose-100/60 transform rotate-12">
+                            <svg class="w-12 h-12 sm:w-24 sm:h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
+                        </div>
+                        
+                        <div class="flex items-center gap-1 sm:gap-2 text-rose-400 mb-1 sm:mb-3 relative z-10">
+                            <svg class="w-3 h-3 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                            <span class="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-center leading-tight">เกรดที่ได้</span>
+                        </div>
+                        <div class="text-2xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-rose-500 to-orange-400 relative z-10 drop-shadow-sm" id="w_bottom_grade">-</div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button type="button" onclick="previewDocument()" class="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-2.5 sm:py-4 px-5 sm:px-10 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-indigo-500/30 transition duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2 sm:gap-3 group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-6 sm:w-6 group-hover:animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        <span class="text-[13px] sm:text-lg">ดูตัวอย่างเอกสารเพื่อสั่งพิมพ์</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- VIEW 2: A4 PRINT VIEW (หน้าเอกสาร A4 เดิม)  -->
+    <!-- ========================================== -->
+    <div id="a4-print-view" class="hidden relative pb-10 bg-gray-200 min-h-screen pt-4 sm:pt-6">
+        
+        <!-- แถบเมนูด้านบนของหน้า Preview -->
+        <div class="max-w-[210mm] mx-auto flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 no-print px-4 gap-3">
+            <button onclick="backToWebForm()" class="w-full sm:w-auto bg-slate-600 hover:bg-slate-700 text-white font-semibold py-3 sm:py-2 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 transition duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                กลับไปแก้ไขข้อมูล
+            </button>
+            <button onclick="window.print()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 sm:py-2 px-6 rounded-xl shadow-md flex items-center justify-center gap-2 transition duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                พิมพ์เอกสาร (PDF)
+            </button>
+        </div>
+
+        <!-- เพิ่มกล่องเพื่อรองรับการใช้นิ้วปัดดูข้อมูลในหน้า A4 (Horizontal Scroll) -->
+        <div class="w-full overflow-x-auto hide-scrollbar px-2 sm:px-0 pb-6">
+            <div class="a4-container relative mx-auto">
+                
+                <!-- Header Section -->
+                <div class="flex justify-between items-start mb-2">
+                    <div class="w-20 mt-2">
+                        <img src="image_1f2f46.png" alt="Company Logo" class="w-full h-auto" onerror="this.src='88 TMAX logo-01.jpg'; this.onerror=function(){this.parentElement.innerHTML='<div style=\'font-weight:700; font-size: 18px;\'>88 TMAX</div>'}">
+                    </div>
+                    <div class="text-right text-[10px] text-gray-500 font-sans mt-2">
+                        FM-SA-003 REV.00 (15/12/2563)
+                    </div>
+                </div>
+
+                <div class="text-center text-lg mb-4 font-semibold">
+                    แบบสำรวจความพึงพอใจของลูกค้า
+                </div>
+
+                <!-- ข้อมูลลูกค้า -->
+                <div class="mb-4 space-y-2 text-[13px]">
+                    <div class="flex items-end">
+                        <span class="mr-2 whitespace-nowrap">บริษัท :</span>
+                        <input type="text" id="company_a4" class="input-line flex-grow" />
+                    </div>
+                    
+                    <div class="flex items-center gap-4 flex-wrap">
+                        <span class="mr-2">ประเภทธุรกิจ :</span>
+                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="a4_type_1" class="w-3.5 h-3.5 border-black"> งานระบบ</label>
+                        <label class="flex items-center gap-1 cursor-pointer ml-2"><input type="checkbox" id="a4_type_2" class="w-3.5 h-3.5 border-black"> โรงหล่อคอนกรีต</label>
+                        <label class="flex items-center gap-1 cursor-pointer ml-2"><input type="checkbox" id="a4_type_3" class="w-3.5 h-3.5 border-black"> งานสถาปัตย์</label>
+                        <label class="flex items-center gap-1 cursor-pointer ml-2"><input type="checkbox" id="a4_type_4" class="w-3.5 h-3.5 border-black"> งานโครงสร้าง</label>
+                        <label class="flex items-center gap-1 cursor-pointer ml-2"><input type="checkbox" id="a4_type_5" class="w-3.5 h-3.5 border-black"> ร้านฮาร์ดแวร์</label>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-4 items-end pt-1">
+                        <div class="col-span-5 flex items-end">
+                            <span class="mr-2 whitespace-nowrap">ชื่อผู้สำรวจ :</span>
+                            <input type="text" id="surveyor_input_top" class="input-line w-full" />
+                        </div>
+                        <div class="col-span-3 flex items-end">
+                            <span class="mr-2 whitespace-nowrap">โทรศัพท์ :</span>
+                            <input type="text" id="surveyor_tel_a4" class="input-line w-full" />
+                        </div>
+                        <div class="col-span-4 flex items-end">
+                            <span class="mr-2 whitespace-nowrap">E-mail :</span>
+                            <input type="text" id="surveyor_email_a4" class="input-line w-full" />
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-4 items-end">
+                        <div class="col-span-5 flex items-end">
+                            <span class="mr-2 whitespace-nowrap">ชื่อผู้ตอบแบบสำรวจ :</span>
+                            <input type="text" id="respondent_input_top" class="input-line w-full" />
+                        </div>
+                        <div class="col-span-3 flex items-end">
+                            <span class="mr-2 whitespace-nowrap">โทรศัพท์ :</span>
+                            <input type="text" id="respondent_tel_a4" class="input-line w-full" />
+                        </div>
+                        <div class="col-span-4 flex items-end">
+                            <span class="mr-2 whitespace-nowrap">E-mail :</span>
+                            <input type="text" id="respondent_email_a4" class="input-line w-full" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ตารางแบบประเมิน -->
+                <div class="mb-1">
+                    <table class="a4-table">
+                        <colgroup>
+                            <col style="width: 15%;"> 
+                            <col style="width: 44%;"> 
+                            <col style="width: 9%;">  
+                            <col style="width: 15%;"> 
+                            <col style="width: 17%;"> 
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th>หัวข้อ</th>
+                                <th>รายละเอียดการประเมิน</th>
+                                <th>คะแนน<br>เต็ม</th>
+                                <th>ระดับ<br>คะแนนที่ได้</th>
+                                <th>รายละเอียดเพิ่มเติม</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 1. คุณภาพสินค้า -->
+                            <tr>
+                                <td rowspan="4" class="text-center align-middle whitespace-nowrap">1.คุณภาพสินค้า</td>
+                                <td>1.1 Specification สินค้าเป็นไปตามต้องการ</td>
+                                <td><input type="number" id="max_s1_1" class="score-input max-score-input" data-default="10" min="0"></td>
+                                <td><input type="number" id="s1_1" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+                            <tr>
+                                <td>1.2 มีการรับรองคุณภาพ</td>
+                                <td><input type="number" id="max_s1_2" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s1_2" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+                            <tr>
+                                <td>1.3 สภาพการบรรจุหีบห่อ</td>
+                                <td><input type="number" id="max_s1_3" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s1_3" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+                            <tr>
+                                <td>1.4 การแก้ไขและป้องกันปัญหา</td>
+                                <td><input type="number" id="max_s1_4" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s1_4" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+
+                            <!-- 2. การส่งมอบ -->
+                            <tr>
+                                <td rowspan="3" class="text-center align-middle whitespace-nowrap">2.การส่งมอบ</td>
+                                <td>2.1 ความรวดเร็ว และตรงเวลาในการจัดส่ง</td>
+                                <td><input type="number" id="max_s2_1" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s2_1" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+                            <tr>
+                                <td class="whitespace-nowrap">2.2 การแต่งกายและความสุภาพของพนักงานจัดส่งสินค้า</td>
+                                <td><input type="number" id="max_s2_2" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s2_2" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+                            <tr>
+                                <td class="whitespace-nowrap">2.3 ความถูกต้องของสินค้าและเอกสารในการส่งมอบ</td>
+                                <td><input type="number" id="max_s2_3" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s2_3" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+
+                            <!-- 3. การบริการ -->
+                            <tr>
+                                <td rowspan="4" class="text-center align-middle whitespace-nowrap">3.การบริการ</td>
+                                <td>3.1 ความสะดวกในการติดต่อสื่อสาร</td>
+                                <td><input type="number" id="max_s3_1" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s3_1" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+                            <tr>
+                                <td class="whitespace-nowrap">3.2 การตอบสนองข้อร้องเรียนและการให้ข้อมูลที่ร้องขอ</td>
+                                <td><input type="number" id="max_s3_2" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s3_2" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+                            <tr>
+                                <td>3.3 ความรวดเร็วในการแก้ไขปัญหา</td>
+                                <td><input type="number" id="max_s3_3" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s3_3" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+                            <tr>
+                                <td>3.4 การเสนอราคามีความรวดเร็ว</td>
+                                <td><input type="number" id="max_s3_4" class="score-input max-score-input" data-default="5" min="0"></td>
+                                <td><input type="number" id="s3_4" class="score-input" min="0"></td>
+                                <td><input type="text" class="text-input-table"></td>
+                            </tr>
+
+                            <!-- ส่วนสรุปผล -->
+                            <tr class="summary-row">
+                                <td colspan="2" class="text-center align-middle"><span class="ml-[35px] font-semibold">รวมคะแนน</span></td>
+                                <td><input type="number" id="total_max_score" class="score-input text-blue-700 font-semibold"></td>
+                                <td><input type="number" id="total_score" class="score-input text-blue-700 font-semibold"></td>
+                                <td class="no-border-cell"></td> 
+                            </tr>
+                            <tr class="summary-row">
+                                <td colspan="3" class="text-center align-middle font-semibold">คิดเป็นเปอร์เซ็นต์</td>
+                                <td><input type="text" id="total_percent" class="score-input text-blue-700 font-semibold" readonly></td>
+                                <td class="no-border-cell"></td>
+                            </tr>
+                            <tr class="summary-row">
+                                <td colspan="3" class="text-center align-middle font-semibold">สรุปผลการประเมินได้เกรด</td>
+                                <td><input type="text" id="total_grade" class="score-input text-red-600 text-lg font-bold" readonly></td>
+                                <td class="no-border-cell"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- หมายเหตุ -->
+                <div class="mt-4 text-[12px] leading-tight">
+                    <div class="flex">
+                        <div class="w-20 font-bold">หมายเหตุ :</div>
+                        <div>
+                            <p>การคำนวณเปอร์เซ็นต์ ให้คิดจากสูตร : เปอร์เซ็นต์ = ( คะแนนที่ได้ / คะแนนเต็มรวม ) x 100</p>
+                            <div class="mt-3">
+                                <p class="underline mb-1 font-semibold">เกณฑ์การประเมิน</p>
+                                <div class="grid grid-cols-12 gap-x-0 w-[350px] ml-4">
+                                    <div class="col-span-1">A</div><div class="col-span-4">90 - 100</div><div class="col-span-2 text-center">%</div><div class="col-span-5">ดีมาก</div>
+                                    <div class="col-span-1">B</div><div class="col-span-4">80 - 89</div><div class="col-span-2 text-center">%</div><div class="col-span-5">ดี</div>
+                                    <div class="col-span-1">C</div><div class="col-span-4">70 - 79</div><div class="col-span-2 text-center">%</div><div class="col-span-5">พอใช้</div>
+                                    <div class="col-span-1">D</div><div class="col-span-4">น้อยกว่า 70</div><div class="col-span-2 text-center">%</div><div class="col-span-5">ต้องปรับปรุง</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ข้อเสนอแนะ -->
+                <div class="mt-4 text-[13px]">
+                    <div class="flex items-start">
+                        <span class="w-20 font-bold pt-1">ข้อเสนอแนะ :</span>
+                        <div class="flex-grow space-y-3 pt-1"> 
+                            <input type="text" id="a4_sug_1" class="input-line w-full block">
+                            <input type="text" id="a4_sug_2" class="input-line w-full block">
+                            <input type="text" id="a4_sug_3" class="input-line w-full block">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ส่วนลงชื่อ -->
+                <div class="mt-6 text-[13px]"> 
+                    <div class="flex flex-col items-end mr-10 space-y-4">
+                        <div class="flex items-end w-[420px] max-w-full">
+                            <span class="whitespace-nowrap font-normal">ผู้ตอบแบบสำรวจ :</span>
+                            <span class="whitespace-nowrap ml-4">ลงชื่อ</span>
+                            <input type="text" id="respondent_signature" class="input-line flex-grow text-center ml-1">
+                        </div>
+                        <div class="flex items-center justify-center w-[420px] max-w-full pl-0 sm:pl-32">
+                            <span class="mr-1">(</span>
+                            <input type="text" id="respondent_input_bottom" class="input-line w-full text-center" placeholder="ชื่อ-นามสกุล">
+                            <span class="ml-1">)</span>
+                        </div>
+                        <div class="flex items-end justify-center w-[420px] max-w-full pl-0 sm:pl-32">
+                            <span class="mr-2">วันที่</span>
+                            <input type="text" id="date_day" class="input-line w-10 text-center" placeholder="วว">
+                            <span class="mx-1">/</span>
+                            <input type="text" id="date_month" class="input-line w-10 text-center" placeholder="ดด">
+                            <span class="mx-1">/</span>
+                            <input type="text" id="date_year" class="input-line w-16 text-center" placeholder="ปปปป">
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- JAVASCRIPT ARCHITECTURE START              -->
-    <!-- ========================================== -->
+    <!-- Script ควบคุมการทำงานทั้งหมด -->
     <script>
-        // ---------------------------------------------------------
-        // 1. DATA DICTIONARY: แคตตาล็อกสินค้า 7 ประเภท
-        // ---------------------------------------------------------
-        const PRODUCT_CATALOG = [
-            // Group 1: I-Bolt (Studs)
-            {
-                id: 'stud_1side',
-                group: '1. ไอ-โบลท์ I-Bolt',
-                name: '1.1 สตัดเกลียวข้างเดียว',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 20, color: 'text-blue-700' },
-                    { id: 'L', label: 'ความยาวรวม (L1)', type: 'number', default: 400, color: 'text-blue-700' },
-                    { id: 'Lt', label: 'ระยะเกลียว (Lt)', type: 'number', default: 100, color: 'text-blue-700' }
-                ]
-            },
-            {
-                id: 'stud_2side',
-                group: '1. ไอ-โบลท์ I-Bolt',
-                name: '1.2 สตัดเกลียว 2 ข้าง',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 20, color: 'text-blue-700' },
-                    { id: 'L', label: 'ความยาวรวม (L1)', type: 'number', default: 400, color: 'text-blue-700' },
-                    { id: 'Lt', label: 'เกลียวซ้าย (Lt)', type: 'number', default: 100, color: 'text-blue-700' },
-                    { id: 'Lt1', label: 'เกลียวขวา (Lt1)', type: 'number', default: 100, color: 'text-blue-700' }
-                ]
-            },
-            {
-                id: 'stud_full',
-                group: '1. ไอ-โบลท์ I-Bolt',
-                name: '1.3 สตัดเกลียวตลอด',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 20, color: 'text-blue-700' },
-                    { id: 'L', label: 'ความยาวรวม (L1)', type: 'number', default: 400, color: 'text-blue-700' }
-                ]
-            },
-            {
-                id: 'stud_shark',
-                group: '1. ไอ-โบลท์ I-Bolt',
-                name: '1.4 สตัดปากฉลาม',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 20, color: 'text-blue-700' },
-                    { id: 'L', label: 'ความยาวรวม (L1)', type: 'number', default: 400, color: 'text-blue-700' }
-                ]
-            },
-            {
-                id: 'stud_chisel',
-                group: '1. ไอ-โบลท์ I-Bolt',
-                name: '1.5 สตัดปลายสกัด',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 20, color: 'text-blue-700' },
-                    { id: 'L', label: 'ความยาวรวม (L1)', type: 'number', default: 400, color: 'text-blue-700' }
-                ]
-            },
-            // Others
-            {
-                id: 'jbolt_std',
-                name: '2. เจ-โบลท์ J-Bolt',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 25, color: 'text-blue-700' },
-                    { id: 'Lt', label: 'ระยะเกลียว (Lt)', type: 'number', default: 100, color: 'text-blue-700' },
-                    { id: 'L1', label: 'ความยาว (L1)', type: 'number', default: 300, color: 'text-blue-700' },
-                    { id: 'L2', label: 'ความกว้างตะขอ (L2)', type: 'number', default: 120, color: 'text-blue-700' },
-                    { id: 'L3', label: 'ความยาวปลายงอ (L3)', type: 'number', default: 100, color: 'text-blue-700' }
-                ]
-            },
-            {
-                id: 'jbolt_angled',
-                name: '3. เจ-โบลท์ งองู J-Bolt (Snake)',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 30, color: 'text-blue-700' },
-                    { id: 'Lt', label: 'ระยะเกลียว (Lt)', type: 'number', default: 90, color: 'text-blue-700' },
-                    { id: 'L1', label: 'ช่วงตรง (L1)', type: 'number', default: 250, color: 'text-blue-700' },
-                    { id: 'L2', label: 'ปลายงอ (L2)', type: 'number', default: 80, color: 'text-blue-700' },
-                    { id: 'Angle', label: 'องศางอ (Angle)', type: 'range', min: 10, max: 170, default: 45, color: 'text-blue-700' }
-                ]
-            },
-            {
-                id: 'lbolt',
-                name: '4. แอล-โบลท์ L-Bolt',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 25, color: 'text-blue-700' },
-                    { id: 'Lt', label: 'ระยะเกลียว (Lt)', type: 'number', default: 100, color: 'text-blue-700' },
-                    { id: 'L1', label: 'ช่วงแกนหลัก (L1)', type: 'number', default: 300, color: 'text-blue-700' },
-                    { id: 'L2', label: 'ช่วงฐานงอ (L2)', type: 'number', default: 120, color: 'text-blue-700' },
-                    { id: 'R', label: 'รัศมีโค้งงอ (R)', type: 'number', default: 25, color: 'text-blue-700' }
-                ]
-            },
-            {
-                id: 'ubolt',
-                name: '5. ยูโบลท์ U-Bolt',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 16, color: 'text-blue-700' },
-                    { id: 'Lt', label: 'ระยะเกลียว (Lt)', type: 'number', default: 60, color: 'text-blue-700' },
-                    { id: 'L1', label: 'ความยาวรวม (L1)', type: 'number', default: 200, color: 'text-blue-700' },
-                    { id: 'L2', label: 'ระยะศูนย์กลาง (L2)', type: 'number', default: 100, color: 'text-blue-700' }
-                ]
-            },
-            {
-                id: 'ubolt_sq',
-                name: '6. ยู-โบลท์เหลี่ยม U-Bolt Square',
-                inputs: [
-                    { id: 'D', label: 'ขนาดแกน (D)', type: 'number', default: 16, color: 'text-blue-700' },
-                    { id: 'Lt', label: 'ระยะเกลียว (Lt)', type: 'number', default: 60, color: 'text-blue-700' },
-                    { id: 'L1', label: 'ความยาวรวม (L1)', type: 'number', default: 200, color: 'text-blue-700' },
-                    { id: 'L2', label: 'ระยะศูนย์กลาง (L2)', type: 'number', default: 100, color: 'text-blue-700' },
-                    { id: 'R', label: 'รัศมีโค้งงอ (R)', type: 'number', default: 15, color: 'text-blue-700' }
-                ]
-            },
-            // Group 7: Plate
-            {
-                id: 'plate_type1',
-                group: '7. เพลท Plate',
-                name: 'Type 1 (เจาะรู 4 มุม)',
-                inputs: [
-                    { id: 'L1', label: 'ความยาว (L1)', type: 'number', default: 150, color: 'text-blue-700' },
-                    { id: 'L2', label: 'ความกว้าง (L2)', type: 'number', default: 150, color: 'text-blue-700' },
-                    { id: 'T', label: 'ความหนา (T)', type: 'number', default: 9, color: 'text-blue-700' },
-                    { id: 'HD', label: 'ขนาดรูเจาะ (HD)', type: 'number', default: 14, color: 'text-blue-700' },
-                    { id: 'M', label: 'ระยะขอบ (M)', type: 'number', default: 20, color: 'text-blue-700' }
-                ]
-            },
-            {
-                id: 'plate_type2',
-                group: '7. เพลท Plate',
-                name: 'Type 2 (เพลททึบ ไม่มีรู)',
-                inputs: [
-                    { id: 'L1', label: 'ความยาว (L1)', type: 'number', default: 150, color: 'text-blue-700' },
-                    { id: 'L2', label: 'ความกว้าง (L2)', type: 'number', default: 150, color: 'text-blue-700' },
-                    { id: 'T', label: 'ความหนา (T)', type: 'number', default: 9, color: 'text-blue-700' }
-                ]
-            }
-        ];
+        const scoreIds = ['s1_1', 's1_2', 's1_3', 's1_4', 's2_1', 's2_2', 's2_3', 's3_1', 's3_2', 's3_3', 's3_4'];
 
-        // ---------------------------------------------------------
-        // 2. DRAWING UTILITIES
-        // ---------------------------------------------------------
-        const Utils = {
-            clearCanvas: (ctx, w, h) => {
-                // เติมพื้นหลังด้วยสีขาวล้วน 100%
-                ctx.fillStyle = '#ffffff'; 
-                ctx.fillRect(0, 0, w, h);
-            },
-            drawDimLine: (ctx, x1, y1, x2, y2) => {
-                ctx.strokeStyle = '#2563eb'; 
-                ctx.lineWidth = 1.5;
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
-
-                const angle = Math.atan2(y2 - y1, x2 - x1);
-                const headlen = 10;
-                const arrowAngle = Math.PI / 7;
-
-                ctx.fillStyle = '#2563eb';
+        // --- ระบบสร้างดาวให้คะแนน (หน้า Web Form) ---
+        function renderStars() {
+            scoreIds.forEach(id => {
+                const maxInput = document.getElementById('w_max_' + id);
+                const valInput = document.getElementById('w_' + id);
+                const container = document.getElementById('star_container_' + id);
                 
-                // Arrow 1
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x1 + headlen * Math.cos(angle + arrowAngle), y1 + headlen * Math.sin(angle + arrowAngle));
-                ctx.lineTo(x1 + headlen * Math.cos(angle - arrowAngle), y1 + headlen * Math.sin(angle - arrowAngle));
-                ctx.closePath();
-                ctx.fill();
-
-                // Arrow 2
-                ctx.beginPath();
-                ctx.moveTo(x2, y2);
-                ctx.lineTo(x2 - headlen * Math.cos(angle + arrowAngle), y2 - headlen * Math.sin(angle + arrowAngle));
-                ctx.lineTo(x2 - headlen * Math.cos(angle - arrowAngle), y2 - headlen * Math.sin(angle - arrowAngle));
-                ctx.closePath();
-                ctx.fill();
-
-                // Extension lines
-                const cap = 8;
-                ctx.beginPath();
-                ctx.moveTo(x1 - cap*Math.sin(angle), y1 + cap*Math.cos(angle));
-                ctx.lineTo(x1 + cap*Math.sin(angle), y1 - cap*Math.cos(angle));
-                ctx.moveTo(x2 - cap*Math.sin(angle), y2 + cap*Math.cos(angle));
-                ctx.lineTo(x2 + cap*Math.sin(angle), y2 - cap*Math.cos(angle));
-                ctx.stroke();
-            },
-            drawBadge: (ctx, x, y, text, rot = 0) => {
-                ctx.save();
-                ctx.translate(x, y);
-                ctx.rotate(rot);
-                ctx.font = 'bold 14px Sarabun';
+                if (!container || !maxInput || !valInput) return;
                 
-                const tw = ctx.measureText(text).width;
-                const th = 14;
-                const px = 10, py = 6;
+                let maxVal = parseInt(maxInput.value) || 0;
+                let currentVal = parseInt(valInput.value) || 0;
                 
-                ctx.shadowColor = 'rgba(37, 99, 235, 0.2)';
-                ctx.shadowBlur = 8;
-                ctx.shadowOffsetY = 3;
+                // กันไม่ให้ดาวเยอะเกินไปจนล้นหน้าจอ (จำกัดสูงสุดไว้ 10)
+                if (maxVal > 10) maxVal = 10;
 
-                ctx.fillStyle = '#eff6ff'; 
-                ctx.beginPath();
-                ctx.roundRect(-tw/2 - px, -th/2 - py, tw + px*2, th + py*2, 6);
-                ctx.fill();
-                
-                ctx.strokeStyle = '#bfdbfe'; 
-                ctx.lineWidth = 1;
-                ctx.stroke();
-
-                ctx.shadowColor = 'transparent';
-                ctx.fillStyle = '#1d4ed8'; 
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(text, 0, 1);
-                ctx.restore();
-            },
-            drawThreads: (ctx, startX, startY, endX, endY, D) => {
-                ctx.strokeStyle = '#94a3b8'; 
-                ctx.lineWidth = Math.max(1, D * 0.1);
-                ctx.lineCap = 'butt';
-                
-                let dist = Math.hypot(endX - startX, endY - startY);
-                if(dist <= 0) return;
-                let dx = (endX - startX) / dist;
-                let dy = (endY - startY) / dist;
-                let perpX = -dy * (D/2);
-                let perpY = dx * (D/2);
-
-                for (let i = 0; i < dist; i += (D*0.25)) {
-                    let cx = startX + dx * i;
-                    let cy = startY + dy * i;
-                    ctx.beginPath();
-                    ctx.moveTo(cx - perpX, cy - perpY);
-                    ctx.lineTo(cx + perpX, cy + perpY);
-                    ctx.stroke();
-                }
-            },
-            // ฟังก์ชันวาดเส้นเกลียวสำหรับสตัดแนวนอน
-            drawHorizontalThreads: (ctx, x1, x2, yTop, yBottom) => {
-                ctx.strokeStyle = '#64748b'; 
-                ctx.lineWidth = 1.2;
-                if (x1 > x2) return;
-                for (let x = x1; x <= x2; x += 4) {
-                    ctx.beginPath();
-                    ctx.moveTo(x, yTop);
-                    ctx.lineTo(x, yBottom);
-                    ctx.stroke();
-                }
-            }
-        };
-
-        const BODY_COLOR = '#334155'; 
-
-        // ---------------------------------------------------------
-        // 3. RENDERERS: ตรรกะการวาดรูปของสินค้าแต่ละชนิด
-        // ---------------------------------------------------------
-        const Renderers = {
-            // 1.1 สตัดเกลียวข้างเดียว
-            stud_1side: (ctx, v, w, h, d) => {
-                const marginX = 240; // เพิ่ม Margin ให้รูปเล็กลง
-                const scale = (w - marginX * 2) / d.L;
-                const startX = marginX;
-                const centerY = h/2;
-                const endX = startX + d.L * scale;
-                const halfD = (d.D * scale) / 2;
-
-                // Outline
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = 2;
-                ctx.strokeRect(startX, centerY - halfD, d.L * scale, d.D * scale);
-
-                // Threads
-                Utils.drawHorizontalThreads(ctx, startX, startX + d.Lt*scale, centerY - halfD, centerY + halfD);
-
-                // Dims
-                const dimY_L = centerY + halfD + 40;
-                Utils.drawDimLine(ctx, startX, dimY_L, endX, dimY_L);
-                Utils.drawBadge(ctx, (startX+endX)/2, dimY_L + 25, `L1=${v.L}`);
-
-                const dimY_Lt = centerY - halfD - 30;
-                Utils.drawDimLine(ctx, startX, dimY_Lt, startX + d.Lt*scale, dimY_Lt);
-                Utils.drawBadge(ctx, startX + (d.Lt*scale)/2, dimY_Lt - 25, `Lt=${v.Lt}`);
-
-                Utils.drawDimLine(ctx, startX - 40, centerY - halfD, startX - 40, centerY + halfD);
-                Utils.drawBadge(ctx, startX - 85, centerY, `D=${v.D}`);
-            },
-
-            // 1.2 สตัดเกลียว 2 ข้าง
-            stud_2side: (ctx, v, w, h, d) => {
-                const marginX = 240;
-                const scale = (w - marginX * 2) / d.L;
-                const startX = marginX;
-                const centerY = h/2;
-                const endX = startX + d.L * scale;
-                const halfD = (d.D * scale) / 2;
-
-                // Outline
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = 2;
-                ctx.strokeRect(startX, centerY - halfD, d.L * scale, d.D * scale);
-
-                // Threads
-                Utils.drawHorizontalThreads(ctx, startX, startX + d.Lt*scale, centerY - halfD, centerY + halfD);
-                Utils.drawHorizontalThreads(ctx, endX - d.Lt1*scale, endX, centerY - halfD, centerY + halfD);
-
-                // Dims
-                const dimY_L = centerY + halfD + 40;
-                Utils.drawDimLine(ctx, startX, dimY_L, endX, dimY_L);
-                Utils.drawBadge(ctx, (startX+endX)/2, dimY_L + 25, `L1=${v.L}`);
-
-                const dimY_Lt = centerY - halfD - 30;
-                Utils.drawDimLine(ctx, startX, dimY_Lt, startX + d.Lt*scale, dimY_Lt);
-                Utils.drawBadge(ctx, startX + (d.Lt*scale)/2, dimY_Lt - 25, `Lt=${v.Lt}`);
-
-                Utils.drawDimLine(ctx, endX - d.Lt1*scale, dimY_Lt, endX, dimY_Lt);
-                Utils.drawBadge(ctx, endX - (d.Lt1*scale)/2, dimY_Lt - 25, `Lt1=${v.Lt1}`);
-
-                Utils.drawDimLine(ctx, startX - 40, centerY - halfD, startX - 40, centerY + halfD);
-                Utils.drawBadge(ctx, startX - 85, centerY, `D=${v.D}`);
-            },
-
-            // 1.3 สตัดเกลียวตลอด
-            stud_full: (ctx, v, w, h, d) => {
-                const marginX = 240;
-                const scale = (w - marginX * 2) / d.L;
-                const startX = marginX;
-                const centerY = h/2;
-                const endX = startX + d.L * scale;
-                const halfD = (d.D * scale) / 2;
-
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = 2;
-                ctx.strokeRect(startX, centerY - halfD, d.L * scale, d.D * scale);
-
-                Utils.drawHorizontalThreads(ctx, startX, endX, centerY - halfD, centerY + halfD);
-
-                const dimY_L = centerY + halfD + 40;
-                Utils.drawDimLine(ctx, startX, dimY_L, endX, dimY_L);
-                Utils.drawBadge(ctx, (startX+endX)/2, dimY_L + 25, `L1=${v.L}`);
-
-                Utils.drawDimLine(ctx, startX - 40, centerY - halfD, startX - 40, centerY + halfD);
-                Utils.drawBadge(ctx, startX - 85, centerY, `D=${v.D}`);
-            },
-
-            // 1.4 สตัดปากฉลาม
-            stud_shark: (ctx, v, w, h, d) => {
-                const marginX = 240;
-                const scale = (w - marginX * 2) / d.L;
-                const startX = marginX;
-                const centerY = h/2;
-                const endX = startX + d.L * scale;
-                const halfD = (d.D * scale) / 2;
-
-                // Path for angled cut (tip at bottom right)
-                const cutX = endX - (d.D * scale);
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = 2;
-                
-                // Outline
-                ctx.beginPath();
-                ctx.moveTo(startX, centerY - halfD);
-                ctx.lineTo(cutX, centerY - halfD);
-                ctx.lineTo(endX, centerY + halfD);
-                ctx.lineTo(startX, centerY + halfD);
-                ctx.closePath();
-                ctx.stroke();
-
-                // Vertical line at cut start
-                ctx.beginPath();
-                ctx.moveTo(cutX, centerY - halfD);
-                ctx.lineTo(cutX, centerY + halfD);
-                ctx.stroke();
-
-                // Clip and draw threads across the whole length
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(startX, centerY - halfD);
-                ctx.lineTo(cutX, centerY - halfD);
-                ctx.lineTo(endX, centerY + halfD);
-                ctx.lineTo(startX, centerY + halfD);
-                ctx.closePath();
-                ctx.clip();
-                Utils.drawHorizontalThreads(ctx, startX, endX, centerY - halfD, centerY + halfD);
-                ctx.restore();
-
-                const dimY_L = centerY + halfD + 40;
-                Utils.drawDimLine(ctx, startX, dimY_L, endX, dimY_L);
-                Utils.drawBadge(ctx, (startX+endX)/2, dimY_L + 25, `L1=${v.L}`);
-
-                Utils.drawDimLine(ctx, startX - 40, centerY - halfD, startX - 40, centerY + halfD);
-                Utils.drawBadge(ctx, startX - 85, centerY, `D=${v.D}`);
-            },
-
-            // 1.5 สตัดปลายสกัด
-            stud_chisel: (ctx, v, w, h, d) => {
-                const marginX = 240;
-                const scale = (w - marginX * 2) / d.L;
-                const startX = marginX;
-                const centerY = h/2;
-                const endX = startX + d.L * scale;
-                const halfD = (d.D * scale) / 2;
-
-                // Path for chisel point (tip at center right)
-                const cutStartX = endX - (d.D * scale * 0.8); 
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = 2;
-
-                // Outline
-                ctx.beginPath();
-                ctx.moveTo(startX, centerY - halfD);
-                ctx.lineTo(cutStartX, centerY - halfD);
-                ctx.lineTo(endX, centerY);
-                ctx.lineTo(cutStartX, centerY + halfD);
-                ctx.lineTo(startX, centerY + halfD);
-                ctx.closePath();
-                ctx.stroke();
-
-                // Vertical line at cut start
-                ctx.beginPath();
-                ctx.moveTo(cutStartX, centerY - halfD);
-                ctx.lineTo(cutStartX, centerY + halfD);
-                ctx.stroke();
-
-                // Clip and draw threads across the whole length
-                ctx.save();
-                ctx.beginPath();
-                ctx.moveTo(startX, centerY - halfD);
-                ctx.lineTo(cutStartX, centerY - halfD);
-                ctx.lineTo(endX, centerY);
-                ctx.lineTo(cutStartX, centerY + halfD);
-                ctx.lineTo(startX, centerY + halfD);
-                ctx.closePath();
-                ctx.clip();
-                Utils.drawHorizontalThreads(ctx, startX, endX, centerY - halfD, centerY + halfD);
-                ctx.restore();
-
-                const dimY_L = centerY + halfD + 40;
-                Utils.drawDimLine(ctx, startX, dimY_L, endX, dimY_L);
-                Utils.drawBadge(ctx, (startX+endX)/2, dimY_L + 25, `L1=${v.L}`);
-
-                Utils.drawDimLine(ctx, startX - 40, centerY - halfD, startX - 40, centerY + halfD);
-                Utils.drawBadge(ctx, startX - 85, centerY, `D=${v.D}`);
-            },
-
-            // 2. J-Bolt Standard
-            jbolt_std: (ctx, v, w, h, d) => {
-                const margin = 240; // เพิ่มระยะขอบให้รูปเล็กลง
-                const scale = (h - margin * 2) / d.L1;
-                
-                // Ensure R is valid (L2 must be > D)
-                const minL2 = d.D * 1.5;
-                const safeL2 = Math.max(d.L2, minL2);
-                
-                // Calculate Center-to-Center radius based on Outer Width L2
-                const R_draw = (safeL2 * scale - d.D * scale) / 2;
-                
-                const L1_draw = d.L1 * scale;
-                const L3_draw = d.L3 * scale;
-                const halfD = (d.D * scale) / 2;
-
-                // startX is center of the left shaft
-                const startX = w/2 - R_draw;
-                const startY = margin;
-                
-                // arcCenterY is the center-point for bottom half-circle
-                const arcCenterY = startY + L1_draw - halfD - R_draw;
-                const hookX = startX + 2 * R_draw;
-                // hookTipY based on L3 outer height from bottom outer edge
-                const hookTipY = startY + L1_draw - L3_draw;
-                
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = d.D * scale;
-                ctx.lineCap = 'butt';
-                
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(startX, arcCenterY);
-                ctx.arc(startX + R_draw, arcCenterY, R_draw, Math.PI, 0, true);
-                ctx.lineTo(hookX, hookTipY);
-                ctx.stroke();
-
-                // Threads
-                Utils.drawThreads(ctx, startX, startY, startX, startY + d.Lt * scale, d.D*scale);
-
-                // --- Dimensions ---
-                const outerBottomY = startY + L1_draw;
-
-                // D (Top Width)
-                Utils.drawDimLine(ctx, startX - halfD, startY - 30, startX + halfD, startY - 30);
-                Utils.drawBadge(ctx, startX, startY - 55, `D=${v.D}`);
-
-                // L1 (Total Left Outer Length)
-                const dimX_L1 = startX - halfD - 60;
-                Utils.drawDimLine(ctx, dimX_L1, startY, dimX_L1, outerBottomY);
-                Utils.drawBadge(ctx, dimX_L1 - 45, startY + L1_draw/2, `L1=${v.L1}`);
-
-                // Lt (Thread Length)
-                const dimX_Lt = startX + halfD + 40;
-                Utils.drawDimLine(ctx, dimX_Lt, startY, dimX_Lt, startY + d.Lt*scale);
-                Utils.drawBadge(ctx, dimX_Lt + 45, startY + (d.Lt*scale)/2, `Lt=${v.Lt}`);
-
-                // L2 (Total Outer Width)
-                const dimY_L2 = outerBottomY + 40;
-                Utils.drawDimLine(ctx, startX - halfD, dimY_L2, hookX + halfD, dimY_L2);
-                Utils.drawBadge(ctx, startX + R_draw, dimY_L2 + 25, `L2=${v.L2}`);
-
-                // L3 (Hook Outer Height)
-                const dimX_L3 = hookX + halfD + 60;
-                Utils.drawDimLine(ctx, dimX_L3, hookTipY, dimX_L3, outerBottomY);
-                Utils.drawBadge(ctx, dimX_L3 + 45, hookTipY + (outerBottomY - hookTipY)/2, `L3=${v.L3}`);
-            },
-
-            // 3. J-Bolt งองู
-            jbolt_angled: (ctx, v, w, h, d) => {
-                const margin = 240; // เพิ่มระยะขอบให้รูปเล็กลง
-                const angleRad = d.Angle * Math.PI / 180;
-                const drawH = d.L1 + (Math.abs(d.L2 * Math.cos(angleRad)));
-                const scale = (h - margin * 2) / drawH;
-
-                const startX = w / 2 - 40;
-                const startY = margin;
-                const bendY = startY + d.L1 * scale;
-                const hookX = startX + d.L2 * scale * Math.sin(angleRad);
-                const hookY = bendY - d.L2 * scale * Math.cos(angleRad);
-
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = d.D * scale;
-                ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                
-                let bendRadius = Math.min(d.D * scale * 1.0, Math.min(d.L1 * scale, d.L2 * scale) * 0.8 * Math.tan(angleRad / 2));
-                ctx.arcTo(startX, bendY, hookX, hookY, bendRadius);
-                ctx.lineTo(hookX, hookY);
-                ctx.stroke();
-
-                Utils.drawThreads(ctx, startX, startY+5, startX, startY + d.Lt * scale, d.D*scale);
-
-                const l1X = startX - (d.D*scale/2) - 60;
-                Utils.drawDimLine(ctx, l1X, startY, l1X, bendY);
-                Utils.drawBadge(ctx, l1X - 45, startY + (d.L1*scale)/2, `L1=${v.L1}`);
-
-                const ltX = startX + (d.D*scale/2) + 60;
-                Utils.drawDimLine(ctx, ltX, startY, ltX, startY + d.Lt*scale);
-                Utils.drawBadge(ctx, ltX + 45, startY + (d.Lt*scale)/2, `Lt=${v.Lt}`);
-
-                const offset = (d.D*scale/2) + 30;
-                const lineAngle = Math.atan2(hookY - bendY, hookX - startX);
-                const offX = offset * Math.cos(lineAngle + Math.PI/2);
-                const offY = offset * Math.sin(lineAngle + Math.PI/2);
-                Utils.drawDimLine(ctx, startX+offX, bendY+offY, hookX+offX, hookY+offY);
-                
-                const badgeOffX = (offset + 35) * Math.cos(lineAngle + Math.PI/2);
-                const badgeOffY = (offset + 35) * Math.sin(lineAngle + Math.PI/2);
-                Utils.drawBadge(ctx, (startX+hookX)/2 + badgeOffX, (bendY+hookY)/2 + badgeOffY, `L2=${v.L2}`, lineAngle);
-                
-                Utils.drawDimLine(ctx, startX - (d.D*scale/2), startY - 30, startX + (d.D*scale/2), startY - 30);
-                Utils.drawBadge(ctx, startX, startY - 55, `M${v.D}`);
-            },
-
-            // 4. L-Bolt
-            lbolt: (ctx, v, w, h, d) => {
-                const marginTop = 260; // เพิ่มให้รูปเล็กลง 30%
-                const marginBottom = 220; 
-                const scale = (h - marginTop - marginBottom) / d.L1;
-                
-                const D_draw = d.D * scale;
-                const L1_draw = d.L1 * scale;
-                const L2_draw = d.L2 * scale;
-                const R_draw = d.R * scale;
-                const Lt_draw = d.Lt * scale;
-
-                // Ensure horizontal base is long enough to draw the bend
-                const safeL2_draw = Math.max(L2_draw, D_draw + R_draw);
-
-                const startX = w / 2 - safeL2_draw / 2;
-                const startY = marginTop;
-                
-                // Calculate pivot point for inner arc
-                const strokeR = R_draw + D_draw / 2;
-                const arcCenterY = startY + L1_draw - R_draw - D_draw;
-                const arcCenterX = startX + strokeR;
-                const endX = startX - D_draw / 2 + safeL2_draw;
-
-                // Draw solid body with flat ends
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = D_draw;
-                ctx.lineCap = 'butt'; 
-                ctx.lineJoin = 'miter';
-                
-                ctx.beginPath();
-                ctx.moveTo(startX, startY);
-                ctx.lineTo(startX, arcCenterY);
-                // Draw bottom-right curve counter-clockwise from left (PI) to bottom (PI/2)
-                ctx.arc(arcCenterX, arcCenterY, strokeR, Math.PI, Math.PI / 2, true);
-                ctx.lineTo(endX, arcCenterY + strokeR);
-                ctx.stroke();
-
-                // Threads
-                Utils.drawThreads(ctx, startX, startY, startX, startY + Lt_draw, D_draw);
-
-                // Dimensions
-                const dimX_L1 = startX - D_draw / 2 - 60;
-                Utils.drawDimLine(ctx, dimX_L1, startY, dimX_L1, startY + L1_draw);
-                Utils.drawBadge(ctx, dimX_L1 - 45, startY + L1_draw / 2, `L1=${v.L1}`);
-
-                const dimY_L2 = startY + L1_draw + 40;
-                Utils.drawDimLine(ctx, startX - D_draw / 2, dimY_L2, endX, dimY_L2);
-                Utils.drawBadge(ctx, (startX - D_draw / 2 + endX) / 2, dimY_L2 + 25, `L2=${v.L2}`);
-
-                const dimX_Lt = startX + D_draw / 2 + 40;
-                Utils.drawDimLine(ctx, dimX_Lt, startY, dimX_Lt, startY + Lt_draw);
-                Utils.drawBadge(ctx, dimX_Lt + 45, startY + Lt_draw / 2, `Lt=${v.Lt}`);
-                
-                Utils.drawDimLine(ctx, startX - D_draw / 2, startY - 30, startX + D_draw / 2, startY - 30);
-                Utils.drawBadge(ctx, startX, startY - 55, `D=${v.D}`);
-
-                // Inner Radius Badge (R)
-                Utils.drawBadge(ctx, arcCenterX + 25, arcCenterY + 15, `R=${v.R}`);
-            },
-
-            // 5. U-Bolt
-            ubolt: (ctx, v, w, h, d) => {
-                const marginTop = 260; // ปรับลดขนาดโดยรวม
-                const marginBottom = 220;
-                const marginX = 240;
-                const scale = Math.min((h - marginTop - marginBottom) / d.L1, (w - marginX * 2) / d.L2);
-                
-                const D_draw = d.D * scale;
-                const L1_draw = d.L1 * scale;
-                const L2_draw = d.L2 * scale;
-                const Lt_draw = d.Lt * scale;
-
-                const centerX = w / 2;
-                const startY = marginTop;
-                
-                const leftX = centerX - L2_draw / 2;
-                const rightX = centerX + L2_draw / 2;
-                
-                const arcRadius = L2_draw / 2;
-                const outerRadius = arcRadius + D_draw / 2;
-                const arcCenterY = startY + L1_draw - outerRadius;
-
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = D_draw;
-                ctx.lineCap = 'butt';
-                
-                ctx.beginPath();
-                ctx.moveTo(leftX, startY);
-                ctx.lineTo(leftX, arcCenterY);
-                ctx.arc(centerX, arcCenterY, arcRadius, Math.PI, 0, true);
-                ctx.lineTo(rightX, startY);
-                ctx.stroke();
-
-                Utils.drawThreads(ctx, leftX, startY, leftX, startY + Lt_draw, D_draw);
-                Utils.drawThreads(ctx, rightX, startY, rightX, startY + Lt_draw, D_draw);
-
-                const outerBottomY = startY + L1_draw;
-
-                // D (Top Left Width)
-                Utils.drawDimLine(ctx, leftX - D_draw/2, startY - 30, leftX + D_draw/2, startY - 30);
-                Utils.drawBadge(ctx, leftX, startY - 55, `D=${v.D}`);
-
-                // L2 (Center-to-Center)
-                Utils.drawDimLine(ctx, leftX, startY - 80, rightX, startY - 80);
-                Utils.drawBadge(ctx, centerX, startY - 105, `L2=${v.L2}`);
-
-                // L1 (Total Length)
-                const dimX_L1 = leftX - D_draw/2 - 60;
-                Utils.drawDimLine(ctx, dimX_L1, startY, dimX_L1, outerBottomY);
-                Utils.drawBadge(ctx, dimX_L1 - 45, startY + L1_draw/2, `L1=${v.L1}`);
-
-                // Lt (Thread Length)
-                const dimX_Lt = rightX + D_draw/2 + 60;
-                Utils.drawDimLine(ctx, dimX_Lt, startY, dimX_Lt, startY + Lt_draw);
-                Utils.drawBadge(ctx, dimX_Lt + 45, startY + Lt_draw/2, `Lt=${v.Lt}`);
-                
-                // W (Inner width / Pipe Dia)
-                const wY = arcCenterY; 
-                const innerLeft = leftX + D_draw/2;
-                const innerRight = rightX - D_draw/2;
-                const innerGap_draw = L2_draw - D_draw;
-                
-                if(innerGap_draw > 20) {
-                    Utils.drawDimLine(ctx, innerLeft, wY, innerRight, wY);
-                    const wVal = (v.L2 - v.D).toFixed(1).replace(/\.0$/, ''); 
-                    Utils.drawBadge(ctx, centerX, wY - 25, `W=${wVal}`);
-                }
-            },
-
-            // 6. U-Bolt Square (ยู-โบลท์เหลี่ยม)
-            ubolt_sq: (ctx, v, w, h, d) => {
-                const marginTop = 260; // ปรับลดขนาดโดยรวม
-                const marginBottom = 220;
-                const marginX = 240;
-                const scale = Math.min((h - marginTop - marginBottom) / d.L1, (w - marginX * 2) / d.L2);
-                
-                const D_draw = d.D * scale;
-                const L1_draw = d.L1 * scale;
-                const L2_draw = d.L2 * scale;
-                const Lt_draw = d.Lt * scale;
-                const R_draw = d.R * scale;
-
-                const centerX = w / 2;
-                const startY = marginTop;
-                
-                const leftX = centerX - L2_draw / 2;
-                const rightX = centerX + L2_draw / 2;
-                const bottomY = startY + L1_draw - D_draw / 2;
-
-                const safeStrokeR = Math.min(R_draw + D_draw/2, L2_draw / 2);
-
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = D_draw;
-                ctx.lineCap = 'butt'; 
-                ctx.lineJoin = 'round';
-                
-                ctx.beginPath();
-                ctx.moveTo(leftX, startY);
-                ctx.lineTo(leftX, bottomY - safeStrokeR);
-                ctx.arcTo(leftX, bottomY, leftX + safeStrokeR, bottomY, safeStrokeR);
-                ctx.lineTo(rightX - safeStrokeR, bottomY);
-                ctx.arcTo(rightX, bottomY, rightX, bottomY - safeStrokeR, safeStrokeR);
-                ctx.lineTo(rightX, startY);
-                ctx.stroke();
-
-                Utils.drawThreads(ctx, leftX, startY, leftX, startY + Lt_draw, D_draw);
-                Utils.drawThreads(ctx, rightX, startY, rightX, startY + Lt_draw, D_draw);
-
-                const outerBottomY = startY + L1_draw;
-
-                // D (Top Left Width)
-                Utils.drawDimLine(ctx, leftX - D_draw/2, startY - 30, leftX + D_draw/2, startY - 30);
-                Utils.drawBadge(ctx, leftX, startY - 55, `D=${v.D}`);
-
-                // L2 (Center-to-Center)
-                Utils.drawDimLine(ctx, leftX, startY - 80, rightX, startY - 80);
-                Utils.drawBadge(ctx, centerX, startY - 110, `L2=${v.L2}`);
-
-                // L1 (Total Length)
-                const dimX_L1 = leftX - D_draw/2 - 60;
-                Utils.drawDimLine(ctx, dimX_L1, startY, dimX_L1, outerBottomY);
-                Utils.drawBadge(ctx, dimX_L1 - 45, startY + L1_draw/2, `L1=${v.L1}`);
-
-                // Lt (Thread Length)
-                const dimX_Lt = rightX + D_draw/2 + 60;
-                Utils.drawDimLine(ctx, dimX_Lt, startY, dimX_Lt, startY + Lt_draw);
-                Utils.drawBadge(ctx, dimX_Lt + 45, startY + Lt_draw/2, `Lt=${v.Lt}`);
-
-                // R (Radius Badge)
-                Utils.drawBadge(ctx, rightX + D_draw/2 + 40, bottomY - safeStrokeR/2, `R=${v.R}`);
-            },
-
-            // 7.1 Plate Type 1 (เจาะรู 4 มุม)
-            plate_type1: (ctx, v, w, h, d) => {
-                const margin = 220;
-                const maxDim = Math.max(d.L1, d.L2);
-                const scale = (Math.min(w, h) - margin * 2) / maxDim;
-                
-                const pW = d.L2 * scale; // กว้าง L2
-                const pL = d.L1 * scale; // ยาว L1
-                const startX = (w - pW) / 2;
-                const startY = (h - pL) / 2;
-
-                ctx.fillStyle = '#f8fafc'; 
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = 3;
-                ctx.fillRect(startX, startY, pW, pL);
-                ctx.strokeRect(startX, startY, pW, pL);
-
-                const holeR = (d.HD * scale) / 2;
-                const inset = d.M * scale; 
-                
-                const holes = [
-                    {x: startX + inset, y: startY + inset},
-                    {x: startX + pW - inset, y: startY + inset},
-                    {x: startX + inset, y: startY + pL - inset},
-                    {x: startX + pW - inset, y: startY + pL - inset}
-                ];
-                
-                holes.forEach(pos => {
-                    // วาดวงกลม (รู)
-                    ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, holeR, 0, Math.PI*2);
-                    ctx.fillStyle = '#ffffff';
-                    ctx.fill();
-                    ctx.strokeStyle = BODY_COLOR; // กลับมาใช้สีเทาเข้ม
-                    ctx.lineWidth = 3;
-                    ctx.stroke();
-                    
-                    // Crosshairs (กากบาท)
-                    ctx.beginPath();
-                    ctx.moveTo(pos.x - holeR - 10, pos.y); ctx.lineTo(pos.x + holeR + 10, pos.y);
-                    ctx.moveTo(pos.x, pos.y - holeR - 10); ctx.lineTo(pos.x, pos.y + holeR + 10);
-                    ctx.strokeStyle = '#94a3b8'; // ใช้สีเทาอ่อนแค่เส้นกากบาท
-                    ctx.lineWidth = 1;
-                    ctx.stroke();
-                });
-
-                // L1 (ซ้าย)
-                Utils.drawDimLine(ctx, startX - 40, startY, startX - 40, startY + pL);
-                Utils.drawBadge(ctx, startX - 40 - 32, startY + pL/2, `L1=${v.L1}`);
-
-                // L2 (ล่าง)
-                Utils.drawDimLine(ctx, startX, startY + pL + 40, startX + pW, startY + pL + 40);
-                Utils.drawBadge(ctx, startX + pW/2, startY + pL + 40 + 25, `L2=${v.L2}`);
-
-                // M (ระยะขอบรูเจาะ - บนขวา)
-                Utils.drawDimLine(ctx, startX + pW - inset, startY - 30, startX + pW, startY - 30);
-                Utils.drawBadge(ctx, startX + pW - inset/2, startY - 30 - 25, `M=${v.M}`);
-                
-                Utils.drawDimLine(ctx, startX + pW + 30, startY, startX + pW + 30, startY + inset);
-                Utils.drawBadge(ctx, startX + pW + 30 + 35, startY + inset/2, `M=${v.M}`);
-
-                Utils.drawBadge(ctx, startX + pW/2, startY + pL/2, `หนา(T)=${v.T} | รู(HD)=${v.HD}`);
-            },
-
-            // 7.2 Plate Type 2 (เพลททึบ ไม่มีรู)
-            plate_type2: (ctx, v, w, h, d) => {
-                const margin = 220;
-                const maxDim = Math.max(d.L1, d.L2);
-                const scale = (Math.min(w, h) - margin * 2) / maxDim;
-                
-                const pW = d.L2 * scale; // กว้าง L2
-                const pL = d.L1 * scale; // ยาว L1
-                const startX = (w - pW) / 2;
-                const startY = (h - pL) / 2;
-
-                ctx.fillStyle = '#f8fafc'; 
-                ctx.strokeStyle = BODY_COLOR;
-                ctx.lineWidth = 3;
-                ctx.fillRect(startX, startY, pW, pL);
-                ctx.strokeRect(startX, startY, pW, pL);
-
-                // L1 (ซ้าย)
-                Utils.drawDimLine(ctx, startX - 40, startY, startX - 40, startY + pL);
-                Utils.drawBadge(ctx, startX - 40 - 32, startY + pL/2, `L1=${v.L1}`);
-
-                // L2 (ล่าง)
-                Utils.drawDimLine(ctx, startX, startY + pL + 40, startX + pW, startY + pL + 40);
-                Utils.drawBadge(ctx, startX + pW/2, startY + pL + 40 + 25, `L2=${v.L2}`);
-
-                Utils.drawBadge(ctx, startX + pW/2, startY + pL/2, `หนา(T)=${v.T}`);
-            }
-        };
-
-        // ---------------------------------------------------------
-        // 4. APP STATE & CONTROLLER
-        // ---------------------------------------------------------
-        const App = {
-            state: {
-                selectedId: PRODUCT_CATALOG[0].id,
-                values: {} 
-            },
-
-            init: function() {
-                this.renderSelector();
-                this.selectProduct(this.state.selectedId);
-            },
-
-            renderSelector: function() {
-                const select = document.getElementById('productSelect');
-                select.innerHTML = '';
-                
-                let currentGroup = null;
-                let parentNode = select;
-
-                PRODUCT_CATALOG.forEach((prod) => {
-                    if (prod.group) {
-                        if (currentGroup !== prod.group) {
-                            currentGroup = prod.group;
-                            const optgroup = document.createElement('optgroup');
-                            optgroup.label = currentGroup;
-                            select.appendChild(optgroup);
-                            parentNode = optgroup;
-                        }
-                    } else {
-                        currentGroup = null;
-                        parentNode = select;
-                    }
-                    
-                    const option = document.createElement('option');
-                    option.value = prod.id;
-                    option.innerText = prod.name;
-                    if (prod.id === this.state.selectedId) {
-                        option.selected = true;
-                    }
-                    parentNode.appendChild(option);
-                });
-            },
-
-            selectProduct: function(id) {
-                this.state.selectedId = id;
-                document.getElementById('productSelect').value = id;
-
-                const product = PRODUCT_CATALOG.find(p => p.id === id);
-                document.getElementById('currentTypeLabel').innerText = product.name;
-                
-                this.state.values = {};
-                product.inputs.forEach(inp => {
-                    this.state.values[inp.id] = inp.default;
-                });
-
-                this.renderForm(product);
-                this.drawCanvas();
-            },
-
-            renderForm: function(product) {
-                const container = document.getElementById('formContainer');
                 container.innerHTML = '';
-
-                product.inputs.forEach(inp => {
-                    const wrapper = document.createElement('div');
+                for (let i = 1; i <= maxVal; i++) {
+                    const star = document.createElement('div');
+                    const isActive = i <= currentVal;
+                    // สร้างไอคอนดาว SVG
+                    star.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 sm:w-6 sm:h-6 shrink-0 transition-colors cursor-pointer ${isActive ? 'text-yellow-400' : 'text-gray-300'} hover:text-yellow-400"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>`;
                     
-                    const label = document.createElement('label');
-                    label.className = `label-text ${inp.color || 'text-blue-800'}`;
-                    label.innerText = inp.label;
-                    wrapper.appendChild(label);
-
-                    if (inp.type === 'range') {
-                        const flexWrap = document.createElement('div');
-                        flexWrap.className = 'flex items-center gap-2';
-                        
-                        const slider = document.createElement('input');
-                        slider.type = 'range';
-                        slider.min = inp.min; slider.max = inp.max;
-                        slider.value = this.state.values[inp.id];
-                        slider.className = 'w-full accent-blue-600';
-
-                        const numInput = document.createElement('input');
-                        numInput.type = 'number';
-                        numInput.value = this.state.values[inp.id];
-                        numInput.className = 'input-field w-20 text-center font-bold text-blue-700';
-
-                        slider.oninput = (e) => { numInput.value = e.target.value; this.updateValue(inp.id, parseFloat(e.target.value)); };
-                        numInput.oninput = (e) => { slider.value = e.target.value; this.updateValue(inp.id, parseFloat(e.target.value)); };
-
-                        flexWrap.appendChild(slider);
-                        flexWrap.appendChild(numInput);
-                        wrapper.appendChild(flexWrap);
-                    } else {
-                        const input = document.createElement('input');
-                        input.type = 'number';
-                        input.value = this.state.values[inp.id];
-                        input.className = 'input-field';
-                        input.oninput = (e) => this.updateValue(inp.id, parseFloat(e.target.value));
-                        wrapper.appendChild(input);
-                    }
-                    
-                    container.appendChild(wrapper);
-                });
-            },
-
-            updateValue: function(key, val) {
-                if(!isNaN(val)) {
-                    this.state.values[key] = val;
-                    this.drawCanvas();
-                }
-            },
-
-            drawCanvas: function() {
-                const canvas = document.getElementById('drawingCanvas');
-                const ctx = canvas.getContext('2d');
-                const w = canvas.width;
-                const h = canvas.height;
-                const product = PRODUCT_CATALOG.find(p => p.id === this.state.selectedId);
-
-                // ดึงค่า Default ของชิ้นงานมาเป็นแกนวาดรูป (Fixed Shape) เพื่อไม่ให้รูปวาดขยับเมื่อตัวเลขเปลี่ยน
-                const drawV = {};
-                product.inputs.forEach(inp => {
-                    drawV[inp.id] = inp.default;
-                });
-
-                Utils.clearCanvas(ctx, w, h); // ใช้ fillRect เติมพื้นหลังสีขาว
-
-                if(Renderers[product.id]) {
-                    // ส่งค่า drawV ไปสร้างรูปทรง และ v (this.state.values) ไปสร้างป้ายตัวหนังสือ
-                    Renderers[product.id](ctx, this.state.values, w, h, drawV);
-                } else {
-                    ctx.fillStyle = 'red';
-                    ctx.fillText('Renderer not found for: ' + product.id, w/2, h/2);
-                }
-            },
-
-            downloadImage: function() {
-                const canvas = document.getElementById('drawingCanvas');
-                const ctx = canvas.getContext('2d', { willReadFrequently: true });
-                const w = canvas.width;
-                const h = canvas.height;
-                
-                // ดึงข้อมูลพิกเซลทั้งหมดมาตรวจสอบ
-                const imgData = ctx.getImageData(0, 0, w, h).data;
-                
-                let top = h, bottom = 0, left = w, right = 0;
-                let hasContent = false;
-
-                // สแกนหาขอบเขตของรูปวาด โดยละเว้นสีขาว 100% และเมินเงาจางๆ ที่หลุดออกไปไกล
-                for (let y = 0; y < h; y++) {
-                    for (let x = 0; x < w; x++) {
-                        const i = (y * w + x) * 4;
-                        // เงื่อนไข: ถ้าพิกเซลนั้น "เข้มกว่า 250" (ไม่ใช่สีขาว หรือเทาอ่อนจางๆ จาก anti-alias ขอบเงา)
-                        if (imgData[i] < 250 && imgData[i+1] < 250 && imgData[i+2] < 250) {
-                            hasContent = true;
-                            if (y < top) top = y;
-                            if (y > bottom) bottom = y;
-                            if (x < left) left = x;
-                            if (x > right) right = x;
+                    // เอฟเฟกต์ตอนนำเมาส์ไปชี้ (Hover)
+                    star.addEventListener('mouseover', () => {
+                        const allStars = container.children;
+                        for(let j=0; j<maxVal; j++) {
+                            const svg = allStars[j].querySelector('svg');
+                            if(j < i) {
+                                svg.classList.remove('text-gray-300');
+                                svg.classList.add('text-yellow-400');
+                            } else {
+                                svg.classList.remove('text-yellow-400');
+                                svg.classList.add('text-gray-300');
+                            }
                         }
+                    });
+                    
+                    // เอฟเฟกต์ตอนเอาเมาส์ออก คืนค่าสีตามคะแนนปัจจุบัน
+                    star.addEventListener('mouseout', () => {
+                        const val = parseInt(valInput.value) || 0;
+                        const allStars = container.children;
+                        for(let j=0; j<maxVal; j++) {
+                            const svg = allStars[j].querySelector('svg');
+                            if(j < val) {
+                                svg.classList.remove('text-gray-300');
+                                svg.classList.add('text-yellow-400');
+                            } else {
+                                svg.classList.remove('text-yellow-400');
+                                svg.classList.add('text-gray-300');
+                            }
+                        }
+                    });
+
+                    // บันทึกคะแนนเมื่อคลิก
+                    star.addEventListener('click', () => {
+                        valInput.value = i;
+                        calculateWebTotals();
+                        renderStars(); // วาดดาวใหม่เพื่ออัปเดตสถานะ Active
+                    });
+
+                    container.appendChild(star);
+                }
+            });
+        }
+
+        // --- ระบบคำนวณคะแนนสำหรับหน้า Web Form ---
+        function calculateWebTotals() {
+            let total = 0; 
+            let maxTotal = 0;
+            
+            scoreIds.forEach(id => {
+                const maxInput = document.getElementById('w_max_' + id);
+                const valInput = document.getElementById('w_' + id);
+                
+                if (maxInput && valInput) {
+                    const maxVal = parseFloat(maxInput.value) || 0;
+                    let val = parseFloat(valInput.value) || 0;
+
+                    if(valInput.value !== "") {
+                        if (val > maxVal) { val = maxVal; valInput.value = val; }
+                        if (val < 0) { val = 0; valInput.value = 0; }
+                        total += val;
+                    }
+                    
+                    if(maxInput.value !== "") {
+                        maxTotal += maxVal;
                     }
                 }
+            });
 
-                let exportCanvas = canvas;
-                
-                // ถ้ารูปมีเนื้อหา ให้ทำการ Crop ขอบสีขาวทิ้ง (ลด padding เหลือ 10)
-                if (hasContent) {
-                    const padding = 10; // ตัดขอบให้ชิดมากๆ เหลือพื้นที่หายใจแค่ 10px
-                    const cropW = right - left + 1;
-                    const cropH = bottom - top + 1;
-                    
-                    exportCanvas = document.createElement('canvas');
-                    exportCanvas.width = cropW + (padding * 2);
-                    exportCanvas.height = cropH + (padding * 2);
-                    const exCtx = exportCanvas.getContext('2d');
-                    
-                    // เติมพื้นหลังสีขาวล้วน
-                    exCtx.fillStyle = '#ffffff';
-                    exCtx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
-                    
-                    // วางรูปลงไปตรงกลางแบบที่ถูกตัดแล้ว
-                    exCtx.drawImage(canvas, left, top, cropW, cropH, padding, padding, cropW, cropH);
-                }
-
-                const product = PRODUCT_CATALOG.find(p => p.id === this.state.selectedId);
-                const sizeStr = this.state.values.D ? `-M${this.state.values.D}` : '';
-                const link = document.createElement('a');
-                link.download = `Generate-${product.id}${sizeStr}.png`;
-                link.href = exportCanvas.toDataURL("image/png");
-                link.click();
+            const safeSetText = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = text;
             }
+
+            safeSetText('w_total_max', maxTotal);
+            safeSetText('w_total_score', total);
+            safeSetText('w_bottom_max', maxTotal);
+            safeSetText('w_bottom_score', total);
+
+            if(maxTotal > 0 && total > 0) {
+                const pct = (total / maxTotal) * 100;
+                safeSetText('w_total_pct', pct.toFixed(2) + '%');
+                safeSetText('w_bottom_pct', pct.toFixed(2) + '%');
+                
+                let grade = 'D';
+                if(pct >= 90) grade = 'A'; 
+                else if(pct >= 80) grade = 'B'; 
+                else if(pct >= 70) grade = 'C';
+                
+                safeSetText('w_total_grade', grade);
+                safeSetText('w_bottom_grade', grade);
+            } else {
+                safeSetText('w_total_pct', '-');
+                safeSetText('w_total_grade', '-');
+                safeSetText('w_bottom_pct', '-');
+                safeSetText('w_bottom_grade', '-');
+            }
+        }
+
+        // หากมีการแก้ไขตัวเลขช่องคะแนนเต็ม (Web view) ให้วาดดาวใหม่
+        document.querySelectorAll('.w-score-max').forEach(input => {
+            input.addEventListener('input', () => {
+                calculateWebTotals();
+                renderStars();
+            });
+        });
+
+        // Helper functions for safe DOM manipulation
+        const safeSetVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = val || '';
+        };
+        const safeGetVal = (id) => {
+            const el = document.getElementById(id);
+            return el ? el.value : '';
         };
 
-        window.onload = () => App.init();
+        // --- ระบบซิงค์ข้อมูลจากหน้า Web Form ไปยังหน้า A4 ---
+        function previewDocument() {
+            // ซิงค์ข้อความทั่วไป
+            safeSetVal('company_a4', safeGetVal('w_company'));
+            
+            // ข้อมูลผู้สำรวจ
+            const sName = safeGetVal('w_surveyor_name');
+            safeSetVal('surveyor_input_top', sName);
+            safeSetVal('surveyor_tel_a4', safeGetVal('w_surveyor_tel'));
+            safeSetVal('surveyor_email_a4', safeGetVal('w_surveyor_email'));
+
+            // ข้อมูลลูกค้า (ผู้ตอบ)
+            const rName = safeGetVal('w_respondent_name');
+            safeSetVal('respondent_input_top', rName);
+            safeSetVal('respondent_input_bottom', rName);
+            safeSetVal('respondent_signature', rName); // ลงชื่อ
+            safeSetVal('respondent_tel_a4', safeGetVal('w_respondent_tel'));
+            safeSetVal('respondent_email_a4', safeGetVal('w_respondent_email'));
+
+            // ซิงค์ Checkbox ประเภทธุรกิจ
+            for(let i=1; i<=5; i++) {
+                const wCheck = document.getElementById('w_type_' + i);
+                const a4Check = document.getElementById('a4_type_' + i);
+                if (wCheck && a4Check) a4Check.checked = wCheck.checked;
+            }
+
+            // ซิงค์ข้อเสนอแนะ (แยกบรรทัด)
+            const suggestionsText = safeGetVal('w_suggestions');
+            const suggestions = suggestionsText ? suggestionsText.split('\n') : [];
+            safeSetVal('a4_sug_1', suggestions[0] || '');
+            safeSetVal('a4_sug_2', suggestions[1] || '');
+            safeSetVal('a4_sug_3', suggestions[2] || '');
+
+            // ซิงค์คะแนนดาว ไปเป็นตัวเลขบน A4
+            scoreIds.forEach(id => {
+                const maxEl = document.getElementById('max_' + id);
+                const wMaxEl = document.getElementById('w_max_' + id);
+                if (maxEl && wMaxEl) maxEl.value = wMaxEl.value;
+
+                // แก้ไขการอ้างอิง ID โดยนำ 's' ที่เกินออก
+                const sEl = document.getElementById(id);
+                const wSEl = document.getElementById('w_' + id);
+                if (sEl && wSEl) {
+                    // ป้องกันการโชว์เลข 0 ถ้าลูกค้าไม่ได้เลือกดาวเลย
+                    sEl.value = (wSEl.value && wSEl.value !== "0") ? wSEl.value : "";
+                }
+            });
+
+            // สั่งให้หน้า A4 คำนวณสรุปผลจากข้อมูลที่ถูกวางลงไป
+            calculateA4Totals();
+
+            // สลับหน้าจอ
+            const webFormView = document.getElementById('web-form-view');
+            const a4PrintView = document.getElementById('a4-print-view');
+            if (webFormView) webFormView.classList.add('hidden');
+            if (a4PrintView) a4PrintView.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function backToWebForm() {
+            const webFormView = document.getElementById('web-form-view');
+            const a4PrintView = document.getElementById('a4-print-view');
+            if (a4PrintView) a4PrintView.classList.add('hidden');
+            if (webFormView) webFormView.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // --- ระบบคำนวณคะแนนบนหน้า A4 (รันตอน Preview และตอนพิมพ์ในหน้า A4 โดยตรง) ---
+        function calculateA4Totals() {
+            let total = 0;
+            let maxTotal = 0;
+            let anyDetailFilled = false;
+            let anyMaxFilled = false; 
+
+            scoreIds.forEach(id => {
+                // แก้ไขการอ้างอิง ID โดยนำ 's' ที่เกินออก
+                const inputEl = document.getElementById(id);
+                const maxInputEl = document.getElementById('max_' + id);
+                
+                if (maxInputEl && maxInputEl.value !== "") {
+                    anyMaxFilled = true;
+                    let max = parseFloat(maxInputEl.value);
+                    if (!isNaN(max)) maxTotal += max;
+                }
+                
+                if (inputEl && inputEl.value !== "") {
+                    anyDetailFilled = true;
+                    let val = parseFloat(inputEl.value);
+                    let max = (maxInputEl && parseFloat(maxInputEl.value)) || 0;
+                    if (!isNaN(val)) {
+                        if (max > 0 && val > max) { val = max; inputEl.value = max; } 
+                        else if (val < 0) { val = 0; inputEl.value = 0; }
+                        total += val;
+                    }
+                }
+            });
+
+            const totalMaxScoreEl = document.getElementById('total_max_score');
+            if (totalMaxScoreEl) {
+                if (anyMaxFilled) totalMaxScoreEl.value = maxTotal;
+                else totalMaxScoreEl.value = '';
+            }
+
+            const totalScoreEl = document.getElementById('total_score');
+            if (totalScoreEl) {
+                if (anyDetailFilled) totalScoreEl.value = total;
+                else totalScoreEl.value = '';
+            }
+
+            let currentTotalStr = totalScoreEl ? totalScoreEl.value : "";
+            let currentMaxStr = totalMaxScoreEl ? totalMaxScoreEl.value : "";
+
+            if (currentTotalStr !== "" && currentMaxStr !== "") {
+                let currentTotal = parseFloat(currentTotalStr) || 0;
+                let currentMax = parseFloat(currentMaxStr) || 0;
+                
+                if (currentMax > 0) {
+                    const percent = (currentTotal / currentMax) * 100;
+                    const pctEl = document.getElementById('total_percent');
+                    if (pctEl) pctEl.value = percent.toFixed(2) + ' %';
+                    
+                    let grade = '';
+                    if (percent >= 90) grade = 'A';
+                    else if (percent >= 80) grade = 'B';
+                    else if (percent >= 70) grade = 'C';
+                    else grade = 'D';
+                    
+                    const gradeEl = document.getElementById('total_grade');
+                    if (gradeEl) gradeEl.value = grade;
+                } else {
+                    clearA4Summary();
+                }
+            } else {
+                clearA4Summary();
+            }
+        }
+
+        function clearA4Summary() {
+            const pctEl = document.getElementById('total_percent');
+            const gradeEl = document.getElementById('total_grade');
+            if (pctEl) pctEl.value = '';
+            if (gradeEl) gradeEl.value = '';
+        }
+
+        // ทำให้พิมพ์แก้ไขบนหน้า A4 โดยตรงก็คำนวณได้เหมือนเดิม
+        document.querySelectorAll('.score-input').forEach(input => {
+            if(!['total_percent', 'total_grade', 'total_score', 'total_max_score'].includes(input.id)){
+                input.addEventListener('input', calculateA4Totals);
+            }
+        });
+
+        // โหลดข้อมูลอัตโนมัติตอนเปิดเว็บ
+        window.addEventListener('DOMContentLoaded', () => {
+            const now = new Date();
+            const dayEl = document.getElementById('date_day');
+            const monthEl = document.getElementById('date_month');
+            const yearEl = document.getElementById('date_year');
+            
+            if (dayEl) dayEl.value = now.getDate().toString().padStart(2, '0');
+            if (monthEl) monthEl.value = (now.getMonth() + 1).toString().padStart(2, '0');
+            if (yearEl) yearEl.value = now.getFullYear() + 543; 
+
+            // วาดดาวให้คะแนน
+            renderStars();
+            calculateWebTotals();
+        });
+
     </script>
 </body>
 </html>
