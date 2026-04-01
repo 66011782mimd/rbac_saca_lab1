@@ -96,12 +96,12 @@
             }
             html, body {
                 width: 210mm !important;
-                min-width: 210mm !important;
-                height: 297mm !important;
+                /* ปรับความสูงลงเล็กน้อยเป็น 296mm ป้องกันเศษ pixel ดันให้เกิดหน้าที่ 2 */
+                height: 296mm !important; 
                 margin: 0 !important;
                 padding: 0 !important;
                 background-color: white !important;
-                overflow: visible !important;
+                overflow: hidden !important; /* ตัดส่วนเกินทิ้ง */
             }
             #web-form-view {
                 display: none !important;
@@ -111,13 +111,13 @@
                 padding: 0 !important;
                 margin: 0 !important;
                 background: white !important;
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                width: 210mm !important;
+                position: static !important; /* เปลี่ยนเป็น static เพื่อให้การคำนวณหน้าแม่นยำขึ้น */
+                width: 100% !important;
+                height: 296mm !important;
+                min-height: 0 !important; /* ล้างค่า min-h-screen */
             }
             #a4-print-view > div {
-                padding: 0 !important;
+                padding: 0 !important; /* ลบ padding-bottom ที่เผื่อไว้บนเว็บออก */
                 margin: 0 !important;
             }
             #a4-scaler {
@@ -125,14 +125,14 @@
                 height: auto !important;
             }
             .a4-container {
-                margin: 0 !important;
+                margin: 0 auto !important;
                 padding: 8mm 15mm 10mm 15mm !important;
                 box-shadow: none !important;
                 width: 210mm !important;
                 min-width: 210mm !important;
-                height: 297mm !important;
-                max-height: 297mm !important;
-                overflow: hidden !important; /* ป้องกันการล้นไปหน้าที่ 2 */
+                height: 296mm !important; /* บังคับความสูงไม่ให้เกิน 1 หน้า */
+                max-height: 296mm !important;
+                overflow: hidden !important; /* ป้องกันเนื้อหาล้นไปหน้าที่ 2 */
                 box-sizing: border-box !important;
                 page-break-after: avoid !important;
                 page-break-inside: avoid !important;
@@ -143,8 +143,8 @@
             .input-line {
                 border-bottom: 1px dotted #000;
             }
-            .overflow-x-auto {
-                overflow: visible !important;
+            .overflow-x-auto, .overflow-hidden {
+                overflow: hidden !important; /* ซ่อนแถบเลื่อนเวลาสั่งพิมพ์ */
             }
         }
     </style>
