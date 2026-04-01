@@ -96,40 +96,56 @@
             }
             html, body {
                 width: 210mm !important;
-                height: 295mm !important; /* ลดความสูงลงเพื่อให้ปลอดภัยบนทุกอุปกรณ์ */
-                max-height: 295mm !important;
+                height: 285mm !important; /* บีบความสูงลงเพื่อหนี Header/Footer ของเบราว์เซอร์มือถือ */
+                max-height: 285mm !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 background-color: white !important;
-                overflow: hidden !important; /* ตัดส่วนเกินทิ้งเด็ดขาด */
+                overflow: hidden !important; 
             }
             #web-form-view, .no-print {
                 display: none !important;
             }
-            #a4-print-view, 
-            #a4-print-view > div:not(.no-print), 
-            #a4-scaler {
+            #a4-print-view {
                 display: block !important;
-                position: static !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
                 width: 210mm !important;
-                height: 295mm !important;
-                max-height: 295mm !important;
+                height: 285mm !important;
+                max-height: 285mm !important;
                 margin: 0 !important;
-                padding: 0 !important; /* ลบ padding/margin แอบแฝงทั้งหมด */
+                padding: 0 !important;
                 background: white !important;
                 min-height: 0 !important; 
                 overflow: hidden !important; 
+            }
+            #a4-wrapper {
+                padding: 0 !important;
+                margin: 0 !important;
+                height: 285mm !important;
+                overflow: hidden !important;
+            }
+            #a4-scaler {
+                position: static !important;
                 transform: none !important;
+                width: 210mm !important;
+                height: 285mm !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
             }
             .a4-container {
-                position: static !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
                 margin: 0 !important;
-                padding: 8mm 15mm 10mm 15mm !important;
+                padding: 5mm 15mm 5mm 15mm !important; /* ลดขอบบนล่างลง */
                 box-shadow: none !important;
                 width: 210mm !important;
                 min-width: 210mm !important;
-                height: 295mm !important; /* บังคับความสูงไม่ให้แตะขอบ 297mm */
-                max-height: 295mm !important;
+                height: 285mm !important; 
+                max-height: 285mm !important;
                 overflow: hidden !important; 
                 box-sizing: border-box !important;
                 page-break-after: avoid !important;
@@ -426,7 +442,7 @@
         </div>
 
         <!-- เพิ่มกล่องเพื่อแสดงหน้า A4 ให้พอดีหน้าจอ (Scale) -->
-        <div class="w-full flex justify-center overflow-hidden px-0 sm:px-0 pb-6">
+        <div id="a4-wrapper" class="w-full flex justify-center overflow-hidden px-0 sm:px-0 pb-6">
             <div id="a4-scaler" class="origin-top transition-transform duration-200">
                 <div id="a4-doc" class="a4-container relative mx-auto">
                 
