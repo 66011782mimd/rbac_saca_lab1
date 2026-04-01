@@ -9,16 +9,16 @@
     <style>
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #f3f4f6;
-            color: #000;
+            background-color: #f4f7f9;
+            color: #0f172a;
             -webkit-print-color-adjust: exact;
             font-weight: 400;
         }
         
-        /* สไตล์สำหรับ A4 */
+        /* สไตล์สำหรับ A4 (ซ่อนไว้สำหรับหน้าเว็บ) */
         .a4-container {
             width: 210mm;
-            min-width: 210mm; /* บังคับขนาดให้เลื่อนดูบนมือถือได้ */
+            min-width: 210mm;
             min-height: 297mm;
             margin: 20px auto;
             background: white;
@@ -88,526 +88,589 @@
             -moz-appearance: textfield;
         }
 
+        /* Web Form Custom Scroller */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        /* Custom Input Styling for Modern Web Form */
+        .modern-input {
+            width: 100%;
+            background-color: #f1f5f9;
+            border: 1px solid transparent;
+            border-radius: 0.375rem; 
+            padding: 0.25rem 0.5rem; 
+            font-size: 0.75rem; 
+            color: #1e293b;
+            outline: none;
+            transition: all 0.25s ease;
+        }
+        @media (min-width: 640px) {
+            .modern-input { 
+                padding: 0.5rem 0.875rem; 
+                font-size: 0.95rem; 
+            }
+        }
+        .modern-input:hover {
+            background-color: #e2e8f0;
+        }
+        .modern-input:focus {
+            background-color: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        /* --- เพิ่มแอนิเมชันตัวเลขเด้งเวลามีการอัปเดต --- */
+        @keyframes valuePop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); color: #3b82f6; }
+            100% { transform: scale(1); }
+        }
+        .animate-value-pop {
+            animation: valuePop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
         /* ซ่อนส่วนอื่นๆ เวลาสั่งพิมพ์และบังคับขนาดในมือถือให้พอดี A4 */
         @media print {
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
+            @page { size: A4 portrait; margin: 0; }
             html, body {
                 width: 210mm !important;
-                height: 285mm !important; /* บีบความสูงลงเพื่อหนี Header/Footer ของเบราว์เซอร์มือถือ */
+                height: 285mm !important; 
                 max-height: 285mm !important;
                 margin: 0 !important;
                 padding: 0 !important;
                 background-color: white !important;
                 overflow: hidden !important; 
             }
-            #web-form-view, .no-print {
-                display: none !important;
-            }
+            #web-form-view, .no-print { display: none !important; }
             #a4-print-view {
                 display: block !important;
                 position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
+                top: 0 !important; left: 0 !important;
                 width: 210mm !important;
                 height: 285mm !important;
                 max-height: 285mm !important;
-                margin: 0 !important;
-                padding: 0 !important;
+                margin: 0 !important; padding: 0 !important;
                 background: white !important;
-                min-height: 0 !important; 
-                overflow: hidden !important; 
+                min-height: 0 !important; overflow: hidden !important; 
             }
             #a4-wrapper {
-                padding: 0 !important;
-                margin: 0 !important;
-                height: 285mm !important;
-                overflow: hidden !important;
+                padding: 0 !important; margin: 0 !important;
+                height: 285mm !important; overflow: hidden !important;
             }
             #a4-scaler {
-                position: static !important;
-                transform: none !important;
-                width: 210mm !important;
-                height: 285mm !important;
-                margin: 0 !important;
-                padding: 0 !important;
+                position: static !important; transform: none !important;
+                width: 210mm !important; height: 285mm !important;
+                margin: 0 !important; padding: 0 !important;
                 overflow: hidden !important;
             }
             .a4-container {
-                position: absolute !important;
-                top: 0 !important;
-                left: 0 !important;
-                margin: 0 !important;
-                padding: 5mm 15mm 5mm 15mm !important; /* ลดขอบบนล่างลง */
+                position: absolute !important; top: 0 !important; left: 0 !important;
+                margin: 0 !important; padding: 5mm 15mm 5mm 15mm !important;
                 box-shadow: none !important;
-                width: 210mm !important;
-                min-width: 210mm !important;
-                height: 285mm !important; 
-                max-height: 285mm !important;
-                overflow: hidden !important; 
-                box-sizing: border-box !important;
-                page-break-after: avoid !important;
-                page-break-inside: avoid !important;
+                width: 210mm !important; min-width: 210mm !important;
+                height: 285mm !important; max-height: 285mm !important;
+                overflow: hidden !important; box-sizing: border-box !important;
+                page-break-after: avoid !important; page-break-inside: avoid !important;
             }
-            .input-line {
-                border-bottom: 1px dotted #000;
-            }
-            .overflow-x-auto, .overflow-hidden {
-                overflow: hidden !important;
-            }
-            * {
-                page-break-inside: avoid !important;
-            }
+            .input-line { border-bottom: 1px dotted #000; }
+            .overflow-x-auto, .overflow-hidden { overflow: hidden !important; }
+            * { page-break-inside: avoid !important; }
         }
     </style>
 </head>
-<body class="overflow-x-hidden">
+<body class="overflow-x-hidden antialiased selection:bg-blue-100 selection:text-blue-900">
 
     <!-- ========================================== -->
     <!-- VIEW 1: WEB FORM (หน้าเว็บสำหรับกรอกข้อมูล) -->
     <!-- ========================================== -->
-    <div id="web-form-view" class="min-h-screen bg-slate-50 py-3 sm:py-10 px-2 sm:px-6 lg:px-8">
-        <div class="max-w-5xl mx-auto space-y-3 sm:space-y-6">
+    <div id="web-form-view" class="min-h-screen py-2 sm:py-8 px-1 sm:px-6 lg:px-8">
+        <div class="max-w-[56rem] mx-auto space-y-2 sm:space-y-6">
             
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-8 border-t-4 border-t-indigo-500">
-                <h1 class="text-base sm:text-2xl font-bold text-slate-800 mb-1 sm:mb-2">ระบบกรอกข้อมูลแบบสำรวจความพึงพอใจลูกค้า</h1>
-                <p class="text-slate-500 text-[11px] sm:text-sm">กรุณากรอกข้อมูลในแบบฟอร์มด้านล่าง ระบบจะนำข้อมูลไปสร้างเป็นเอกสาร A4 (FM-SA-003) ให้อัตโนมัติ</p>
-            </div>
-
-            <!-- ข้อมูลลูกค้า -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-8">
-                <h2 class="text-sm sm:text-lg font-bold text-slate-800 mb-3 sm:mb-5 pb-2 sm:pb-3 border-b border-slate-100">1. ข้อมูลทั่วไป</h2>
+            <!-- Modern Header Banner -->
+            <div class="relative overflow-hidden rounded-[0.75rem] sm:rounded-[1.25rem] bg-[#0f172a] shadow-md p-2 sm:p-6 text-white">
+                <!-- Abstract glowing orbs -->
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 sm:w-64 sm:h-64 bg-blue-500 opacity-20 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 sm:w-56 sm:h-56 bg-indigo-500 opacity-20 rounded-full blur-2xl pointer-events-none"></div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 mb-3 sm:mb-6">
-                    <div class="col-span-1 md:col-span-2">
-                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-1 sm:mb-1.5">ชื่อบริษัทลูกค้า</label>
-                        <input type="text" id="w_company" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
+                <div class="relative z-10 flex flex-col items-center text-center">
+                    <div class="inline-flex items-center justify-center p-0.5 sm:p-2.5 bg-white/10 rounded-md sm:rounded-xl mb-1 sm:mb-3 backdrop-blur-sm border border-white/10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-6 sm:w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
                     </div>
-                    <div class="col-span-1 md:col-span-2">
-                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-2 sm:mb-3">ประเภทธุรกิจ <span class="text-slate-400 font-normal text-[10px] sm:text-xs ml-1">(เลือกได้มากกว่า 1)</span></label>
-                        <div class="flex flex-wrap gap-2 sm:gap-3">
-                            <label class="cursor-pointer relative">
-                                <input type="checkbox" id="w_type_1" class="peer sr-only">
-                                <div class="flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[12px] sm:text-sm font-medium text-slate-600 bg-white border border-slate-200 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md peer-checked:shadow-indigo-200/50 select-none active:scale-95">
-                                    งานระบบ
-                                </div>
-                            </label>
-                            <label class="cursor-pointer relative">
-                                <input type="checkbox" id="w_type_2" class="peer sr-only">
-                                <div class="flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[12px] sm:text-sm font-medium text-slate-600 bg-white border border-slate-200 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md peer-checked:shadow-indigo-200/50 select-none active:scale-95">
-                                    โรงหล่อคอนกรีต
-                                </div>
-                            </label>
-                            <label class="cursor-pointer relative">
-                                <input type="checkbox" id="w_type_3" class="peer sr-only">
-                                <div class="flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[12px] sm:text-sm font-medium text-slate-600 bg-white border border-slate-200 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md peer-checked:shadow-indigo-200/50 select-none active:scale-95">
-                                    งานสถาปัตย์
-                                </div>
-                            </label>
-                            <label class="cursor-pointer relative">
-                                <input type="checkbox" id="w_type_4" class="peer sr-only">
-                                <div class="flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[12px] sm:text-sm font-medium text-slate-600 bg-white border border-slate-200 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md peer-checked:shadow-indigo-200/50 select-none active:scale-95">
-                                    งานโครงสร้าง
-                                </div>
-                            </label>
-                            <label class="cursor-pointer relative">
-                                <input type="checkbox" id="w_type_5" class="peer sr-only">
-                                <div class="flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-[12px] sm:text-sm font-medium text-slate-600 bg-white border border-slate-200 transition-all duration-200 hover:bg-slate-50 hover:border-slate-300 peer-checked:bg-indigo-500 peer-checked:text-white peer-checked:border-indigo-500 peer-checked:shadow-md peer-checked:shadow-indigo-200/50 select-none active:scale-95">
-                                    ร้านฮาร์ดแวร์
-                                </div>
-                            </label>
+                    <h1 class="text-sm sm:text-2xl font-bold mb-0.5 sm:mb-2 tracking-tight text-white leading-none">ระบบแบบสำรวจความพึงพอใจ</h1>
+                    <p class="text-slate-400 text-[8px] sm:text-sm font-medium max-w-sm sm:max-w-lg leading-tight sm:leading-relaxed">กรอกข้อมูลให้ครบถ้วน ระบบจะคำนวณและสร้างเอกสาร (FM-SA-003) ให้อัตโนมัติ</p>
+                </div>
+            </div>
+
+            <!-- 1. ข้อมูลลูกค้า -->
+            <div class="bg-white rounded-[0.75rem] sm:rounded-[1.25rem] shadow-sm border border-slate-100 p-3 sm:p-8 transition-all duration-300">
+                <div class="flex items-center gap-1.5 sm:gap-4 mb-2 sm:mb-6 pb-1.5 sm:pb-4 border-b border-slate-100">
+                    <div class="w-5 h-5 sm:w-10 sm:h-10 rounded-md sm:rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-[10px] sm:text-base shadow-sm border border-blue-100/50">1</div>
+                    <h2 class="text-xs sm:text-xl font-bold text-slate-800 tracking-tight leading-none">ข้อมูลทั่วไป</h2>
+                </div>
+                
+                <div class="space-y-3 sm:space-y-6">
+                    <!-- บริษัท & ประเภท -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 sm:gap-6">
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-[9px] sm:text-[13px] font-bold text-slate-500 mb-0.5 sm:mb-2 uppercase tracking-wide">ชื่อบริษัทลูกค้า</label>
+                            <input type="text" id="w_company" class="modern-input" placeholder="บริษัท เอบีซี จำกัด">
+                        </div>
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-[9px] sm:text-[13px] font-bold text-slate-500 mb-1 sm:mb-2 uppercase tracking-wide">ประเภทธุรกิจ <span class="text-slate-400 font-normal normal-case ml-0.5 sm:ml-1">(เลือกได้มากกว่า 1)</span></label>
+                            <div class="flex flex-wrap gap-1 sm:gap-3">
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" id="w_type_1" class="peer sr-only">
+                                    <div class="flex items-center px-2 py-1 sm:px-4 sm:py-2.5 rounded sm:rounded-lg text-[9px] sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 transition-all duration-200 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:shadow-sm select-none">
+                                        งานระบบ
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" id="w_type_2" class="peer sr-only">
+                                    <div class="flex items-center px-2 py-1 sm:px-4 sm:py-2.5 rounded sm:rounded-lg text-[9px] sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 transition-all duration-200 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:shadow-sm select-none">
+                                        โรงหล่อคอนกรีต
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" id="w_type_3" class="peer sr-only">
+                                    <div class="flex items-center px-2 py-1 sm:px-4 sm:py-2.5 rounded sm:rounded-lg text-[9px] sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 transition-all duration-200 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:shadow-sm select-none">
+                                        งานสถาปัตย์
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" id="w_type_4" class="peer sr-only">
+                                    <div class="flex items-center px-2 py-1 sm:px-4 sm:py-2.5 rounded sm:rounded-lg text-[9px] sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 transition-all duration-200 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:shadow-sm select-none">
+                                        งานโครงสร้าง
+                                    </div>
+                                </label>
+                                <label class="cursor-pointer relative">
+                                    <input type="checkbox" id="w_type_5" class="peer sr-only">
+                                    <div class="flex items-center px-2 py-1 sm:px-4 sm:py-2.5 rounded sm:rounded-lg text-[9px] sm:text-sm font-semibold text-slate-600 bg-slate-50 hover:bg-slate-100 transition-all duration-200 peer-checked:bg-slate-800 peer-checked:text-white peer-checked:shadow-sm select-none">
+                                        ร้านฮาร์ดแวร์
+                                    </div>
+                                </label>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-6 mb-3 sm:mb-6 p-2.5 sm:p-5 bg-slate-50 rounded-lg sm:rounded-xl border border-slate-100">
-                    <div>
-                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-1 sm:mb-1.5">ชื่อ/รหัสผู้สำรวจ</label>
-                        <input type="text" id="w_surveyor_name" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-1 sm:mb-1.5">เบอร์โทรศัพท์ (ผู้สำรวจ)</label>
-                        <input type="text" id="w_surveyor_tel" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] sm:text-sm font-semibold text-slate-700 mb-1 sm:mb-1.5">E-mail (ผู้สำรวจ)</label>
-                        <input type="email" id="w_surveyor_email" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
-                    </div>
-                </div>
+                    <div class="h-px bg-slate-100 w-full hidden md:block"></div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-6 p-2.5 sm:p-5 bg-indigo-50/50 rounded-lg sm:rounded-xl border border-indigo-100/60">
-                    <div>
-                        <label class="block text-[11px] sm:text-sm font-semibold text-indigo-900 mb-1 sm:mb-1.5">ชื่อผู้ตอบแบบสำรวจ</label>
-                        <input type="text" id="w_respondent_name" class="w-full border border-indigo-200 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
+                    <!-- ผู้สำรวจ -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-1.5 sm:gap-5">
+                        <div>
+                            <label class="block text-[8px] sm:text-xs font-bold text-slate-400 mb-0.5 sm:mb-1.5 uppercase tracking-wider">ชื่อ/รหัสผู้สำรวจ</label>
+                            <input type="text" id="w_surveyor_name" class="modern-input" placeholder="ระบุชื่อ">
+                        </div>
+                        <div>
+                            <label class="block text-[8px] sm:text-xs font-bold text-slate-400 mb-0.5 sm:mb-1.5 uppercase tracking-wider">เบอร์โทรศัพท์</label>
+                            <input type="text" id="w_surveyor_tel" class="modern-input" placeholder="08X-XXX-XXXX">
+                        </div>
+                        <div>
+                            <label class="block text-[8px] sm:text-xs font-bold text-slate-400 mb-0.5 sm:mb-1.5 uppercase tracking-wider">อีเมล (ผู้สำรวจ)</label>
+                            <input type="email" id="w_surveyor_email" class="modern-input" placeholder="email@example.com">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-[11px] sm:text-sm font-semibold text-indigo-900 mb-1 sm:mb-1.5">เบอร์โทรศัพท์ (ผู้ตอบแบบสำรวจ)</label>
-                        <input type="text" id="w_respondent_tel" class="w-full border border-indigo-200 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] sm:text-sm font-semibold text-indigo-900 mb-1 sm:mb-1.5">E-mail (ผู้ตอบแบบสำรวจ)</label>
-                        <input type="email" id="w_respondent_email" class="w-full border border-indigo-200 rounded-lg sm:rounded-xl px-2.5 py-1.5 sm:px-4 sm:py-2.5 bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none text-[13px] sm:text-base text-slate-700">
+
+                    <!-- ผู้ตอบแบบสำรวจ -->
+                    <div class="bg-blue-50/60 rounded-[0.5rem] sm:rounded-xl p-2 sm:p-6 border border-blue-100/50">
+                        <div class="flex items-center gap-1 sm:gap-2 mb-1.5 sm:mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 sm:h-5 sm:w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                            <h3 class="font-bold text-blue-900 text-[10px] sm:text-base leading-none">ข้อมูลผู้ตอบแบบสำรวจ</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-1.5 sm:gap-5">
+                            <div>
+                                <input type="text" id="w_respondent_name" class="modern-input bg-white text-[11px] sm:text-[0.95rem]" placeholder="ชื่อผู้ตอบ">
+                            </div>
+                            <div>
+                                <input type="text" id="w_respondent_tel" class="modern-input bg-white text-[11px] sm:text-[0.95rem]" placeholder="เบอร์โทรศัพท์">
+                            </div>
+                            <div>
+                                <input type="email" id="w_respondent_email" class="modern-input bg-white text-[11px] sm:text-[0.95rem]" placeholder="อีเมล (ผู้ตอบ)">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- ตารางประเมิน -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-8">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-3 sm:mb-5 pb-2 sm:pb-3 border-b border-slate-100 gap-2 sm:gap-3">
-                    <h2 class="text-sm sm:text-lg font-bold text-slate-800">2. การประเมินความพึงพอใจ</h2>
-                    <div class="text-right text-[11px] sm:text-sm w-full sm:w-auto">
-                        <div class="bg-indigo-100/80 text-indigo-800 px-3 sm:px-4 py-1.5 rounded-lg font-semibold shadow-sm border border-indigo-200/50 flex justify-between sm:inline-block">
-                            <span>คะแนนรวม: <span id="w_total_score">0</span> / <span id="w_total_max">0</span> (<span id="w_total_pct">-</span>)</span>
-                            <span class="sm:ml-2">Grade <span id="w_total_grade" class="font-bold text-rose-600">-</span></span>
+            <!-- 2. ตารางประเมิน -->
+            <div class="bg-white rounded-[0.75rem] sm:rounded-[1.25rem] shadow-sm border border-slate-100 p-3 sm:p-8 transition-all duration-300">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 sm:mb-6 pb-2 sm:pb-4 border-b border-slate-100 gap-1.5 sm:gap-4">
+                    <div class="flex items-center gap-1.5 sm:gap-4">
+                        <div class="w-5 h-5 sm:w-10 sm:h-10 rounded-md sm:rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-[10px] sm:text-base shadow-sm border border-blue-100/50">2</div>
+                        <h2 class="text-xs sm:text-xl font-bold text-slate-800 tracking-tight leading-none">การประเมินความพึงพอใจ</h2>
+                    </div>
+                    
+                    <div class="w-full sm:w-auto bg-slate-50 px-2 py-1 sm:px-6 sm:py-2.5 rounded-md sm:rounded-xl border border-slate-200 flex justify-between items-center gap-1.5 sm:gap-6">
+                        <div class="flex items-center gap-1 sm:gap-2">
+                            <span class="text-[8px] sm:text-sm font-bold text-slate-500 uppercase tracking-wider hidden sm:inline">คะแนนรวม</span>
+                            <span class="text-xs sm:text-2xl font-black text-slate-800"><span id="w_total_score">0</span><span class="text-[8px] sm:text-lg text-slate-400 mx-0.5 sm:mx-1.5">/</span><span id="w_total_max" class="text-[8px] sm:text-lg text-slate-400">0</span></span>
+                        </div>
+                        <div class="h-3 sm:h-8 w-px bg-slate-300"></div>
+                        <div class="flex items-center gap-1 sm:gap-2">
+                            <span class="text-[8px] sm:text-sm font-bold text-slate-500 uppercase tracking-wider">เกรด</span>
+                            <span id="w_total_grade" class="text-xs sm:text-2xl font-black text-blue-600">-</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="rounded-xl border border-slate-200 overflow-hidden bg-white shadow-sm">
+                <!-- Layout ตารางประเมิน -->
+                <div class="space-y-3 sm:space-y-6">
                     
                     <!-- Desktop Header -->
-                    <div class="hidden md:flex bg-slate-100/80 text-slate-700 font-semibold border-b border-slate-200 text-sm">
-                        <div class="w-[15%] p-3.5 border-r border-slate-200 flex items-center justify-center">หัวข้อ</div>
-                        <div class="w-[34%] p-3.5 border-r border-slate-200 flex items-center">รายละเอียดการประเมิน</div>
-                        <div class="w-[11%] p-3.5 border-r border-slate-200 flex items-center justify-center text-center">คะแนนเต็ม</div>
-                        <div class="w-[20%] p-3.5 border-r border-slate-200 bg-indigo-50/50 text-indigo-900 flex items-center justify-center text-center">ให้คะแนน (ดาว)</div>
-                        <div class="w-[20%] p-3.5 flex items-center justify-center text-center">รายละเอียดเพิ่มเติม</div>
+                    <div class="hidden md:flex bg-slate-50 border-b border-slate-200 text-[14px] font-bold text-slate-500 uppercase tracking-wider rounded-t-xl overflow-hidden">
+                        <div class="w-[35%] p-4 pl-5 border-r border-slate-200">หัวข้อการประเมิน</div>
+                        <div class="w-[10%] p-4 border-r border-slate-200 text-center">เต็ม</div>
+                        <div class="w-[25%] p-4 border-r border-slate-200 text-center">ให้คะแนน</div>
+                        <div class="w-[30%] p-4 text-center">รายละเอียดเพิ่มเติม</div>
                     </div>
 
-                    <div id="web-score-body" class="flex flex-col">
-
-                        <!-- ================= กลุ่มที่ 1: คุณภาพสินค้า ================= -->
-                        <div class="flex flex-col md:flex-row border-b border-slate-200 last:border-0">
-                            <!-- Mobile Header / Desktop Rowspan -->
-                            <div class="md:hidden bg-slate-200/50 p-2.5 font-bold text-slate-800 text-sm border-b border-slate-200">
-                                1. คุณภาพสินค้า
-                            </div>
-                            <div class="hidden md:flex w-[15%] bg-slate-50/50 p-3.5 font-semibold text-slate-800 border-r border-slate-200 items-start pt-5 justify-center text-center">
-                                1. คุณภาพสินค้า
-                            </div>
-
-                            <!-- เนื้อหาในกลุ่ม 1 -->
-                            <div class="w-full md:w-[85%] flex flex-col">
-                                <!-- ข้อ 1.1 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        1.1 Specification สินค้าเป็นไปตามต้องการ
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s1_1" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="10">
+                    <!-- ================= กลุ่มที่ 1: คุณภาพสินค้า ================= -->
+                    <div class="mt-0">
+                        <h3 class="text-[10px] sm:text-[15px] font-bold text-slate-800 mb-1 sm:mb-3 mt-1 sm:mt-4 px-1 sm:px-2 flex items-center gap-1 sm:gap-2">
+                            <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500"></div>
+                            1. คุณภาพสินค้า
+                        </h3>
+                        <div class="space-y-1 sm:space-y-2">
+                            <!-- ข้อ 1.1 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">1.1 Specification สินค้าเป็นไปตามต้องการ</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s1_1_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="10" oninput="syncMax(this, 'w_max_s1_1')">
                                         </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s1_1" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s1_1" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s1_1" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
+                                        <div id="star_container_s1_1_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
                                     </div>
                                 </div>
-                                <!-- ข้อ 1.2 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        1.2 มีการรับรองคุณภาพ
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s1_2" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
-                                        </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s1_2" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s1_2" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s1_2" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
-                                    </div>
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s1_1" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="10" oninput="syncMax(this, 'w_max_s1_1_mobile')">
                                 </div>
-                                <!-- ข้อ 1.3 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        1.3 สภาพการบรรจุหีบห่อ
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s1_3" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
-                                        </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s1_3" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s1_3" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s1_3" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
-                                    </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s1_1" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s1_1" class="w-score-val" value="0">
                                 </div>
-                                <!-- ข้อ 1.4 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        1.4 การแก้ไขและป้องกันปัญหา
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s1_4" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
-                                        </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s1_4" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s1_4" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s1_4" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
-                                    </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s1_1" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
                                 </div>
                             </div>
-                        </div>
-
-                        <!-- ================= กลุ่มที่ 2: การส่งมอบ ================= -->
-                        <div class="flex flex-col md:flex-row border-b border-slate-200 last:border-0">
-                            <!-- Mobile Header / Desktop Rowspan -->
-                            <div class="md:hidden bg-slate-200/50 p-2.5 font-bold text-slate-800 text-sm border-b border-slate-200">
-                                2. การส่งมอบ
-                            </div>
-                            <div class="hidden md:flex w-[15%] bg-slate-50/50 p-3.5 font-semibold text-slate-800 border-r border-slate-200 items-start pt-5 justify-center text-center">
-                                2. การส่งมอบ
-                            </div>
-
-                            <!-- เนื้อหาในกลุ่ม 2 -->
-                            <div class="w-full md:w-[85%] flex flex-col">
-                                <!-- ข้อ 2.1 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        2.1 ความรวดเร็ว และตรงเวลาในการจัดส่ง
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s2_1" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
+                            <!-- ข้อ 1.2 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">1.2 มีการรับรองคุณภาพ</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s1_2_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s1_2')">
                                         </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s2_1" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s2_1" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s2_1" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
+                                        <div id="star_container_s1_2_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
                                     </div>
                                 </div>
-                                <!-- ข้อ 2.2 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        2.2 การแต่งกายและความสุภาพของพนักงานจัดส่งสินค้า
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s2_2" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s1_2" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s1_2_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s1_2" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s1_2" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s1_2" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
+                                </div>
+                            </div>
+                            <!-- ข้อ 1.3 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">1.3 สภาพการบรรจุหีบห่อ</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s1_3_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s1_3')">
                                         </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s2_2" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s2_2" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s2_2" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
+                                        <div id="star_container_s1_3_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
                                     </div>
                                 </div>
-                                <!-- ข้อ 2.3 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        2.3 ความถูกต้องของสินค้าและเอกสารในการส่งมอบ
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s2_3" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s1_3" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s1_3_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s1_3" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s1_3" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s1_3" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
+                                </div>
+                            </div>
+                            <!-- ข้อ 1.4 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">1.4 การแก้ไขและป้องกันปัญหา</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s1_4_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s1_4')">
                                         </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s2_3" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s2_3" class="w-score-val" value="0">
-                                        </div>
+                                        <div id="star_container_s1_4_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
                                     </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s2_3" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
-                                    </div>
+                                </div>
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s1_4" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s1_4_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s1_4" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s1_4" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s1_4" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
                                 </div>
                             </div>
                         </div>
-
-                        <!-- ================= กลุ่มที่ 3: การบริการ ================= -->
-                        <div class="flex flex-col md:flex-row border-b border-slate-200 last:border-0">
-                            <!-- Mobile Header / Desktop Rowspan -->
-                            <div class="md:hidden bg-slate-200/50 p-2.5 font-bold text-slate-800 text-sm border-b border-slate-200">
-                                3. การบริการ
-                            </div>
-                            <div class="hidden md:flex w-[15%] bg-slate-50/50 p-3.5 font-semibold text-slate-800 border-r border-slate-200 items-start pt-5 justify-center text-center">
-                                3. การบริการ
-                            </div>
-
-                            <!-- เนื้อหาในกลุ่ม 3 -->
-                            <div class="w-full md:w-[85%] flex flex-col">
-                                <!-- ข้อ 3.1 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        3.1 ความสะดวกในการติดต่อสื่อสาร
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s3_1" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
-                                        </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s3_1" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s3_1" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s3_1" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
-                                    </div>
-                                </div>
-                                <!-- ข้อ 3.2 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        3.2 การตอบสนองข้อร้องเรียนและการให้ข้อมูลที่ร้องขอ
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s3_2" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
-                                        </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s3_2" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s3_2" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s3_2" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
-                                    </div>
-                                </div>
-                                <!-- ข้อ 3.3 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        3.3 ความรวดเร็วในการแก้ไขปัญหา
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s3_3" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
-                                        </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s3_3" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s3_3" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s3_3" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
-                                    </div>
-                                </div>
-                                <!-- ข้อ 3.4 -->
-                                <div class="flex flex-col md:flex-row border-b border-slate-100 md:border-slate-200 last:border-0 p-3 md:p-0 gap-2 md:gap-0 bg-white hover:bg-slate-50/50 transition-colors">
-                                    <div class="w-full md:w-[40%] md:p-3.5 text-slate-700 md:border-r border-slate-200 text-sm md:flex md:items-center">
-                                        3.4 การเสนอราคามีความรวดเร็ว
-                                    </div>
-                                    <div class="w-full md:w-[36.5%] flex items-center bg-slate-50 md:bg-transparent rounded-lg border border-slate-100 md:border-0 p-2 md:p-0 md:border-r border-slate-200">
-                                        <div class="w-[25%] md:w-[35.5%] md:p-3.5 flex flex-col md:flex-row items-center justify-center md:border-r border-slate-200">
-                                            <span class="text-[10px] text-slate-400 md:hidden mb-0.5">คะแนนเต็ม</span>
-                                            <input type="number" id="w_max_s3_4" class="w-full text-center bg-white md:bg-transparent outline-none w-score-max font-medium text-slate-700 border border-slate-200 md:border-0 rounded md:rounded-none py-1 md:py-0 text-sm" value="5">
-                                        </div>
-                                        <div class="w-[75%] md:w-[64.5%] md:p-3.5 flex flex-col items-center justify-center bg-indigo-50/20 md:bg-indigo-50/30 rounded md:rounded-none px-2 py-1.5 md:py-0 ml-2 md:ml-0 border-l border-slate-200 md:border-l-0 min-h-[50px]">
-                                            <span class="text-[10px] text-indigo-400 font-semibold mb-1 md:hidden">แตะเพื่อให้คะแนน</span>
-                                            <div id="star_container_s3_4" class="flex flex-wrap justify-center gap-0.5 sm:gap-1.5 w-full"></div>
-                                            <input type="hidden" id="w_s3_4" class="w-score-val" value="0">
-                                        </div>
-                                    </div>
-                                    <div class="w-full md:w-[23.5%] md:p-3.5 flex items-center justify-center mt-1 md:mt-0">
-                                        <input type="text" id="w_note_s3_4" class="w-full border border-slate-200 md:border-0 md:border-b md:border-dashed border-slate-300 rounded md:rounded-none px-3 py-1.5 md:py-1 md:px-1 text-[12px] sm:text-sm bg-white md:bg-transparent outline-none focus:ring-2 focus:ring-indigo-500/20 md:focus:ring-0 md:focus:border-solid md:focus:border-indigo-500 transition-all placeholder-slate-300" placeholder="รายละเอียดเพิ่มเติม...">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
+
+                    <!-- ================= กลุ่มที่ 2: การส่งมอบ ================= -->
+                    <div class="pt-1.5 sm:pt-4 border-t border-slate-100">
+                        <h3 class="text-[10px] sm:text-[15px] font-bold text-slate-800 mb-1 sm:mb-3 mt-1 sm:mt-2 px-1 sm:px-2 flex items-center gap-1 sm:gap-2">
+                            <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500"></div>
+                            2. การส่งมอบ
+                        </h3>
+                        <div class="space-y-1 sm:space-y-2">
+                            <!-- ข้อ 2.1 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">2.1 ความรวดเร็ว และตรงเวลาในการจัดส่ง</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s2_1_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s2_1')">
+                                        </div>
+                                        <div id="star_container_s2_1_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s2_1" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s2_1_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s2_1" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s2_1" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s2_1" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
+                                </div>
+                            </div>
+                            <!-- ข้อ 2.2 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">2.2 การแต่งกายและความสุภาพของพนักงานจัดส่งสินค้า</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s2_2_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s2_2')">
+                                        </div>
+                                        <div id="star_container_s2_2_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s2_2" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s2_2_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s2_2" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s2_2" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s2_2" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
+                                </div>
+                            </div>
+                            <!-- ข้อ 2.3 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">2.3 ความถูกต้องของสินค้าและเอกสารในการส่งมอบ</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s2_3_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s2_3')">
+                                        </div>
+                                        <div id="star_container_s2_3_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s2_3" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s2_3_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s2_3" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s2_3" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s2_3" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= กลุ่มที่ 3: การบริการ ================= -->
+                    <div class="pt-1.5 sm:pt-4 border-t border-slate-100">
+                        <h3 class="text-[10px] sm:text-[15px] font-bold text-slate-800 mb-1 sm:mb-3 mt-1 sm:mt-2 px-1 sm:px-2 flex items-center gap-1 sm:gap-2">
+                            <div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500"></div>
+                            3. การบริการ
+                        </h3>
+                        <div class="space-y-1 sm:space-y-2">
+                            <!-- ข้อ 3.1 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">3.1 ความสะดวกในการติดต่อสื่อสาร</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s3_1_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s3_1')">
+                                        </div>
+                                        <div id="star_container_s3_1_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s3_1" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s3_1_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s3_1" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s3_1" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s3_1" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
+                                </div>
+                            </div>
+                            <!-- ข้อ 3.2 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">3.2 การตอบสนองข้อร้องเรียนและการให้ข้อมูลที่ร้องขอ</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s3_2_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s3_2')">
+                                        </div>
+                                        <div id="star_container_s3_2_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s3_2" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s3_2_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s3_2" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s3_2" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s3_2" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
+                                </div>
+                            </div>
+                            <!-- ข้อ 3.3 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">3.3 ความรวดเร็วในการแก้ไขปัญหา</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s3_3_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s3_3')">
+                                        </div>
+                                        <div id="star_container_s3_3_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s3_3" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s3_3_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s3_3" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s3_3" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s3_3" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
+                                </div>
+                            </div>
+                            <!-- ข้อ 3.4 -->
+                            <div class="bg-slate-50/50 border border-slate-100 rounded-lg sm:rounded-xl p-1.5 sm:p-4 flex flex-col md:flex-row gap-1 sm:gap-4 items-start md:items-center justify-between hover:bg-white hover:shadow-sm transition-all duration-200 group">
+                                <div class="w-full md:w-[35%] flex flex-col pl-1 md:pr-4">
+                                    <span class="text-[10px] sm:text-[15px] font-semibold text-slate-800 leading-tight sm:leading-snug">3.4 การเสนอราคามีความรวดเร็ว</span>
+                                    <div class="mt-1 flex items-center justify-between gap-2 md:hidden w-full pr-1">
+                                        <div class="flex items-center gap-1">
+                                           <span class="text-[7px] font-bold text-slate-400 uppercase">เต็ม</span>
+                                           <input type="number" id="w_max_s3_4_mobile" class="w-8 text-center bg-white border border-slate-200 rounded py-0 px-0 text-[10px] outline-none w-score-max h-5" value="5" oninput="syncMax(this, 'w_max_s3_4')">
+                                        </div>
+                                        <div id="star_container_s3_4_mobile" class="flex flex-wrap justify-end gap-0.5 min-h-[16px] items-center"></div>
+                                    </div>
+                                </div>
+                                <div class="hidden md:flex w-[10%] items-center justify-center">
+                                    <input type="number" id="w_max_s3_4" class="w-16 text-center bg-slate-100 border border-transparent focus:bg-white focus:border-blue-300 rounded-lg py-1.5 text-[14px] outline-none font-semibold text-slate-700 transition-all w-score-max" value="5" oninput="syncMax(this, 'w_max_s3_4_mobile')">
+                                </div>
+                                <div class="hidden md:flex w-[25%] items-center justify-center px-2">
+                                    <div id="star_container_s3_4" class="flex flex-wrap justify-center gap-1 min-h-[24px] items-center w-full"></div>
+                                    <input type="hidden" id="w_s3_4" class="w-score-val" value="0">
+                                </div>
+                                <div class="w-full md:w-[30%] mt-1 md:mt-0">
+                                    <input type="text" id="w_note_s3_4" class="modern-input w-full text-[10px] sm:text-[0.95rem]" placeholder="รายละเอียดเพิ่มเติม...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
             <!-- ข้อเสนอแนะ -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-3 sm:p-8 mb-3 sm:mb-6">
-                <h2 class="text-sm sm:text-lg font-bold text-slate-800 mb-2 sm:mb-4 pb-2 sm:pb-3 border-b border-slate-100">3. ข้อเสนอแนะเพิ่มเติม</h2>
-                <textarea id="w_suggestions" rows="2" class="w-full border border-slate-300 rounded-lg sm:rounded-xl px-3 py-2 sm:px-4 sm:py-3 bg-slate-50/50 hover:bg-white focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all duration-200 outline-none resize-none text-sm sm:text-base text-slate-700" placeholder="พิมพ์ข้อเสนอแนะที่นี่"></textarea>
+            <div class="bg-white rounded-[0.75rem] sm:rounded-[1.25rem] shadow-sm border border-slate-100 p-3 sm:p-8 transition-all duration-300">
+                <div class="flex items-center gap-1.5 sm:gap-4 mb-2 sm:mb-6 pb-1.5 sm:pb-4 border-b border-slate-100">
+                    <div class="w-5 h-5 sm:w-10 sm:h-10 rounded-md sm:rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 font-bold text-[10px] sm:text-base shadow-sm border border-blue-100/50">3</div>
+                    <h2 class="text-xs sm:text-xl font-bold text-slate-800 tracking-tight leading-none">ข้อเสนอแนะเพิ่มเติม</h2>
+                </div>
+                <textarea id="w_suggestions" rows="3" class="modern-input resize-none" placeholder="ข้อเสนอแนะ..."></textarea>
             </div>
 
             <!-- สรุปผลประเมินก่อนพิมพ์ -->
-            <div class="bg-gradient-to-br from-indigo-50/80 to-blue-50/80 rounded-2xl sm:rounded-3xl shadow-sm border border-indigo-100/60 p-4 sm:p-10 mb-4 sm:mb-10">
-                <div class="text-center mb-4 sm:mb-8">
-                    <h3 class="text-base sm:text-2xl font-bold text-indigo-900 mb-0.5 sm:mb-2">สรุปผลการประเมิน</h3>
-                    <p class="text-indigo-600/80 text-[10px] sm:text-sm">ขอบคุณที่สละเวลาให้คะแนนและข้อเสนอแนะกับเรา</p>
-                </div>
-                
-                <!-- เปลี่ยนกลับเป็น grid-cols-3 เพื่อให้เรียงติดกันแนวนอน 3 อันบนมือถือ -->
-                <div class="grid grid-cols-3 gap-2 sm:gap-5 mb-5 sm:mb-10">
-                    <!-- Card 1: คะแนนรวม -->
-                    <div class="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-6 border border-indigo-50 shadow-sm flex flex-col items-center justify-center transition-transform hover:-translate-y-1 hover:shadow-md duration-300">
-                        <div class="flex items-center gap-1 sm:gap-2 text-indigo-400 mb-1 sm:mb-3">
-                            <svg class="w-3 h-3 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                            <span class="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-center leading-tight hidden sm:block">คะแนนรวม</span>
-                            <span class="text-[9px] font-bold uppercase tracking-wider text-center leading-tight block sm:hidden">คะแนน<br>รวม</span>
+            <div class="bg-white rounded-[0.75rem] sm:rounded-[1.5rem] shadow-md border border-slate-100 p-3 sm:p-8 relative overflow-hidden group/container">
+                <div class="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 sm:w-64 sm:h-64 bg-blue-50 rounded-full blur-3xl transition-transform duration-700 group-hover/container:scale-150 pointer-events-none"></div>
+
+                <div class="relative z-10 flex flex-col sm:flex-row items-stretch justify-between gap-3 sm:gap-8">
+                    <div class="w-full sm:w-[65%] grid grid-cols-3 gap-1.5 sm:gap-5">
+                        <!-- Card 1: คะแนนรวม -->
+                        <div class="bg-slate-50 hover:bg-white rounded-lg sm:rounded-2xl p-2 sm:p-5 flex flex-col items-center justify-center border border-slate-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-blue-100 cursor-default group">
+                            <div class="text-slate-400 group-hover:text-blue-500 transition-colors text-[7px] sm:text-sm font-bold uppercase tracking-wider mb-0.5 sm:mb-2">คะแนนรวม</div>
+                            <div class="text-sm sm:text-3xl font-black text-slate-800 tracking-tight flex items-baseline">
+                                <span id="w_bottom_score" class="inline-block transition-transform">0</span>
+                                <span class="text-[8px] sm:text-xl text-slate-300 mx-0.5 sm:mx-1 font-medium">/</span>
+                                <span id="w_bottom_max" class="text-[10px] sm:text-2xl text-blue-500 inline-block transition-transform">0</span>
+                            </div>
                         </div>
-                        <div class="text-lg sm:text-4xl font-black text-indigo-700 tracking-tight flex items-baseline">
-                            <span id="w_bottom_score">0</span>
-                            <span class="text-xs sm:text-2xl text-indigo-300 mx-0.5 sm:mx-1 font-medium">/</span>
-                            <span id="w_bottom_max" class="text-xs sm:text-2xl text-indigo-500">0</span>
+
+                        <!-- Card 2: เปอร์เซ็นต์ -->
+                        <div class="bg-slate-50 hover:bg-white rounded-lg sm:rounded-2xl p-2 sm:p-5 flex flex-col items-center justify-center border border-slate-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-cyan-100 cursor-default group">
+                            <div class="text-slate-400 group-hover:text-cyan-500 transition-colors text-[7px] sm:text-sm font-bold uppercase tracking-wider mb-0.5 sm:mb-2">เปอร์เซ็นต์</div>
+                            <div class="text-sm sm:text-3xl font-black text-cyan-600 tracking-tight inline-block transition-transform" id="w_bottom_pct">-</div>
+                        </div>
+
+                        <!-- Card 3: เกรดที่ได้ -->
+                        <div class="bg-slate-800 hover:bg-slate-900 rounded-lg sm:rounded-2xl p-2 sm:p-5 flex flex-col items-center justify-center border border-slate-700 shadow-inner transition-all duration-300 hover:shadow-[0_8px_20px_rgba(15,23,42,0.4)] hover:-translate-y-1 hover:border-slate-500 relative overflow-hidden cursor-default group">
+                            <div class="absolute inset-0 bg-gradient-to-tr from-blue-500/0 via-blue-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 transform translate-x-[-100%] group-hover:translate-x-[100%]"></div>
+                            <div class="text-slate-400 group-hover:text-slate-300 transition-colors text-[7px] sm:text-sm font-bold uppercase tracking-wider mb-0.5 sm:mb-2 relative z-10">เกรดที่ได้</div>
+                            <div class="text-base sm:text-4xl font-black text-white inline-block transition-transform relative z-10" id="w_bottom_grade">-</div>
                         </div>
                     </div>
 
-                    <!-- Card 2: เปอร์เซ็นต์ -->
-                    <div class="bg-white rounded-xl sm:rounded-2xl p-2 sm:p-6 border border-blue-50 shadow-sm flex flex-col items-center justify-center transition-transform hover:-translate-y-1 hover:shadow-md duration-300">
-                        <div class="flex items-center gap-1 sm:gap-2 text-blue-400 mb-1 sm:mb-3">
-                            <svg class="w-3 h-3 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-                            <span class="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-center leading-tight hidden sm:block">คิดเป็นเปอร์เซ็นต์</span>
-                            <span class="text-[9px] font-bold uppercase tracking-wider text-center leading-tight block sm:hidden">คิดเป็น<br>%</span>
-                        </div>
-                        <div class="text-lg sm:text-4xl font-black text-blue-600 tracking-tight" id="w_bottom_pct">-</div>
+                    <div class="w-full sm:w-[35%] flex items-stretch">
+                        <button type="button" onclick="previewDocument()" class="w-full min-h-[40px] sm:min-h-[100%] bg-[#0f172a] hover:bg-blue-600 text-white font-bold py-2 sm:py-0 px-3 sm:px-6 rounded-lg sm:rounded-2xl shadow-md hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 active:scale-95 flex items-center justify-center gap-1.5 sm:gap-3 focus:outline-none focus:ring-2 focus:ring-blue-500/40 group overflow-hidden relative">
+                            <div class="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 sm:h-6 sm:w-6 relative z-10 group-hover:scale-125 group-hover:rotate-[-10deg] transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            <span class="text-[10px] sm:text-base tracking-wide relative z-10">สร้างเอกสารเพื่อสั่งพิมพ์</span>
+                        </button>
                     </div>
-
-                    <!-- Card 3: เกรดที่ได้ -->
-                    <div class="bg-gradient-to-b from-white to-rose-50/50 rounded-xl sm:rounded-2xl p-2 sm:p-6 border border-rose-100 shadow-sm flex flex-col items-center justify-center relative overflow-hidden transition-transform hover:-translate-y-1 hover:shadow-md duration-300">
-                        <!-- ลายน้ำดาวตกแต่งพื้นหลัง -->
-                        <div class="absolute -top-2 -right-2 sm:-top-4 sm:-right-4 text-rose-100/60 transform rotate-12">
-                            <svg class="w-12 h-12 sm:w-24 sm:h-24" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
-                        </div>
-                        
-                        <div class="flex items-center gap-1 sm:gap-2 text-rose-400 mb-1 sm:mb-3 relative z-10">
-                            <svg class="w-3 h-3 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-                            <span class="text-[9px] sm:text-xs font-bold uppercase tracking-wider text-center leading-tight">เกรดที่ได้</span>
-                        </div>
-                        <div class="text-2xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-br from-rose-500 to-orange-400 relative z-10 drop-shadow-sm" id="w_bottom_grade">-</div>
-                    </div>
-                </div>
-
-                <div class="flex justify-center">
-                    <button type="button" onclick="previewDocument()" class="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white font-bold py-2.5 sm:py-4 px-5 sm:px-10 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-indigo-500/30 transition duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2 sm:gap-3 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-6 sm:w-6 group-hover:animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                        <span class="text-[13px] sm:text-lg">ดูตัวอย่างเอกสารเพื่อสั่งพิมพ์</span>
-                    </button>
                 </div>
             </div>
 
@@ -618,21 +681,21 @@
     <!-- ========================================== -->
     <!-- VIEW 2: A4 PRINT VIEW (หน้าเอกสาร A4 เดิม)  -->
     <!-- ========================================== -->
-    <div id="a4-print-view" class="hidden relative pb-10 bg-gray-200 min-h-screen pt-4 sm:pt-6">
+    <div id="a4-print-view" class="hidden relative pb-10 bg-slate-900 min-h-screen pt-2 sm:pt-4">
         
         <!-- แถบเมนูด้านบนของหน้า Preview -->
-        <div class="max-w-[210mm] mx-auto flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 no-print px-4 gap-3">
-            <button onclick="backToWebForm()" class="w-full sm:w-auto bg-slate-600 hover:bg-slate-700 text-white font-semibold py-3 sm:py-2 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 transition duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div class="max-w-[210mm] mx-auto flex flex-col sm:flex-row justify-between items-center mb-3 sm:mb-6 no-print px-2 gap-2">
+            <button onclick="backToWebForm()" class="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-semibold py-2 px-4 rounded-lg shadow-sm border border-slate-700 flex items-center justify-center gap-1.5 transition duration-200 text-xs sm:text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
                 กลับไปแก้ไขข้อมูล
             </button>
-            <button onclick="window.print()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 sm:py-2 px-6 rounded-xl shadow-md flex items-center justify-center gap-2 transition duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button onclick="window.print()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg shadow-md shadow-blue-600/20 flex items-center justify-center gap-1.5 transition duration-200 text-xs sm:text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                 </svg>
-                พิมพ์เอกสาร (PDF)
+                สั่งพิมพ์ (PDF)
             </button>
         </div>
 
@@ -882,14 +945,27 @@
     <script>
         const scoreIds = ['s1_1', 's1_2', 's1_3', 's1_4', 's2_1', 's2_2', 's2_3', 's3_1', 's3_2', 's3_3', 's3_4'];
 
+        // --- ซิงค์ช่องกรอกคะแนนเต็มมือถือและเดสก์ท็อปเข้าด้วยกัน ---
+        function syncMax(el, targetId) {
+            const target = document.getElementById(targetId);
+            if(target) {
+                target.value = el.value;
+                calculateWebTotals();
+                renderStars();
+            }
+        }
+
         // --- ระบบสร้างดาวให้คะแนน (หน้า Web Form) ---
         function renderStars() {
             scoreIds.forEach(id => {
                 const maxInput = document.getElementById('w_max_' + id);
                 const valInput = document.getElementById('w_' + id);
-                const container = document.getElementById('star_container_' + id);
                 
-                if (!container || !maxInput || !valInput) return;
+                // ค้นหา container ของทั้ง Desktop และ Mobile
+                const containerDesktop = document.getElementById('star_container_' + id);
+                const containerMobile = document.getElementById('star_container_' + id + '_mobile');
+                
+                if (!maxInput || !valInput) return;
                 
                 let maxVal = parseInt(maxInput.value) || 0;
                 let currentVal = parseInt(valInput.value) || 0;
@@ -897,58 +973,65 @@
                 // กันไม่ให้ดาวเยอะเกินไปจนล้นหน้าจอ (จำกัดสูงสุดไว้ 10)
                 if (maxVal > 10) maxVal = 10;
 
-                // ปรับขนาดดาวอัตโนมัติ: ถ้าดาวเยอะ (มากกว่า 5) ให้เล็กลงเพื่อให้พอดีจอมือถือ
-                let starSizeClass = maxVal > 5 
-                    ? "w-[16px] h-[16px] min-[380px]:w-[18px] min-[380px]:h-[18px] sm:w-5 sm:h-5 md:w-6 md:h-6" 
-                    : "w-6 h-6 sm:w-7 sm:h-7";
-
-                container.innerHTML = '';
-                for (let i = 1; i <= maxVal; i++) {
-                    const star = document.createElement('div');
-                    const isActive = i <= currentVal;
-                    // สร้างไอคอนดาว SVG พร้อมคลาสที่แปรผันตามจำนวนดาว
-                    star.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="${starSizeClass} shrink-0 transition-all duration-150 active:scale-75 cursor-pointer ${isActive ? 'text-yellow-400 drop-shadow-sm' : 'text-slate-200'} hover:text-yellow-400 hover:scale-110"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>`;
+                // ฟังก์ชันวาดดาวใส่ container
+                const renderToContainer = (container, isMobile) => {
+                    if (!container) return;
+                    container.innerHTML = '';
                     
-                    // เอฟเฟกต์ตอนนำเมาส์ไปชี้ (Hover)
-                    star.addEventListener('mouseover', () => {
-                        const allStars = container.children;
-                        for(let j=0; j<maxVal; j++) {
-                            const svg = allStars[j].querySelector('svg');
-                            if(j < i) {
-                                svg.classList.remove('text-slate-200');
-                                svg.classList.add('text-yellow-400');
-                            } else {
-                                svg.classList.remove('text-yellow-400');
-                                svg.classList.add('text-slate-200');
-                            }
-                        }
-                    });
-                    
-                    // เอฟเฟกต์ตอนเอาเมาส์ออก คืนค่าสีตามคะแนนปัจจุบัน
-                    star.addEventListener('mouseout', () => {
-                        const val = parseInt(valInput.value) || 0;
-                        const allStars = container.children;
-                        for(let j=0; j<maxVal; j++) {
-                            const svg = allStars[j].querySelector('svg');
-                            if(j < val) {
-                                svg.classList.remove('text-slate-200');
-                                svg.classList.add('text-yellow-400', 'drop-shadow-sm');
-                            } else {
-                                svg.classList.remove('text-yellow-400', 'drop-shadow-sm');
-                                svg.classList.add('text-slate-200');
-                            }
-                        }
-                    });
+                    // ปรับขนาดดาว: ถ้ามือถือก็เล็กหน่อย เดสก์ท็อปก็ใหญ่หน่อย
+                    let starSizeClass = isMobile ? "w-3 h-3 sm:w-4 sm:h-4" : "w-4 h-4 sm:w-5 sm:h-5";
 
-                    // บันทึกคะแนนเมื่อคลิก
-                    star.addEventListener('click', () => {
-                        valInput.value = i;
-                        calculateWebTotals();
-                        renderStars(); // วาดดาวใหม่เพื่ออัปเดตสถานะ Active
-                    });
+                    for (let i = 1; i <= maxVal; i++) {
+                        const star = document.createElement('div');
+                        const isActive = i <= currentVal;
+                        
+                        star.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="${starSizeClass} shrink-0 transition-all duration-150 active:scale-75 cursor-pointer ${isActive ? 'text-amber-400 drop-shadow-sm scale-110' : 'text-slate-200 hover:text-amber-200'} hover:scale-125"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>`;
+                        
+                        // เอฟเฟกต์ตอนนำเมาส์ไปชี้ (Hover)
+                        star.addEventListener('mouseover', () => {
+                            const allStars = container.children;
+                            for(let j=0; j<maxVal; j++) {
+                                const svg = allStars[j].querySelector('svg');
+                                if(j < i) {
+                                    svg.classList.remove('text-slate-200');
+                                    svg.classList.add('text-amber-400');
+                                } else {
+                                    svg.classList.remove('text-amber-400', 'drop-shadow-sm', 'scale-110');
+                                    svg.classList.add('text-slate-200');
+                                }
+                            }
+                        });
+                        
+                        // เอฟเฟกต์ตอนเอาเมาส์ออก คืนค่าสีตามคะแนนปัจจุบัน
+                        star.addEventListener('mouseout', () => {
+                            const val = parseInt(valInput.value) || 0;
+                            const allStars = container.children;
+                            for(let j=0; j<maxVal; j++) {
+                                const svg = allStars[j].querySelector('svg');
+                                if(j < val) {
+                                    svg.classList.remove('text-slate-200');
+                                    svg.classList.add('text-amber-400', 'drop-shadow-sm', 'scale-110');
+                                } else {
+                                    svg.classList.remove('text-amber-400', 'drop-shadow-sm', 'scale-110');
+                                    svg.classList.add('text-slate-200');
+                                }
+                            }
+                        });
 
-                    container.appendChild(star);
-                }
+                        // บันทึกคะแนนเมื่อคลิก
+                        star.addEventListener('click', () => {
+                            valInput.value = i;
+                            calculateWebTotals();
+                            renderStars(); // วาดใหม่ทั้งหมดเพื่อซิงค์
+                        });
+
+                        container.appendChild(star);
+                    }
+                };
+
+                // เรียกวาดทั้ง 2 จุด (Desktop & Mobile)
+                renderToContainer(containerDesktop, false);
+                renderToContainer(containerMobile, true);
             });
         }
 
@@ -958,7 +1041,8 @@
             let maxTotal = 0;
             
             scoreIds.forEach(id => {
-                const maxInput = document.getElementById('w_max_' + id);
+                // อิงจาก max ตัวใดตัวหนึ่ง (ใช้ของ desktop เป็นหลัก)
+                const maxInput = document.getElementById('w_max_' + id); 
                 const valInput = document.getElementById('w_' + id);
                 
                 if (maxInput && valInput) {
@@ -999,6 +1083,22 @@
                 
                 safeSetText('w_total_grade', grade);
                 safeSetText('w_bottom_grade', grade);
+
+                // เรียกใช้แอนิเมชัน Pop เมื่อค่ามีการเปลี่ยนแปลง
+                const animateValue = (elementId) => {
+                    const el = document.getElementById(elementId);
+                    if(el) {
+                        el.classList.remove('animate-value-pop');
+                        void el.offsetWidth; // บังคับให้เบราว์เซอร์ล้างสถานะเดิม
+                        el.classList.add('animate-value-pop');
+                    }
+                };
+                
+                animateValue('w_bottom_score');
+                animateValue('w_bottom_max');
+                animateValue('w_bottom_pct');
+                animateValue('w_bottom_grade');
+
             } else {
                 safeSetText('w_total_pct', '-');
                 safeSetText('w_total_grade', '-');
@@ -1007,7 +1107,7 @@
             }
         }
 
-        // หากมีการแก้ไขตัวเลขช่องคะแนนเต็ม (Web view) ให้วาดดาวใหม่
+        // หากมีการแก้ไขตัวเลขช่องคะแนนเต็ม ให้วาดดาวใหม่
         document.querySelectorAll('.w-score-max').forEach(input => {
             input.addEventListener('input', () => {
                 calculateWebTotals();
@@ -1061,7 +1161,7 @@
             // ซิงค์คะแนนดาวและข้อความรายละเอียดเพิ่มเติม ไปเป็นตัวเลขบน A4
             scoreIds.forEach(id => {
                 const maxEl = document.getElementById('max_' + id);
-                const wMaxEl = document.getElementById('w_max_' + id);
+                const wMaxEl = document.getElementById('w_max_' + id); // ใช้ของเดสก์ท็อปเป็นหลัก
                 if (maxEl && wMaxEl) maxEl.value = wMaxEl.value;
 
                 // ซิงค์คะแนน
@@ -1180,25 +1280,37 @@
             if (gradeEl) gradeEl.value = '';
         }
 
-        // --- ระบบสเกลหน้า A4 ให้พอดีหน้าจอมือถือ ---
+        // --- ระบบสเกลหน้า A4 ให้พอดีหน้าจอ (ทั้งแนวนอนและแนวตั้ง) ---
         function adjustA4Scale() {
             const scaler = document.getElementById('a4-scaler');
             const doc = document.getElementById('a4-doc');
             if (!scaler || !doc) return;
 
             const windowWidth = window.innerWidth;
-            // ความกว้าง A4 ประมาณ 794px เผื่อขอบหน้าจอเล็กน้อยเป็น 820px
-            const targetWidth = 820; 
+            const windowHeight = window.innerHeight;
 
-            if (windowWidth < targetWidth) {
-                const scale = windowWidth / targetWidth;
-                scaler.style.transform = `scale(${scale})`;
-                // ปรับความสูงของกล่องนอกเพื่อไม่ให้เกิดพื้นที่ว่าง (offsetHeight ของเอกสารคูณกับ scale)
-                scaler.style.height = `${doc.offsetHeight * scale}px`;
-            } else {
-                scaler.style.transform = 'none';
-                scaler.style.height = 'auto';
+            // ความกว้างและสูงโดยประมาณของ A4 (px)
+            const docWidth = 794; 
+            const docHeight = 1123 + 40; // เผื่อ margin บน-ล่าง
+
+            // คำนวณพื้นที่ที่สามารถแสดงผลได้ (หักแถบปุ่มเมนูด้านบนออกประมาณ 100px)
+            const availableWidth = windowWidth - 40;
+            const availableHeight = windowHeight - 120;
+
+            const scaleW = availableWidth / docWidth;
+            const scaleH = availableHeight / docHeight;
+
+            // เลือกสเกลที่น้อยกว่า เพื่อให้แผ่น A4 ไม่ล้นจอทั้งแนวตั้งและแนวนอน
+            let scale = Math.min(scaleW, scaleH);
+
+            // จำกัดไม่ให้ใหญ่กว่าขนาดจริง (100%)
+            if (scale > 1) {
+                scale = 1;
             }
+
+            scaler.style.transform = `scale(${scale})`;
+            scaler.style.transformOrigin = 'top center';
+            scaler.style.height = `${docHeight * scale}px`;
         }
 
         // ล้างค่า Scale อัตโนมัติก่อนพิมพ์ เพื่อป้องกัน iOS Safari ดึงความสูงผิดไปคำนวณเป็นหน้า 2
