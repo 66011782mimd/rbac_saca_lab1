@@ -39,13 +39,14 @@
             min-height: 1123px !important;
             max-height: 1123px !important;
             background: white;
-            padding: 40px 50px; 
+            padding: 35px 50px; /* ลด Padding บนล่างลงนิดนึงเพื่อไม่ให้ล้นหน้า */
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             position: relative;
             margin: 0 auto;
+            overflow: hidden;
         }
         
         /* บังคับไม่ให้ Safari/Mobile ซ้อนสไตล์ใน Input */
@@ -87,7 +88,7 @@
             table-layout: fixed; 
         }
         .a4-table th, .a4-table td {
-            border: 1px solid #000;
+            border: 2px solid #000; 
             padding: 4px 6px;
             line-height: 1.4;
             word-wrap: break-word;
@@ -290,7 +291,7 @@
             }
             .a4-container {
                 position: absolute !important; top: 0 !important; left: 0 !important;
-                margin: 0 !important; padding: 40px 50px !important;
+                margin: 0 !important; padding: 35px 50px !important;
                 box-shadow: none !important;
                 width: 794px !important; 
                 height: 1123px !important; 
@@ -834,24 +835,24 @@
                 <div id="a4-doc" class="a4-container relative mx-auto text-black shrink-0">
                 
                 <!-- Header Component -->
-                <div class="relative w-full h-[100px] shrink-0 mb-2">
-                    <div class="absolute left-0 top-0 w-[90px]">
-                        <img id="company-logo-img" src="https://tmaxcorp.co.th/88%20TMAX%20logo-01.jpg" alt="Company Logo" class="w-full h-auto object-contain">
+                <div class="relative w-full h-[90px] shrink-0 mb-2">
+                    <div class="absolute left-0 top-0 w-[100px] h-[100px]">
+                        <img id="company-logo-img" src="https://tmaxcorp.co.th/88%20TMAX%20logo-01.jpg" alt="Company Logo" class="w-full h-full object-contain object-left-top" loading="eager" decoding="sync">
                     </div>
                     
-                    <div id="a4-fm-header" class="absolute right-0 top-4 text-[10px] text-gray-500 font-sans">
+                    <div id="a4-fm-header" class="absolute right-0 top-0 text-[10px] text-gray-700 font-sans">
                         FM-SA-003 REV.00 (15/12/2563)
                     </div>
 
-                    <div id="a4-title-header" class="absolute inset-x-0 top-14 flex justify-center pointer-events-none">
-                        <div class="text-[20px] font-bold">
+                    <div id="a4-title-header" class="absolute inset-x-0 top-[40px] flex justify-center pointer-events-none">
+                        <div class="text-[22px] font-bold text-black tracking-wide">
                             แบบสำรวจความพึงพอใจของลูกค้า
                         </div>
                     </div>
                 </div>
 
                 <!-- ข้อมูลลูกค้า -->
-                <div id="a4-customer-info" class="mb-4 space-y-2.5 text-[13px]">
+                <div id="a4-customer-info" class="mb-3 space-y-2 text-[13px]">
                     <div class="flex items-end w-full">
                         <span class="mr-2 whitespace-nowrap">บริษัท :</span>
                         <input type="text" id="company_a4" class="input-line flex-grow text-black" />
@@ -898,7 +899,7 @@
                 </div>
 
                 <!-- ตารางแบบประเมิน -->
-                <div id="a4-table-wrap" class="mb-3">
+                <div id="a4-table-wrap" class="mb-2">
                     <table class="a4-table">
                         <colgroup>
                             <col style="width: 13%;"> 
@@ -994,17 +995,17 @@
 
                             <!-- ส่วนสรุปผล -->
                             <tr class="summary-row h-[28px]">
-                                <td colspan="2" class="text-center align-middle">รวมคะแนน</td>
+                                <td colspan="2" class="text-center align-middle font-bold">รวมคะแนน</td>
                                 <td><input type="number" id="total_max_score" class="score-input font-bold text-center" readonly></td>
                                 <td><input type="number" id="total_score" class="score-input font-bold text-center" readonly></td>
                                 <td rowspan="3" class="no-border-cell bg-white"></td> 
                             </tr>
                             <tr class="summary-row h-[28px]">
-                                <td colspan="2" class="text-center align-middle">คิดเป็นเปอร์เซ็นต์</td>
+                                <td colspan="2" class="text-center align-middle font-bold">คิดเป็นเปอร์เซ็นต์</td>
                                 <td colspan="2"><input type="text" id="total_percent" class="score-input font-bold text-center" readonly></td>
                             </tr>
                             <tr class="summary-row h-[28px]">
-                                <td colspan="2" class="text-center align-middle">สรุปผลการประเมินได้เกรด</td>
+                                <td colspan="2" class="text-center align-middle font-bold">สรุปผลการประเมินได้เกรด</td>
                                 <td colspan="2"><input type="text" id="total_grade" class="score-input font-bold text-center" readonly></td>
                             </tr>
                         </tbody>
@@ -1031,10 +1032,10 @@
                 </div>
 
                 <!-- ข้อเสนอแนะ -->
-                <div id="a4-suggestions" class="mt-4 text-[13px] px-1">
+                <div id="a4-suggestions" class="mt-2 text-[13px] px-1">
                     <div class="flex items-start">
                         <span class="w-24 font-bold pt-1 shrink-0">ข้อเสนอแนะ :</span>
-                        <div id="a4-sug-lines" class="flex-grow space-y-4 pt-1"> 
+                        <div id="a4-sug-lines" class="flex-grow space-y-3 pt-1"> 
                             <input type="text" id="a4_sug_1" class="suggestion-line w-full block">
                             <input type="text" id="a4_sug_2" class="suggestion-line w-full block">
                             <input type="text" id="a4_sug_3" class="suggestion-line w-full block">
@@ -1043,7 +1044,7 @@
                 </div>
 
                 <!-- ส่วนลงชื่อที่จัดวางตามภาพต้นฉบับเป๊ะๆ -->
-                <div id="a4-signature" class="mt-auto pt-4 mb-8 text-[13px] flex justify-end pr-10 shrink-0">
+                <div id="a4-signature" class="mt-auto pt-2 mb-2 text-[13px] flex justify-end pr-10 shrink-0">
                     <table class="border-none w-auto text-[13px] m-0">
                         <tbody>
                             <tr>
@@ -1641,41 +1642,12 @@
             scaler.style.marginBottom = `-${docHeight * (1 - scale)}px`;
         }
 
-        // ล้างค่า Scale อัตโนมัติก่อนพิมพ์ + ปรับ spacing ให้เนื้อหาพอดี 1 แผ่น A4
-        window.addEventListener('beforeprint', () => {
-            const scaler = document.getElementById('a4-scaler');
-            if (scaler) {
-                scaler.style.transform = 'none';
-                scaler.style.marginBottom = '0';
-            }
-            // Apply inline styles เพื่อบังคับ spacing สำหรับ iOS Safari
-            const titleHeader = document.getElementById('a4-title-header');
-            if (titleHeader) { titleHeader.dataset.origStyle = titleHeader.style.cssText; titleHeader.style.paddingTop = '25px'; titleHeader.style.marginBottom = '10px'; }
-            const fmHeader = document.getElementById('a4-fm-header');
-            if (fmHeader) { fmHeader.dataset.origStyle = fmHeader.style.cssText; fmHeader.style.marginBottom = '1px'; }
-            const customerInfo = document.getElementById('a4-customer-info');
-            if (customerInfo) { customerInfo.dataset.origStyle = customerInfo.style.cssText; customerInfo.style.marginBottom = '5px'; }
-            const notes = document.getElementById('a4-notes-section');
-            if (notes) { notes.dataset.origStyle = notes.style.cssText; notes.style.marginTop = '4px'; notes.style.fontSize = '11px'; }
-            const suggestions = document.getElementById('a4-suggestions');
-            if (suggestions) { suggestions.dataset.origStyle = suggestions.style.cssText; suggestions.style.marginTop = '5px'; }
-            const sugLines = document.getElementById('a4-sug-lines');
-            if (sugLines) { sugLines.dataset.origStyle = sugLines.style.cssText; sugLines.style.paddingTop = '2px'; }
-            const signature = document.getElementById('a4-signature');
-            if (signature) { signature.dataset.origStyle = signature.style.cssText; signature.style.marginTop = '10px'; }
-        });
-
         // คืนค่า Scale + คืน inline styles หลังพิมพ์เสร็จ
         window.addEventListener('afterprint', () => {
             const a4PrintView = document.getElementById('a4-print-view');
             if (a4PrintView && !a4PrintView.classList.contains('hidden')) {
                 adjustA4Scale();
             }
-            // คืนค่า inline styles ที่เปลี่ยนไป
-            ['a4-title-header', 'a4-fm-header', 'a4-customer-info', 'a4-notes-section', 'a4-suggestions', 'a4-sug-lines', 'a4-signature'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el && el.dataset.origStyle !== undefined) { el.style.cssText = el.dataset.origStyle; delete el.dataset.origStyle; }
-            });
         });
 
         // สเกลใหม่เมื่อมีการหมุนจอ (Resize)
