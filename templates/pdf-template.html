@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบสำรวจความพึงพอใจของลูกค้า - TMAX</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: white;
+            color: #0f172a;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+            font-weight: 400;
+        }
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 8mm 15mm 10mm 15mm;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .input-line {
+            border: none;
+            border-bottom: 1px dotted #000;
+            background: transparent;
+            outline: none;
+            padding: 0 4px;
+            font-family: inherit;
+            font-size: inherit;
+        }
+        .suggestion-line {
+            border: none;
+            border-bottom: 1px solid #cbd5e1;
+            background: transparent;
+            outline: none;
+            padding: 0 4px;
+            font-family: inherit;
+            font-size: inherit;
+            width: 100%;
+            display: block;
+        }
+        .a4-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            table-layout: fixed;
+        }
+        .a4-table th, .a4-table td {
+            border: 1px solid #000;
+            padding: 4px 6px;
+            line-height: 1.4;
+            word-wrap: break-word;
+            font-weight: 400;
+        }
+        .a4-table th {
+            text-align: center;
+            background-color: #fcfcfc;
+            padding: 12px 6px;
+        }
+        .val-cell {
+            text-align: center;
+            font-size: 14px;
+        }
+        .no-border-cell {
+            border: none !important;
+        }
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .whitespace-nowrap { white-space: nowrap; }
+        .underline { text-decoration: underline; }
+        .flex { display: flex; }
+        .items-end { align-items: flex-end; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .justify-end { justify-content: flex-end; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .flex-col { flex-direction: column; }
+        .flex-grow { flex-grow: 1; }
+        .gap-1 { gap: 4px; }
+        .gap-4 { gap: 16px; }
+        .mr-2 { margin-right: 8px; }
+        .mr-3 { margin-right: 12px; }
+        .ml-4 { margin-left: 16px; }
+        .mb-1 { margin-bottom: 4px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-3 { margin-bottom: 12px; }
+        .mt-2 { margin-top: 8px; }
+        .mt-3 { margin-top: 12px; }
+        .mt-8 { margin-top: 32px; }
+        .mx-2 { margin-left: 8px; margin-right: 8px; }
+        .pt-1 { padding-top: 4px; }
+        .pb-1 { padding-bottom: 4px; }
+        .w-full { width: 100%; }
+        .grid-3col {
+            display: grid;
+            grid-template-columns: 5fr 3fr 4fr;
+            gap: 16px;
+            align-items: end;
+        }
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .checkbox-row label {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+        }
+        .checkbox-row label + label {
+            margin-left: 8px;
+        }
+        input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+        }
+        .grid-criteria {
+            display: grid;
+            grid-template-columns: 1fr 4fr 2fr 5fr;
+            gap: 0;
+            width: 350px;
+            margin-left: 16px;
+        }
+
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            body { background: white; }
+            .page {
+                padding: 5mm 12mm 5mm 12mm;
+                width: 210mm;
+                height: 297mm;
+                overflow: hidden;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <!-- Header -->
+        <div class="text-right" style="font-size: 10px; color: #6b7280; margin-bottom: 2px;">
+            FM-SA-003 REV.00 (15/12/2563)
+        </div>
+
+        <div style="position: relative; display: flex; align-items: flex-end; justify-content: center; margin-bottom: 16px; padding-top: 25px;">
+            <div style="position: absolute; left: 0; bottom: 0; width: 80px;">
+                <div style="font-weight: 700; font-size: 18px;">88 TMAX</div>
+            </div>
+            <div class="text-center" style="font-size: 20px; font-weight: 700; padding-bottom: 4px;">
+                แบบสำรวจความพึงพอใจของลูกค้า
+            </div>
+        </div>
+
+        <!-- ข้อมูลลูกค้า -->
+        <div style="margin-bottom: 12px; font-size: 13px;">
+            <div class="flex items-end" style="margin-bottom: 4px;">
+                <span class="mr-2 whitespace-nowrap">บริษัท :</span>
+                <span class="input-line flex-grow">{{company}}</span>
+            </div>
+            
+            <div class="checkbox-row" style="margin-bottom: 4px;">
+                <span class="mr-2">ประเภทธุรกิจ :</span>
+                <label><input type="checkbox" {{type_1_checked}}> งานระบบ</label>
+                <label><input type="checkbox" {{type_2_checked}}> โรงหล่อคอนกรีต</label>
+                <label><input type="checkbox" {{type_3_checked}}> งานสถาปัตย์</label>
+                <label><input type="checkbox" {{type_4_checked}}> งานโครงสร้าง</label>
+                <label><input type="checkbox" {{type_5_checked}}> ร้านฮาร์ดแวร์</label>
+            </div>
+
+            <div class="grid-3col" style="margin-bottom: 4px;">
+                <div class="flex items-end">
+                    <span class="mr-2 whitespace-nowrap">ชื่อผู้สำรวจ :</span>
+                    <span class="input-line w-full">{{surveyor_name}}</span>
+                </div>
+                <div class="flex items-end">
+                    <span class="mr-2 whitespace-nowrap">โทรศัพท์ :</span>
+                    <span class="input-line w-full">{{surveyor_tel}}</span>
+                </div>
+                <div class="flex items-end">
+                    <span class="mr-2 whitespace-nowrap">E-mail :</span>
+                    <span class="input-line w-full">{{surveyor_email}}</span>
+                </div>
+            </div>
+
+            <div class="grid-3col">
+                <div class="flex items-end">
+                    <span class="mr-2 whitespace-nowrap">ชื่อผู้ตอบแบบสำรวจ :</span>
+                    <span class="input-line w-full">{{respondent_name}}</span>
+                </div>
+                <div class="flex items-end">
+                    <span class="mr-2 whitespace-nowrap">โทรศัพท์ :</span>
+                    <span class="input-line w-full">{{respondent_tel}}</span>
+                </div>
+                <div class="flex items-end">
+                    <span class="mr-2 whitespace-nowrap">E-mail :</span>
+                    <span class="input-line w-full">{{respondent_email}}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ตารางแบบประเมิน -->
+        <div class="mb-1">
+            <table class="a4-table">
+                <colgroup>
+                    <col style="width: 15%;">
+                    <col style="width: 42%;">
+                    <col style="width: 8%;">
+                    <col style="width: 10%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>หัวข้อ</th>
+                        <th>รายละเอียดการประเมิน</th>
+                        <th>คะแนน<br>เต็ม</th>
+                        <th>ระดับ<br><span class="whitespace-nowrap">คะแนนที่ได้</span></th>
+                        <th>รายละเอียดเพิ่มเติม</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 1. คุณภาพสินค้า -->
+                    <tr>
+                        <td rowspan="4" class="text-center whitespace-nowrap" style="vertical-align: middle;">1.คุณภาพสินค้า</td>
+                        <td>1.1 Specification สินค้าเป็นไปตามต้องการ</td>
+                        <td class="val-cell">{{max_s1_1}}</td>
+                        <td class="val-cell">{{val_s1_1}}</td>
+                        <td>{{note_s1_1}}</td>
+                    </tr>
+                    <tr>
+                        <td>1.2 มีการรับรองคุณภาพ</td>
+                        <td class="val-cell">{{max_s1_2}}</td>
+                        <td class="val-cell">{{val_s1_2}}</td>
+                        <td>{{note_s1_2}}</td>
+                    </tr>
+                    <tr>
+                        <td>1.3 สภาพการบรรจุหีบห่อ</td>
+                        <td class="val-cell">{{max_s1_3}}</td>
+                        <td class="val-cell">{{val_s1_3}}</td>
+                        <td>{{note_s1_3}}</td>
+                    </tr>
+                    <tr>
+                        <td>1.4 การแก้ไขและป้องกันปัญหา</td>
+                        <td class="val-cell">{{max_s1_4}}</td>
+                        <td class="val-cell">{{val_s1_4}}</td>
+                        <td>{{note_s1_4}}</td>
+                    </tr>
+
+                    <!-- 2. การส่งมอบ -->
+                    <tr>
+                        <td rowspan="3" class="text-center whitespace-nowrap" style="vertical-align: middle;">2.การส่งมอบ</td>
+                        <td>2.1 ความรวดเร็ว และตรงเวลาในการจัดส่ง</td>
+                        <td class="val-cell">{{max_s2_1}}</td>
+                        <td class="val-cell">{{val_s2_1}}</td>
+                        <td>{{note_s2_1}}</td>
+                    </tr>
+                    <tr>
+                        <td class="whitespace-nowrap">2.2 การแต่งกายและความสุภาพของพนักงานจัดส่งสินค้า</td>
+                        <td class="val-cell">{{max_s2_2}}</td>
+                        <td class="val-cell">{{val_s2_2}}</td>
+                        <td>{{note_s2_2}}</td>
+                    </tr>
+                    <tr>
+                        <td class="whitespace-nowrap">2.3 ความถูกต้องของสินค้าและเอกสารในการส่งมอบ</td>
+                        <td class="val-cell">{{max_s2_3}}</td>
+                        <td class="val-cell">{{val_s2_3}}</td>
+                        <td>{{note_s2_3}}</td>
+                    </tr>
+
+                    <!-- 3. การบริการ -->
+                    <tr>
+                        <td rowspan="4" class="text-center whitespace-nowrap" style="vertical-align: middle;">3.การบริการ</td>
+                        <td>3.1 ความสะดวกในการติดต่อสื่อสาร</td>
+                        <td class="val-cell">{{max_s3_1}}</td>
+                        <td class="val-cell">{{val_s3_1}}</td>
+                        <td>{{note_s3_1}}</td>
+                    </tr>
+                    <tr>
+                        <td class="whitespace-nowrap">3.2 การตอบสนองข้อร้องเรียนและการให้ข้อมูลที่ร้องขอ</td>
+                        <td class="val-cell">{{max_s3_2}}</td>
+                        <td class="val-cell">{{val_s3_2}}</td>
+                        <td>{{note_s3_2}}</td>
+                    </tr>
+                    <tr>
+                        <td>3.3 ความรวดเร็วในการแก้ไขปัญหา</td>
+                        <td class="val-cell">{{max_s3_3}}</td>
+                        <td class="val-cell">{{val_s3_3}}</td>
+                        <td>{{note_s3_3}}</td>
+                    </tr>
+                    <tr>
+                        <td>3.4 การเสนอราคามีความรวดเร็ว</td>
+                        <td class="val-cell">{{max_s3_4}}</td>
+                        <td class="val-cell">{{val_s3_4}}</td>
+                        <td>{{note_s3_4}}</td>
+                    </tr>
+
+                    <!-- สรุป -->
+                    <tr>
+                        <td colspan="2" class="text-center" style="vertical-align: middle;"><span style="margin-left: 35px;">รวมคะแนน</span></td>
+                        <td class="val-cell">{{totalMax}}</td>
+                        <td class="val-cell">{{totalScore}}</td>
+                        <td class="no-border-cell"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-center" style="vertical-align: middle;">คิดเป็นเปอร์เซ็นต์</td>
+                        <td class="val-cell">{{totalPercent}}</td>
+                        <td class="no-border-cell"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" class="text-center" style="vertical-align: middle;">สรุปผลการประเมินได้เกรด</td>
+                        <td class="val-cell">{{totalGrade}}</td>
+                        <td class="no-border-cell"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- หมายเหตุ -->
+        <div class="mt-3" style="font-size: 12px; line-height: 1.4;">
+            <div class="flex">
+                <div style="width: 80px; font-weight: 700;">หมายเหตุ :</div>
+                <div>
+                    <p>การคำนวณเปอร์เซ็นต์ ให้คิดจากสูตร : เปอร์เซ็นต์ = ( คะแนนที่ได้ / คะแนนเต็มรวม ) x 100</p>
+                    <div class="mt-2">
+                        <p class="underline mb-1 font-semibold">เกณฑ์การประเมิน</p>
+                        <div class="grid-criteria">
+                            <div>A</div><div>90 - 100</div><div class="text-center">%</div><div>ดีมาก</div>
+                            <div>B</div><div>80 - 89</div><div class="text-center">%</div><div>ดี</div>
+                            <div>C</div><div>70 - 79</div><div class="text-center">%</div><div>พอใช้</div>
+                            <div>D</div><div>น้อยกว่า 70</div><div class="text-center">%</div><div>ต้องปรับปรุง</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ข้อเสนอแนะ -->
+        <div class="mt-3" style="font-size: 13px;">
+            <div class="flex items-start">
+                <span style="width: 80px; font-weight: 700; padding-top: 4px;">ข้อเสนอแนะ :</span>
+                <div class="flex-grow" style="padding-top: 4px;">
+                    <div class="suggestion-line" style="min-height: 18px; margin-bottom: 8px;">{{sug_1}}</div>
+                    <div class="suggestion-line" style="min-height: 18px; margin-bottom: 8px;">{{sug_2}}</div>
+                    <div class="suggestion-line" style="min-height: 18px;">{{sug_3}}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ลงชื่อ -->
+        <div class="mt-8 flex justify-end" style="font-size: 13px; padding-right: 40px;">
+            <div class="flex items-start">
+                <div class="whitespace-nowrap pt-1 mr-2">ผู้ตอบแบบสำรวจ : &nbsp;&nbsp;ลงชื่อ</div>
+                <div class="flex-col" style="width: 280px;">
+                    <div class="input-line w-full text-center" style="margin-bottom: 10px; min-height: 20px;">{{respondent_name}}</div>
+                    <div class="flex justify-between items-center w-full" style="margin-bottom: 10px;">
+                        <span>(</span>
+                        <span class="input-line flex-grow text-center" style="font-size: 12px; margin: 0 8px;">{{respondent_name}}</span>
+                        <span>)</span>
+                    </div>
+                    <div class="flex items-end justify-center w-full">
+                        <span class="mr-3">วันที่</span>
+                        <span class="input-line text-center" style="width: 36px;">{{date_day}}</span>
+                        <span class="mx-2">/</span>
+                        <span class="input-line text-center" style="width: 36px;">{{date_month}}</span>
+                        <span class="mx-2">/</span>
+                        <span class="input-line text-center" style="width: 56px;">{{date_year}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

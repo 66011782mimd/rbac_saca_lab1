@@ -269,42 +269,35 @@
             }
             .a4-container {
                 position: absolute !important; top: 0 !important; left: 0 !important;
-                margin: 0 !important; padding: 3mm 10mm 3mm 10mm !important;
+                margin: 0 !important; padding: 5mm 12mm 5mm 12mm !important;
                 box-shadow: none !important;
                 width: 210mm !important; min-width: 210mm !important;
                 min-height: 0 !important;
-                height: auto !important; max-height: 297mm !important;
+                height: 297mm !important; max-height: 297mm !important;
                 overflow: hidden !important; box-sizing: border-box !important;
                 page-break-after: avoid !important; page-break-inside: avoid !important;
-            }
-
-            /* ====== ย่อเนื้อหาเอกสารทั้งหมดให้พอดี 1 แผ่น ====== */
-            #a4-doc {
-                transform: scale(0.88) !important;
-                transform-origin: top left !important;
-                width: 113.6% !important; /* 100/0.88 */
             }
 
             /* --- FM-SA-003 header --- */
             #a4-fm-header {
                 margin-bottom: 1px !important;
-                font-size: 9px !important;
+                font-size: 10px !important;
             }
 
-            /* --- หัวเรื่อง: ลด pt-10 และ mb-6 --- */
+            /* --- หัวเรื่อง: ลด padding/margin --- */
             #a4-title-header {
-                padding-top: 20px !important;
-                margin-bottom: 8px !important;
+                padding-top: 25px !important;
+                margin-bottom: 10px !important;
             }
 
             /* --- ข้อมูลลูกค้า --- */
             #a4-customer-info {
-                margin-bottom: 4px !important;
+                margin-bottom: 5px !important;
                 font-size: 12px !important;
             }
             #a4-customer-info > div {
-                margin-top: 1px !important;
-                margin-bottom: 1px !important;
+                margin-top: 2px !important;
+                margin-bottom: 2px !important;
             }
 
             /* --- ตารางประเมิน --- */
@@ -312,31 +305,31 @@
                 margin-bottom: 2px !important;
             }
             .a4-table { font-size: 11px !important; }
-            .a4-table th { padding: 4px 4px !important; }
-            .a4-table td { padding: 2px 4px !important; line-height: 1.3 !important; }
+            .a4-table th { padding: 5px 5px !important; }
+            .a4-table td { padding: 3px 5px !important; line-height: 1.35 !important; }
 
             /* --- หมายเหตุ --- */
             #a4-notes-section {
-                margin-top: 3px !important;
-                font-size: 10.5px !important;
-                line-height: 1.3 !important;
+                margin-top: 4px !important;
+                font-size: 11px !important;
+                line-height: 1.35 !important;
             }
 
             /* --- ข้อเสนอแนะ --- */
             #a4-suggestions {
-                margin-top: 3px !important;
+                margin-top: 5px !important;
                 font-size: 12px !important;
             }
             #a4-sug-lines {
-                padding-top: 0 !important;
+                padding-top: 2px !important;
             }
             #a4-sug-lines > * {
-                margin-top: 4px !important;
+                margin-top: 6px !important;
             }
 
-            /* --- ลงชื่อ: ลด mt-8 ลงมาก --- */
+            /* --- ลงชื่อ --- */
             #a4-signature {
-                margin-top: 6px !important;
+                margin-top: 10px !important;
                 font-size: 12px !important;
             }
 
@@ -1667,21 +1660,41 @@
             scaler.style.height = `${docHeight * scale}px`;
         }
 
-        // ล้างค่า Scale อัตโนมัติก่อนพิมพ์ เพื่อป้องกัน iOS Safari ดึงความสูงผิดไปคำนวณเป็นหน้า 2
+        // ล้างค่า Scale อัตโนมัติก่อนพิมพ์ + ปรับ spacing ให้เนื้อหาพอดี 1 แผ่น A4
         window.addEventListener('beforeprint', () => {
             const scaler = document.getElementById('a4-scaler');
             if (scaler) {
                 scaler.style.transform = 'none';
                 scaler.style.height = 'auto';
             }
+            // Apply inline styles เพื่อบังคับ spacing สำหรับ iOS Safari
+            const titleHeader = document.getElementById('a4-title-header');
+            if (titleHeader) { titleHeader.dataset.origStyle = titleHeader.style.cssText; titleHeader.style.paddingTop = '25px'; titleHeader.style.marginBottom = '10px'; }
+            const fmHeader = document.getElementById('a4-fm-header');
+            if (fmHeader) { fmHeader.dataset.origStyle = fmHeader.style.cssText; fmHeader.style.marginBottom = '1px'; }
+            const customerInfo = document.getElementById('a4-customer-info');
+            if (customerInfo) { customerInfo.dataset.origStyle = customerInfo.style.cssText; customerInfo.style.marginBottom = '5px'; }
+            const notes = document.getElementById('a4-notes-section');
+            if (notes) { notes.dataset.origStyle = notes.style.cssText; notes.style.marginTop = '4px'; notes.style.fontSize = '11px'; }
+            const suggestions = document.getElementById('a4-suggestions');
+            if (suggestions) { suggestions.dataset.origStyle = suggestions.style.cssText; suggestions.style.marginTop = '5px'; }
+            const sugLines = document.getElementById('a4-sug-lines');
+            if (sugLines) { sugLines.dataset.origStyle = sugLines.style.cssText; sugLines.style.paddingTop = '2px'; }
+            const signature = document.getElementById('a4-signature');
+            if (signature) { signature.dataset.origStyle = signature.style.cssText; signature.style.marginTop = '10px'; }
         });
 
-        // คืนค่า Scale หลังพิมพ์เสร็จ เพื่อให้หน้าจอแสดงผลเต็มจอมือถือเหมือนเดิม
+        // คืนค่า Scale + คืน inline styles หลังพิมพ์เสร็จ
         window.addEventListener('afterprint', () => {
             const a4PrintView = document.getElementById('a4-print-view');
             if (a4PrintView && !a4PrintView.classList.contains('hidden')) {
                 adjustA4Scale();
             }
+            // คืนค่า inline styles ที่เปลี่ยนไป
+            ['a4-title-header', 'a4-fm-header', 'a4-customer-info', 'a4-notes-section', 'a4-suggestions', 'a4-sug-lines', 'a4-signature'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.dataset.origStyle !== undefined) { el.style.cssText = el.dataset.origStyle; delete el.dataset.origStyle; }
+            });
         });
 
         // สเกลใหม่เมื่อมีการหมุนจอ (Resize)
@@ -1727,121 +1740,81 @@
             loadFromDocumentLink();
         });
 
-        // --- ระบบส่งอีเมลพร้อมแนบลิงก์จำลองเป็น PDF ---
-        function sendEmailViaLink() {
-            const companyName = safeGetVal('w_company') || 'ไม่ระบุชื่อบริษัท';
-            const respondentName = safeGetVal('w_respondent_name') || 'ไม่ระบุชื่อ';
-            const targetEmail = 'jojoe20042547@gmail.com'; 
-            const subject = `เอกสารแบบสำรวจความพึงพอใจของลูกค้า - ${companyName}`;
-            let bodyText = `มีการประเมินความพึงพอใจจากลูกค้า: บริษัท ${companyName} (ผู้ตอบแบบสำรวจ: ${respondentName})`;
+        // --- ระบบส่ง PDF อัตโนมัติผ่าน Backend Node.js ---
+        async function sendEmailViaLink() {
+            const btn = document.getElementById('btn-send-email');
+            let originalText = "ส่งอีเมล";
             
             try {
-                const data = {
-                    company: safeGetVal('w_company'),
-                    sName: safeGetVal('w_surveyor_name'),
-                    sTel: safeGetVal('w_surveyor_tel'),
-                    sEmail: safeGetVal('w_surveyor_email'),
-                    rName: safeGetVal('w_respondent_name'),
-                    rTel: safeGetVal('w_respondent_tel'),
-                    rEmail: safeGetVal('w_respondent_email'),
-                    sug: safeGetVal('w_suggestions'),
-                    types: [1,2,3,4,5].map(i => document.getElementById('w_type_'+i)?.checked),
-                    scores: {}
-                };
-                
-                scoreIds.forEach(id => {
-                    data.scores[id] = {
-                        max: safeGetVal('w_max_' + id),
-                        val: safeGetVal('w_' + id),
-                        note: safeGetVal('w_note_' + id)
-                    };
-                });
-
-                const jsonStr = JSON.stringify(data);
-                const base64Str = btoa(encodeURIComponent(jsonStr));
-                
-                const currentUrl = new URL(window.location.href);
-                currentUrl.searchParams.set('d', base64Str);
-                const link = currentUrl.toString();
-
-                // สร้างสถานะกำลังส่ง
-                const btn = document.getElementById('btn-send-email');
-                let originalText = "ส่งอีเมล";
                 if(btn) {
                     originalText = btn.innerHTML;
-                    btn.innerHTML = `<span class="animate-pulse">กำลังส่ง...</span>`;
+                    btn.innerHTML = `<span class="animate-pulse flex items-center gap-2"><svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>กำลังสร้าง PDF และส่งอีเมล...</span>`;
                     btn.disabled = true;
                 }
 
-                // ดำเนินการส่งผ่าน AJAX (ทำงานเบื้องหลัง ไม่เด้งหน้าต่างใดๆ ทั้งสิ้น)
-                fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
-                    method: "POST",
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        _subject: subject,
-                        _template: "box",
-                        _captcha: "false",
-                        "ชื่อบริษัทและชื่อลูกค้า": `${companyName} (ลูกค้า: ${respondentName})`,
-                        "ข้อความจากระบบ": bodyText,
-                        "ลิงก์เปิดเอกสาร (กดเพื่อโชว์เป็น PDF จำลองทันที)": link
-                    })
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if(btn) {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }
-                    if(result.success == "true" || result.success == true) {
-                        alert(`✅ ส่งข้อมูลและลิงก์เอกสารเข้าอีเมลเรียบร้อยแล้วครับ!`);
-                    } else {
-                        // กรณีที่ FormSubmit ปฏิเสธ AJAX (เช่น ย้ายโดเมนใหม่ หรือติดระบบป้องกันสแปมที่จับได้)
-                        // ให้ใช้วิธีเปิดแท็บใหม่แทนเพื่อให้ผู้ใช้เห็นหน้าจอยืนยันตัวตน (Captcha หรือบอกให้เข้าไปกด Activate)
-                        alert("⚠️ ระบบความปลอดภัยของเซิร์ฟเวอร์อีเมลต้องการการยืนยันตัวตนสำหรับเว็บไซต์โดเมนนี้ (github.io)\n\nระบบจะเด้งเปิดหน้าต่าง/แท็บใหม่เพื่อให้คุณยืนยันการส่ง (หรือแจ้งเตือนให้ไปกด Activate ในอีเมล)");
-                        
-                        const form = document.createElement("form");
-                        form.action = `https://formsubmit.co/${targetEmail}`;
-                        form.method = "POST";
-                        form.target = "_blank"; 
+                // รวบรวมข้อมูลทั้งหมดจากฟอร์ม
+                const data = collectFormData();
 
-                        const inputs = [
-                            { name: "_subject", value: subject },
-                            { name: "_template", value: "box" },
-                            { name: "_captcha", value: "false" },
-                            { name: "ชื่อบริษัทและชื่อลูกค้า", value: `${companyName} (ลูกค้า: ${respondentName})` },
-                            { name: "ข้อความจากระบบ", value: bodyText },
-                            { name: "ลิงก์เปิดเอกสาร (กดเพื่อโชว์เป็น PDF จำลองทันที)", value: link }
-                        ];
-
-                        inputs.forEach(item => {
-                            const input = document.createElement("input");
-                            input.type = "hidden";
-                            input.name = item.name;
-                            input.value = item.value;
-                            form.appendChild(input);
-                        });
-
-                        document.body.appendChild(form);
-                        form.submit();
-                        document.body.removeChild(form);
-                    }
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    if(btn) {
-                        btn.innerHTML = originalText;
-                        btn.disabled = false;
-                    }
-                    alert("การส่งอีเมลไม่สำเร็จ (อาจขัดข้องเรื่องเครือข่าย) กรุณาลองใหม่อีกครั้ง");
+                const response = await fetch('/api/send-pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
                 });
 
-            } catch(e) {
-                console.error("Link generation failed", e);
-                alert("เกิดข้อผิดพลาดในการรวบรวมข้อมูลเอกสาร");
+                const result = await response.json();
+
+                if(btn) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+
+                if (result.success) {
+                    alert(`✅ สร้าง PDF และส่งอีเมลเรียบร้อยแล้ว!\n\n📎 ไฟล์: ${result.filename}\n📧 ส่งไปยังอีเมลที่ตั้งค่าไว้`);
+                } else {
+                    alert(`❌ เกิดข้อผิดพลาด: ${result.error}\n\n${result.detail || ''}`);
+                }
+
+            } catch(error) {
+                console.error('Error:', error);
+                if(btn) {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+                alert('❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้\nกรุณาตรวจสอบว่า Node.js server กำลังทำงานอยู่ (npm start)');
             }
+        }
+
+        // --- รวบรวมข้อมูลจากฟอร์มทั้งหมด ---
+        function collectFormData() {
+            // คำนวณคะแนนรวม
+            calculateWebTotals();
+            
+            const data = {
+                company: safeGetVal('w_company'),
+                sName: safeGetVal('w_surveyor_name'),
+                sTel: safeGetVal('w_surveyor_tel'),
+                sEmail: safeGetVal('w_surveyor_email'),
+                rName: safeGetVal('w_respondent_name'),
+                rTel: safeGetVal('w_respondent_tel'),
+                rEmail: safeGetVal('w_respondent_email'),
+                sug: safeGetVal('w_suggestions'),
+                types: [1,2,3,4,5].map(i => document.getElementById('w_type_'+i)?.checked),
+                scores: {},
+                totalMax: document.getElementById('w_total_max')?.innerText || '',
+                totalScore: document.getElementById('w_total_score')?.innerText || '',
+                totalPercent: document.getElementById('w_total_pct')?.innerText || '',
+                totalGrade: document.getElementById('w_total_grade')?.innerText || ''
+            };
+            
+            scoreIds.forEach(id => {
+                data.scores[id] = {
+                    max: safeGetVal('w_max_' + id),
+                    val: safeGetVal('w_' + id),
+                    note: safeGetVal('w_note_' + id)
+                };
+            });
+
+            return data;
         }
 
         // --- ระบบโหลดข้อมูลจากลิงก์ ---
