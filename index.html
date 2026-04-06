@@ -1645,6 +1645,15 @@
             if (monthEl) monthEl.value = (now.getMonth() + 1).toString().padStart(2, '0');
             if (yearEl) yearEl.value = now.getFullYear() + 543; 
 
+            // ล็อกช่องคะแนนเต็มไม่ให้แก้ไขได้
+            document.querySelectorAll('.w-score-max').forEach(el => {
+                el.readOnly = true;
+                el.classList.add('cursor-not-allowed', 'bg-slate-50', 'text-slate-400');
+                el.classList.remove('bg-white', 'focus:border-indigo-400', 'text-slate-700', 'text-slate-600');
+                // เอา event listener ของเก่าที่มีการคุยกันออกด้วยเพื่อความชัวร์ (ถ้ามี)
+                el.oninput = null; 
+            });
+
             // วาดดาวให้คะแนน
             renderStars();
             calculateWebTotals();
