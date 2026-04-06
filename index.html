@@ -1656,9 +1656,10 @@
         // --- ระบบส่งอีเมลพร้อมแนบลิงก์จำลองเป็น PDF ---
         function sendEmailViaLink() {
             const companyName = safeGetVal('w_company') || 'ไม่ระบุชื่อบริษัท';
+            const respondentName = safeGetVal('w_respondent_name') || 'ไม่ระบุชื่อ';
             const targetEmail = 'jojoe20042547@gmail.com'; 
             const subject = `เอกสารแบบสำรวจความพึงพอใจของลูกค้า - ${companyName}`;
-            let bodyText = `มีการประเมินความพึงพอใจจากลูกค้า: บริษัท ${companyName}`;
+            let bodyText = `มีการประเมินความพึงพอใจจากลูกค้า: บริษัท ${companyName} (ผู้ตอบแบบสำรวจ: ${respondentName})`;
             
             try {
                 const data = {
@@ -1709,7 +1710,7 @@
                         _subject: subject,
                         _template: "box",
                         _captcha: "false",
-                        "ชื่อบริษัทลูกค้า": companyName,
+                        "ชื่อบริษัทและชื่อลูกค้า": `${companyName} (ลูกค้า: ${respondentName})`,
                         "ข้อความจากระบบ": bodyText,
                         "ลิงก์เปิดเอกสาร (กดเพื่อโชว์เป็น PDF จำลองทันที)": link
                     })
@@ -1723,7 +1724,35 @@
                     if(result.success == "true" || result.success == true) {
                         alert(`✅ ส่งข้อมูลและลิงก์เอกสารเข้าอีเมลเรียบร้อยแล้วครับ!`);
                     } else {
-                        alert("เกิดข้อผิดพลาดในการส่งทางระบบ กรุณาลองใหม่อีกครั้ง");
+                        // กรณีที่ FormSubmit ปฏิเสธ AJAX (เช่น ย้ายโดเมนใหม่ หรือติดระบบป้องกันสแปมที่จับได้)
+                        // ให้ใช้วิธีเปิดแท็บใหม่แทนเพื่อให้ผู้ใช้เห็นหน้าจอยืนยันตัวตน (Captcha หรือบอกให้เข้าไปกด Activate)
+                        alert("⚠️ ระบบความปลอดภัยของเซิร์ฟเวอร์อีเมลต้องการการยืนยันตัวตนสำหรับเว็บไซต์โดเมนนี้ (github.io)\n\nระบบจะเด้งเปิดหน้าต่าง/แท็บใหม่เพื่อให้คุณยืนยันการส่ง (หรือแจ้งเตือนให้ไปกด Activate ในอีเมล)");
+                        
+                        const form = document.createElement("form");
+                        form.action = `https://formsubmit.co/${targetEmail}`;
+                        form.method = "POST";
+                        form.target = "_blank"; 
+
+                        const inputs = [
+                            { name: "_subject", value: subject },
+                            { name: "_template", value: "box" },
+                            { name: "_captcha", value: "false" },
+                            { name: "ชื่อบริษัทและชื่อลูกค้า", value: `${companyName} (ลูกค้า: ${respondentName})` },
+                            { name: "ข้อความจากระบบ", value: bodyText },
+                            { name: "ลิงก์เปิดเอกสาร (กดเพื่อโชว์เป็น PDF จำลองทันที)", value: link }
+                        ];
+
+                        inputs.forEach(item => {
+                            const input = document.createElement("input");
+                            input.type = "hidden";
+                            input.name = item.name;
+                            input.value = item.value;
+                            form.appendChild(input);
+                        });
+
+                        document.body.appendChild(form);
+                        form.submit();
+                        document.body.removeChild(form);
                     }
                 })
                 .catch(error => {
