@@ -11,6 +11,17 @@ const nodemailer = require('nodemailer');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// โหลดรูปภาพโลโก้เก็บไว้เป็น base64
+let logoBase64 = '';
+try {
+    const logoPath = path.join(__dirname, '88 TMAX logo-01.jpg');
+    if (fs.existsSync(logoPath)) {
+        logoBase64 = fs.readFileSync(logoPath).toString('base64');
+    }
+} catch (e) {
+    console.warn('⚠️ ไม่สามารถโหลดรูปโลโก้ได้:', e.message);
+}
+
 // Middleware
 app.use(express.json({ limit: '5mb' }));
 app.use(express.static(__dirname));
@@ -185,6 +196,9 @@ app.post('/api/download-pdf', async (req, res) => {
 // --- ฟังก์ชันแทนที่ Template ---
 function fillTemplate(html, data) {
     const scoreIds = ['s1_1', 's1_2', 's1_3', 's1_4', 's2_1', 's2_2', 's2_3', 's3_1', 's3_2', 's3_3', 's3_4'];
+    
+    // รูปโลโก้
+    html = html.replace(/{{logo_base64}}/g, logoBase64);
     
     // ข้อมูลทั่วไป
     html = html.replace(/{{company}}/g, escHtml(data.company || ''));

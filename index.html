@@ -6,6 +6,7 @@
     <title>แบบสำรวจความพึงพอใจของลูกค้า - TMAX</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         html, body {
             max-width: 100vw;
@@ -16,6 +17,7 @@
             background-color: #f8fafc;
             color: #0f172a;
             -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
             font-weight: 400;
         }
 
@@ -28,23 +30,35 @@
             animation: pageLoad 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         
-        /* สไตล์สำหรับ A4 (ซ่อนไว้สำหรับหน้าเว็บ) */
+        /* สไตล์สำหรับ A4 ล็อกขนาดให้คงที่ที่สุด เพื่อไม่ให้มือถือบีบเลย์เอาต์ */
         .a4-container {
-            width: 210mm;
-            min-width: 210mm;
-            min-height: 297mm;
-            margin: 20px auto;
+            width: 794px;
+            min-width: 794px !important;
+            max-width: 794px !important;
+            height: 1123px;
+            min-height: 1123px !important;
+            max-height: 1123px !important;
             background: white;
-            padding: 8mm 15mm 10mm 15mm; 
+            padding: 40px 50px; 
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            margin: 0 auto;
         }
+        
+        /* บังคับไม่ให้ Safari/Mobile ซ้อนสไตล์ใน Input */
         .input-line {
             border: none;
-            border-bottom: 1px dotted #000;
+            border-bottom: 1px solid #9ca3af; 
             background: transparent;
             outline: none;
-            padding: 0 4px;
+            padding: 0 4px 2px 4px;
+            font-family: inherit;
+            color: #000;
+            border-radius: 0;
+            -webkit-appearance: none;
         }
         .input-line:focus {
             border-bottom: 1px solid #000;
@@ -52,19 +66,24 @@
         }
         .suggestion-line {
             border: none;
-            border-bottom: 1px solid #cbd5e1; 
+            border-bottom: 1px solid #9ca3af; 
             background: transparent;
             outline: none;
-            padding: 0 4px;
+            padding: 0 4px 4px 4px;
+            font-family: inherit;
+            color: #000;
+            border-radius: 0;
+            -webkit-appearance: none;
         }
         .suggestion-line:focus {
-            border-bottom: 1px solid #94a3b8;
+            border-bottom: 1px solid #000;
             background-color: #f9fafb;
         }
+        
         .a4-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 13px; 
             table-layout: fixed; 
         }
         .a4-table th, .a4-table td {
@@ -87,6 +106,8 @@
             background: transparent;
             font-family: inherit;
             font-size: 14px;
+            color: #000;
+            -webkit-appearance: none;
         }
         .score-input:focus {
             background-color: #f0fdf4;
@@ -97,6 +118,8 @@
             outline: none;
             background: transparent;
             font-family: inherit;
+            color: #000;
+            -webkit-appearance: none;
         }
         .no-border-cell {
             border: none !important;
@@ -232,13 +255,12 @@
             transform: translateY(0);
         }
 
-        /* ซ่อนส่วนอื่นๆ เวลาสั่งพิมพ์และบังคับขนาดในมือถือให้พอดี A4 */
+        /* ซ่อนส่วนอื่นๆ เวลาสั่งพิมพ์และบังคับขนาดให้พอดี A4 */
         @media print {
             @page { size: A4 portrait; margin: 0; }
             html, body {
-                width: 210mm !important;
-                height: 297mm !important; 
-                max-height: 297mm !important;
+                width: 794px !important;
+                height: 1123px !important; 
                 margin: 0 !important;
                 padding: 0 !important;
                 background-color: white !important;
@@ -249,92 +271,35 @@
                 display: block !important;
                 position: absolute !important;
                 top: 0 !important; left: 0 !important;
-                width: 210mm !important;
-                height: 297mm !important;
-                max-height: 297mm !important;
+                width: 794px !important;
+                height: 1123px !important;
                 margin: 0 !important; padding: 0 !important;
                 background: white !important;
                 min-height: 0 !important; overflow: hidden !important; 
             }
             #a4-wrapper {
                 padding: 0 !important; margin: 0 !important;
-                height: 297mm !important; overflow: hidden !important;
+                height: 1123px !important; overflow: hidden !important;
             }
             #a4-scaler {
                 position: static !important;
-                width: 210mm !important; height: 297mm !important;
+                width: 794px !important; height: 1123px !important;
                 margin: 0 !important; padding: 0 !important;
                 overflow: hidden !important;
                 transform: none !important;
             }
             .a4-container {
                 position: absolute !important; top: 0 !important; left: 0 !important;
-                margin: 0 !important; padding: 5mm 12mm 5mm 12mm !important;
+                margin: 0 !important; padding: 40px 50px !important;
                 box-shadow: none !important;
-                width: 210mm !important; min-width: 210mm !important;
-                min-height: 0 !important;
-                height: 297mm !important; max-height: 297mm !important;
+                width: 794px !important; 
+                height: 1123px !important; 
                 overflow: hidden !important; box-sizing: border-box !important;
                 page-break-after: avoid !important; page-break-inside: avoid !important;
             }
 
-            /* --- FM-SA-003 header --- */
-            #a4-fm-header {
-                margin-bottom: 1px !important;
-                font-size: 10px !important;
-            }
-
-            /* --- หัวเรื่อง: ลด padding/margin --- */
-            #a4-title-header {
-                padding-top: 25px !important;
-                margin-bottom: 10px !important;
-            }
-
-            /* --- ข้อมูลลูกค้า --- */
-            #a4-customer-info {
-                margin-bottom: 5px !important;
-                font-size: 12px !important;
-            }
-            #a4-customer-info > div {
-                margin-top: 2px !important;
-                margin-bottom: 2px !important;
-            }
-
-            /* --- ตารางประเมิน --- */
-            #a4-table-wrap {
-                margin-bottom: 2px !important;
-            }
-            .a4-table { font-size: 11px !important; }
-            .a4-table th { padding: 5px 5px !important; }
-            .a4-table td { padding: 3px 5px !important; line-height: 1.35 !important; }
-
-            /* --- หมายเหตุ --- */
-            #a4-notes-section {
-                margin-top: 4px !important;
-                font-size: 11px !important;
-                line-height: 1.35 !important;
-            }
-
-            /* --- ข้อเสนอแนะ --- */
-            #a4-suggestions {
-                margin-top: 5px !important;
-                font-size: 12px !important;
-            }
-            #a4-sug-lines {
-                padding-top: 2px !important;
-            }
-            #a4-sug-lines > * {
-                margin-top: 6px !important;
-            }
-
-            /* --- ลงชื่อ --- */
-            #a4-signature {
-                margin-top: 10px !important;
-                font-size: 12px !important;
-            }
-
-            .input-line { border-bottom: 1px dotted #000; }
-            .suggestion-line { border-bottom: 1px solid #9ca3af; }
+            .input-line { border-bottom: 1px solid #9ca3af !important; color: #000 !important; }
+            .suggestion-line { border-bottom: 1px solid #9ca3af !important; color: #000 !important; }
             .overflow-x-auto, .overflow-hidden { overflow: hidden !important; }
             * { page-break-inside: avoid !important; }
         }
@@ -864,80 +829,83 @@
         </div>
 
         <!-- เพิ่มกล่องเพื่อแสดงหน้า A4 ให้พอดีหน้าจอ (Scale) -->
-        <div id="a4-wrapper" class="w-full flex justify-center overflow-hidden px-0 sm:px-0 pb-6">
-            <div id="a4-scaler" class="origin-top transition-transform duration-200">
-                <div id="a4-doc" class="a4-container relative mx-auto">
+        <div id="a4-wrapper" class="w-full flex justify-center overflow-x-hidden px-0 sm:px-0 pb-6">
+            <div id="a4-scaler" class="origin-top transition-transform duration-200 shrink-0 w-[794px] h-[1123px]">
+                <div id="a4-doc" class="a4-container relative mx-auto text-black shrink-0">
                 
-                <!-- Header Section -->
-                <div id="a4-fm-header" class="text-right text-[10px] text-gray-500 font-sans mb-2 relative z-10">
-                    FM-SA-003 REV.00 (15/12/2563)
-                </div>
-
-                <div id="a4-title-header" class="relative flex items-end justify-center mb-6 pt-10">
-                    <div class="absolute left-0 bottom-0 w-20">
-                        <img src="image_1f2f46.png" alt="Company Logo" class="w-full h-auto" onerror="this.src='88 TMAX logo-01.jpg'; this.onerror=function(){this.parentElement.innerHTML='<div style=\'font-weight:700; font-size: 18px;\'>88 TMAX</div>'}">
+                <!-- Header Component -->
+                <div class="relative w-full h-[100px] shrink-0 mb-2">
+                    <div class="absolute left-0 top-0 w-[90px]">
+                        <img id="company-logo-img" src="https://tmaxcorp.co.th/88%20TMAX%20logo-01.jpg" alt="Company Logo" class="w-full h-auto object-contain">
                     </div>
-                    <div class="text-center text-xl font-bold pb-1">
-                        แบบสำรวจความพึงพอใจของลูกค้า
+                    
+                    <div id="a4-fm-header" class="absolute right-0 top-4 text-[10px] text-gray-500 font-sans">
+                        FM-SA-003 REV.00 (15/12/2563)
+                    </div>
+
+                    <div id="a4-title-header" class="absolute inset-x-0 top-14 flex justify-center pointer-events-none">
+                        <div class="text-[20px] font-bold">
+                            แบบสำรวจความพึงพอใจของลูกค้า
+                        </div>
                     </div>
                 </div>
 
                 <!-- ข้อมูลลูกค้า -->
-                <div id="a4-customer-info" class="mb-3 space-y-1.5 text-[13px]">
-                    <div class="flex items-end">
+                <div id="a4-customer-info" class="mb-4 space-y-2.5 text-[13px]">
+                    <div class="flex items-end w-full">
                         <span class="mr-2 whitespace-nowrap">บริษัท :</span>
-                        <input type="text" id="company_a4" class="input-line flex-grow" />
+                        <input type="text" id="company_a4" class="input-line flex-grow text-black" />
                     </div>
                     
-                    <div class="flex items-center gap-4 flex-wrap">
+                    <div class="flex items-center gap-4 flex-wrap pb-1 pt-1">
                         <span class="mr-2">ประเภทธุรกิจ :</span>
-                        <label class="flex items-center gap-1 cursor-pointer"><input type="checkbox" id="a4_type_1" class="w-3.5 h-3.5 border-black"> งานระบบ</label>
-                        <label class="flex items-center gap-1 cursor-pointer ml-2"><input type="checkbox" id="a4_type_2" class="w-3.5 h-3.5 border-black"> โรงหล่อคอนกรีต</label>
-                        <label class="flex items-center gap-1 cursor-pointer ml-2"><input type="checkbox" id="a4_type_3" class="w-3.5 h-3.5 border-black"> งานสถาปัตย์</label>
-                        <label class="flex items-center gap-1 cursor-pointer ml-2"><input type="checkbox" id="a4_type_4" class="w-3.5 h-3.5 border-black"> งานโครงสร้าง</label>
-                        <label class="flex items-center gap-1 cursor-pointer ml-2"><input type="checkbox" id="a4_type_5" class="w-3.5 h-3.5 border-black"> ร้านฮาร์ดแวร์</label>
+                        <label class="flex items-center gap-1.5 cursor-pointer"><input type="checkbox" id="a4_type_1" class="w-3.5 h-3.5 border-black rounded-sm"> งานระบบ</label>
+                        <label class="flex items-center gap-1.5 cursor-pointer ml-2"><input type="checkbox" id="a4_type_2" class="w-3.5 h-3.5 border-black rounded-sm"> โรงหล่อคอนกรีต</label>
+                        <label class="flex items-center gap-1.5 cursor-pointer ml-2"><input type="checkbox" id="a4_type_3" class="w-3.5 h-3.5 border-black rounded-sm"> งานสถาปัตย์</label>
+                        <label class="flex items-center gap-1.5 cursor-pointer ml-2"><input type="checkbox" id="a4_type_4" class="w-3.5 h-3.5 border-black rounded-sm"> งานโครงสร้าง</label>
+                        <label class="flex items-center gap-1.5 cursor-pointer ml-2"><input type="checkbox" id="a4_type_5" class="w-3.5 h-3.5 border-black rounded-sm"> ร้านฮาร์ดแวร์</label>
                     </div>
 
-                    <div class="grid grid-cols-12 gap-4 items-end pt-1">
-                        <div class="col-span-5 flex items-end">
+                    <div class="flex items-end gap-3 w-full">
+                        <div class="flex items-end w-[42%]">
                             <span class="mr-2 whitespace-nowrap">ชื่อผู้สำรวจ :</span>
-                            <input type="text" id="surveyor_input_top" class="input-line w-full" />
+                            <input type="text" id="surveyor_input_top" class="input-line w-full text-black" />
                         </div>
-                        <div class="col-span-3 flex items-end">
+                        <div class="flex items-end w-[24%]">
                             <span class="mr-2 whitespace-nowrap">โทรศัพท์ :</span>
-                            <input type="text" id="surveyor_tel_a4" class="input-line w-full" />
+                            <input type="text" id="surveyor_tel_a4" class="input-line w-full text-center text-black" />
                         </div>
-                        <div class="col-span-4 flex items-end">
+                        <div class="flex items-end w-[34%]">
                             <span class="mr-2 whitespace-nowrap">E-mail :</span>
-                            <input type="text" id="surveyor_email_a4" class="input-line w-full" />
+                            <input type="text" id="surveyor_email_a4" class="input-line w-full text-black" />
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-12 gap-4 items-end">
-                        <div class="col-span-5 flex items-end">
+                    <div class="flex items-end gap-3 w-full">
+                        <div class="flex items-end w-[42%]">
                             <span class="mr-2 whitespace-nowrap">ชื่อผู้ตอบแบบสำรวจ :</span>
-                            <input type="text" id="respondent_input_top" class="input-line w-full" />
+                            <input type="text" id="respondent_input_top" class="input-line w-full text-black" />
                         </div>
-                        <div class="col-span-3 flex items-end">
+                        <div class="flex items-end w-[24%]">
                             <span class="mr-2 whitespace-nowrap">โทรศัพท์ :</span>
-                            <input type="text" id="respondent_tel_a4" class="input-line w-full" />
+                            <input type="text" id="respondent_tel_a4" class="input-line w-full text-center text-black" />
                         </div>
-                        <div class="col-span-4 flex items-end">
+                        <div class="flex items-end w-[34%]">
                             <span class="mr-2 whitespace-nowrap">E-mail :</span>
-                            <input type="text" id="respondent_email_a4" class="input-line w-full" />
+                            <input type="text" id="respondent_email_a4" class="input-line w-full text-black" />
                         </div>
                     </div>
                 </div>
 
                 <!-- ตารางแบบประเมิน -->
-                <div id="a4-table-wrap" class="mb-1">
+                <div id="a4-table-wrap" class="mb-3">
                     <table class="a4-table">
                         <colgroup>
-                            <col style="width: 15%;"> 
-                            <col style="width: 42%;"> 
-                            <col style="width: 8%;">  
+                            <col style="width: 13%;"> 
+                            <col style="width: 44%;"> 
+                            <col style="width: 9%;">  
                             <col style="width: 10%;"> 
-                            <col style="width: 25%;"> 
+                            <col style="width: 24%;"> 
                         </colgroup>
                         <thead>
                             <tr>
@@ -952,25 +920,25 @@
                             <!-- 1. คุณภาพสินค้า -->
                             <tr>
                                 <td rowspan="4" class="text-center align-middle whitespace-nowrap">1.คุณภาพสินค้า</td>
-                                <td>1.1 Specification สินค้าเป็นไปตามต้องการ</td>
+                                <td class="px-3">1.1 Specification สินค้าเป็นไปตามต้องการ</td>
                                 <td><input type="number" id="max_s1_1" class="score-input max-score-input" data-default="10" min="0"></td>
                                 <td><input type="number" id="s1_1" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s1_1" class="text-input-table"></td>
                             </tr>
                             <tr>
-                                <td>1.2 มีการรับรองคุณภาพ</td>
+                                <td class="px-3">1.2 มีการรับรองคุณภาพ</td>
                                 <td><input type="number" id="max_s1_2" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s1_2" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s1_2" class="text-input-table"></td>
                             </tr>
                             <tr>
-                                <td>1.3 สภาพการบรรจุหีบห่อ</td>
+                                <td class="px-3">1.3 สภาพการบรรจุหีบห่อ</td>
                                 <td><input type="number" id="max_s1_3" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s1_3" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s1_3" class="text-input-table"></td>
                             </tr>
                             <tr>
-                                <td>1.4 การแก้ไขและป้องกันปัญหา</td>
+                                <td class="px-3">1.4 การแก้ไขและป้องกันปัญหา</td>
                                 <td><input type="number" id="max_s1_4" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s1_4" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s1_4" class="text-input-table"></td>
@@ -979,19 +947,19 @@
                             <!-- 2. การส่งมอบ -->
                             <tr>
                                 <td rowspan="3" class="text-center align-middle whitespace-nowrap">2.การส่งมอบ</td>
-                                <td>2.1 ความรวดเร็ว และตรงเวลาในการจัดส่ง</td>
+                                <td class="px-3">2.1 ความรวดเร็ว และตรงเวลาในการจัดส่ง</td>
                                 <td><input type="number" id="max_s2_1" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s2_1" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s2_1" class="text-input-table"></td>
                             </tr>
                             <tr>
-                                <td class="whitespace-nowrap">2.2 การแต่งกายและความสุภาพของพนักงานจัดส่งสินค้า</td>
+                                <td class="whitespace-nowrap px-3">2.2 การแต่งกายและความสุภาพของพนักงานจัดส่งสินค้า</td>
                                 <td><input type="number" id="max_s2_2" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s2_2" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s2_2" class="text-input-table"></td>
                             </tr>
                             <tr>
-                                <td class="whitespace-nowrap">2.3 ความถูกต้องของสินค้าและเอกสารในการส่งมอบ</td>
+                                <td class="whitespace-nowrap px-3">2.3 ความถูกต้องของสินค้าและเอกสารในการส่งมอบ</td>
                                 <td><input type="number" id="max_s2_3" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s2_3" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s2_3" class="text-input-table"></td>
@@ -1000,64 +968,62 @@
                             <!-- 3. การบริการ -->
                             <tr>
                                 <td rowspan="4" class="text-center align-middle whitespace-nowrap">3.การบริการ</td>
-                                <td>3.1 ความสะดวกในการติดต่อสื่อสาร</td>
+                                <td class="px-3">3.1 ความสะดวกในการติดต่อสื่อสาร</td>
                                 <td><input type="number" id="max_s3_1" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s3_1" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s3_1" class="text-input-table"></td>
                             </tr>
                             <tr>
-                                <td class="whitespace-nowrap">3.2 การตอบสนองข้อร้องเรียนและการให้ข้อมูลที่ร้องขอ</td>
+                                <td class="whitespace-nowrap px-3">3.2 การตอบสนองข้อร้องเรียนและการให้ข้อมูลที่ร้องขอ</td>
                                 <td><input type="number" id="max_s3_2" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s3_2" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s3_2" class="text-input-table"></td>
                             </tr>
                             <tr>
-                                <td>3.3 ความรวดเร็วในการแก้ไขปัญหา</td>
+                                <td class="px-3">3.3 ความรวดเร็วในการแก้ไขปัญหา</td>
                                 <td><input type="number" id="max_s3_3" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s3_3" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s3_3" class="text-input-table"></td>
                             </tr>
                             <tr>
-                                <td>3.4 การเสนอราคามีความรวดเร็ว</td>
+                                <td class="px-3">3.4 การเสนอราคามีความรวดเร็ว</td>
                                 <td><input type="number" id="max_s3_4" class="score-input max-score-input" data-default="5" min="0"></td>
                                 <td><input type="number" id="s3_4" class="score-input" min="0"></td>
                                 <td><input type="text" id="note_s3_4" class="text-input-table"></td>
                             </tr>
 
                             <!-- ส่วนสรุปผล -->
-                            <tr class="summary-row">
-                                <td colspan="2" class="text-center align-middle"><span class="ml-[35px]">รวมคะแนน</span></td>
-                                <td><input type="number" id="total_max_score" class="score-input"></td>
-                                <td><input type="number" id="total_score" class="score-input"></td>
-                                <td class="no-border-cell"></td> 
+                            <tr class="summary-row h-[28px]">
+                                <td colspan="2" class="text-center align-middle">รวมคะแนน</td>
+                                <td><input type="number" id="total_max_score" class="score-input font-bold text-center" readonly></td>
+                                <td><input type="number" id="total_score" class="score-input font-bold text-center" readonly></td>
+                                <td rowspan="3" class="no-border-cell bg-white"></td> 
                             </tr>
-                            <tr class="summary-row">
-                                <td colspan="3" class="text-center align-middle">คิดเป็นเปอร์เซ็นต์</td>
-                                <td><input type="text" id="total_percent" class="score-input" readonly></td>
-                                <td class="no-border-cell"></td>
+                            <tr class="summary-row h-[28px]">
+                                <td colspan="2" class="text-center align-middle">คิดเป็นเปอร์เซ็นต์</td>
+                                <td colspan="2"><input type="text" id="total_percent" class="score-input font-bold text-center" readonly></td>
                             </tr>
-                            <tr class="summary-row">
-                                <td colspan="3" class="text-center align-middle">สรุปผลการประเมินได้เกรด</td>
-                                <td><input type="text" id="total_grade" class="score-input" readonly></td>
-                                <td class="no-border-cell"></td>
+                            <tr class="summary-row h-[28px]">
+                                <td colspan="2" class="text-center align-middle">สรุปผลการประเมินได้เกรด</td>
+                                <td colspan="2"><input type="text" id="total_grade" class="score-input font-bold text-center" readonly></td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
 
                 <!-- หมายเหตุ -->
-                <div id="a4-notes-section" class="mt-3 text-[12px] leading-tight">
+                <div id="a4-notes-section" class="mt-2 text-[12px] leading-tight px-1">
                     <div class="flex">
-                        <div class="w-20 font-bold">หมายเหตุ :</div>
+                        <div class="w-20 font-bold shrink-0">หมายเหตุ :</div>
                         <div>
                             <p>การคำนวณเปอร์เซ็นต์ ให้คิดจากสูตร : เปอร์เซ็นต์ = ( คะแนนที่ได้ / คะแนนเต็มรวม ) x 100</p>
-                            <div class="mt-2">
+                            <div class="mt-1.5 text-[11.5px]">
                                 <p class="underline mb-1 font-semibold">เกณฑ์การประเมิน</p>
-                                <div class="grid grid-cols-12 gap-x-0 w-[350px] ml-4">
-                                    <div class="col-span-1">A</div><div class="col-span-4">90 - 100</div><div class="col-span-2 text-center">%</div><div class="col-span-5">ดีมาก</div>
-                                    <div class="col-span-1">B</div><div class="col-span-4">80 - 89</div><div class="col-span-2 text-center">%</div><div class="col-span-5">ดี</div>
-                                    <div class="col-span-1">C</div><div class="col-span-4">70 - 79</div><div class="col-span-2 text-center">%</div><div class="col-span-5">พอใช้</div>
-                                    <div class="col-span-1">D</div><div class="col-span-4">น้อยกว่า 70</div><div class="col-span-2 text-center">%</div><div class="col-span-5">ต้องปรับปรุง</div>
+                                <div class="grid grid-cols-[20px_55px_30px_100px] w-[250px] ml-5">
+                                    <div class="text-center">A</div><div class="text-center">90 - 100</div><div class="text-center">%</div><div>ดีมาก</div>
+                                    <div class="text-center">B</div><div class="text-center">80 - 89</div><div class="text-center">%</div><div>ดี</div>
+                                    <div class="text-center">C</div><div class="text-center">70 - 79</div><div class="text-center">%</div><div>พอใช้</div>
+                                    <div class="text-center">D</div><div class="text-center">น้อยกว่า 70</div><div class="text-center">%</div><div>ต้องปรับปรุง</div>
                                 </div>
                             </div>
                         </div>
@@ -1065,10 +1031,10 @@
                 </div>
 
                 <!-- ข้อเสนอแนะ -->
-                <div id="a4-suggestions" class="mt-3 text-[13px]">
+                <div id="a4-suggestions" class="mt-4 text-[13px] px-1">
                     <div class="flex items-start">
-                        <span class="w-20 font-bold pt-1">ข้อเสนอแนะ :</span>
-                        <div id="a4-sug-lines" class="flex-grow space-y-3 pt-1"> 
+                        <span class="w-24 font-bold pt-1 shrink-0">ข้อเสนอแนะ :</span>
+                        <div id="a4-sug-lines" class="flex-grow space-y-4 pt-1"> 
                             <input type="text" id="a4_sug_1" class="suggestion-line w-full block">
                             <input type="text" id="a4_sug_2" class="suggestion-line w-full block">
                             <input type="text" id="a4_sug_3" class="suggestion-line w-full block">
@@ -1076,27 +1042,41 @@
                     </div>
                 </div>
 
-                <!-- ส่วนลงชื่อที่จัดวางใหม่ให้ตรงเป๊ะทั้งในมือถือและคอมพิวเตอร์ -->
-                <div id="a4-signature" class="mt-8 text-[13px] flex justify-end pr-10">
-                    <div class="flex items-start">
-                        <div class="whitespace-nowrap pt-1 mr-2 font-normal text-black">ผู้ตอบแบบสำรวจ : &nbsp;&nbsp;ลงชื่อ</div>
-                        <div class="flex flex-col w-[280px]">
-                            <input type="text" id="respondent_signature" class="input-line w-full text-center mb-2.5">
-                            <div class="flex justify-between items-center w-full mb-2.5">
-                                <span class="text-black">(</span>
-                                <input type="text" id="respondent_input_bottom" class="input-line flex-grow text-center text-[12px] mx-2 text-black placeholder-slate-400" placeholder="ชื่อ-นามสกุล">
-                                <span class="text-black">)</span>
-                            </div>
-                            <div class="flex items-end justify-center w-full mt-0.5">
-                                <span class="mr-3 text-black">วันที่</span>
-                                <input type="text" id="date_day" class="input-line w-9 text-center text-black">
-                                <span class="mx-2 text-black">/</span>
-                                <input type="text" id="date_month" class="input-line w-9 text-center text-black">
-                                <span class="mx-2 text-black">/</span>
-                                <input type="text" id="date_year" class="input-line w-14 text-center text-black">
-                            </div>
-                        </div>
-                    </div>
+                <!-- ส่วนลงชื่อที่จัดวางตามภาพต้นฉบับเป๊ะๆ -->
+                <div id="a4-signature" class="mt-auto pt-4 mb-8 text-[13px] flex justify-end pr-10 shrink-0">
+                    <table class="border-none w-auto text-[13px] m-0">
+                        <tbody>
+                            <tr>
+                                <td class="text-right align-bottom pb-2 pr-2 whitespace-nowrap text-black font-normal border-none p-0">ผู้ตอบแบบสำรวจ : ลงชื่อ</td>
+                                <td class="align-bottom pb-2 border-none p-0">
+                                    <input type="text" id="respondent_signature" class="input-line w-[250px] text-center text-black">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="border-none p-0"></td>
+                                <td class="align-bottom pb-2 pt-1 border-none p-0">
+                                    <div class="flex items-end w-full">
+                                        <span class="text-black mr-2">(</span>
+                                        <input type="text" id="respondent_input_bottom" class="input-line flex-grow text-center text-slate-700 text-[12px]">
+                                        <span class="text-black ml-2">)</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="border-none p-0"></td>
+                                <td class="align-bottom pt-2 border-none p-0">
+                                    <div class="flex items-end justify-center w-full">
+                                        <span class="mr-3 text-black">วันที่</span>
+                                        <input type="text" id="date_day" class="input-line w-10 text-center text-black">
+                                        <span class="mx-2 text-black">/</span>
+                                        <input type="text" id="date_month" class="input-line w-10 text-center text-black">
+                                        <span class="mx-2 text-black">/</span>
+                                        <input type="text" id="date_year" class="input-line w-14 text-center text-black">
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
 
                 </div>
@@ -1630,34 +1610,35 @@
         // --- ระบบสเกลหน้า A4 ให้พอดีหน้าจอ (ทั้งแนวนอนและแนวตั้ง) ---
         function adjustA4Scale() {
             const scaler = document.getElementById('a4-scaler');
-            const doc = document.getElementById('a4-doc');
-            if (!scaler || !doc) return;
+            if (!scaler) return;
 
             const windowWidth = window.innerWidth;
             const windowHeight = window.innerHeight;
-
-            // ความกว้างและสูงโดยประมาณของ A4 (px)
             const docWidth = 794; 
-            const docHeight = 1123 + 40; // เผื่อ margin บน-ล่าง
+            const docHeight = 1123;
 
-            // คำนวณพื้นที่ที่สามารถแสดงผลได้ (หักแถบปุ่มเมนูด้านบนออกประมาณ 100px)
-            const availableWidth = windowWidth - 40;
-            const availableHeight = windowHeight - 120;
+            // ในมือถือให้เผื่อขอบน้อยหน่อย 10px, ส่วนในคอม 40px
+            const paddingX = windowWidth < 640 ? 10 : 40;
+            const availableWidth = windowWidth - paddingX;
+            
+            // ใช้อัตราส่วนตามความกว้างเพื่อให้เต็มจอ
+            let scale = availableWidth / docWidth;
 
-            const scaleW = availableWidth / docWidth;
-            const scaleH = availableHeight / docHeight;
+            // ในคอมพิวเตอร์ หรือ แนวนอน ที่จอเตี้ยกว่า เราอาจต้องการให้พอดีความสูง
+            if (windowWidth >= 640 && windowHeight < (docHeight * scale + 120)) {
+                const availableHeight = windowHeight - 120;
+                scale = Math.min(scale, availableHeight / docHeight);
+            }
 
-            // เลือกสเกลที่น้อยกว่า เพื่อให้แผ่น A4 ไม่ล้นจอทั้งแนวตั้งและแนวนอน
-            let scale = Math.min(scaleW, scaleH);
-
-            // จำกัดไม่ให้ใหญ่กว่าขนาดจริง (100%)
             if (scale > 1) {
                 scale = 1;
             }
 
             scaler.style.transform = `scale(${scale})`;
             scaler.style.transformOrigin = 'top center';
-            scaler.style.height = `${docHeight * scale}px`;
+            
+            // ลดพื้นที่ว่างที่เกิดจากการ Scale ด้วย Margin Bottom ติดลบ
+            scaler.style.marginBottom = `-${docHeight * (1 - scale)}px`;
         }
 
         // ล้างค่า Scale อัตโนมัติก่อนพิมพ์ + ปรับ spacing ให้เนื้อหาพอดี 1 แผ่น A4
@@ -1665,7 +1646,7 @@
             const scaler = document.getElementById('a4-scaler');
             if (scaler) {
                 scaler.style.transform = 'none';
-                scaler.style.height = 'auto';
+                scaler.style.marginBottom = '0';
             }
             // Apply inline styles เพื่อบังคับ spacing สำหรับ iOS Safari
             const titleHeader = document.getElementById('a4-title-header');
@@ -1769,9 +1750,21 @@
                 }
 
                 if (result.success) {
-                    alert(`✅ สร้าง PDF และส่งอีเมลเรียบร้อยแล้ว!\n\n📎 ไฟล์: ${result.filename}\n📧 ส่งไปยังอีเมลที่ตั้งค่าไว้`);
+                    Swal.fire({
+                        title: 'สำเร็จ!',
+                        text: `สร้าง PDF และส่งอีเมลเรียบร้อยแล้ว\n\nไฟล์: ${result.filename}`,
+                        icon: 'success',
+                        confirmButtonText: 'ตกลง',
+                        confirmButtonColor: '#4f46e5'
+                    });
                 } else {
-                    alert(`❌ เกิดข้อผิดพลาด: ${result.error}\n\n${result.detail || ''}`);
+                    Swal.fire({
+                        title: 'เกิดข้อผิดพลาด!',
+                        text: `${result.error}\n\n${result.detail || ''}`,
+                        icon: 'error',
+                        confirmButtonText: 'ตกลง',
+                        confirmButtonColor: '#ef4444'
+                    });
                 }
 
             } catch(error) {
@@ -1780,14 +1773,20 @@
                     btn.innerHTML = originalText;
                     btn.disabled = false;
                 }
-                alert('❌ ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้\nกรุณาตรวจสอบว่า Node.js server กำลังทำงานอยู่ (npm start)');
+                Swal.fire({
+                    title: 'เชื่อมต่อไม่สำเร็จ',
+                    text: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้ กรุณาตรวจสอบว่า Node.js server กำลังทำงานอยู่ (npm start)',
+                    icon: 'warning',
+                    confirmButtonText: 'ตกลง',
+                    confirmButtonColor: '#f59e0b'
+                });
             }
         }
 
         // --- รวบรวมข้อมูลจากฟอร์มทั้งหมด ---
         function collectFormData() {
-            // คำนวณคะแนนรวม
-            calculateWebTotals();
+            // คำนวณคะแนนรวมในฝั่ง A4 เพื่อความชัวร์
+            calculateA4Totals();
             
             const data = {
                 company: safeGetVal('w_company'),
@@ -1800,10 +1799,10 @@
                 sug: safeGetVal('w_suggestions'),
                 types: [1,2,3,4,5].map(i => document.getElementById('w_type_'+i)?.checked),
                 scores: {},
-                totalMax: document.getElementById('w_total_max')?.innerText || '',
-                totalScore: document.getElementById('w_total_score')?.innerText || '',
-                totalPercent: document.getElementById('w_total_pct')?.innerText || '',
-                totalGrade: document.getElementById('w_total_grade')?.innerText || ''
+                totalMax: document.getElementById('total_max_score')?.value || '',
+                totalScore: document.getElementById('total_score')?.value || '',
+                totalPercent: document.getElementById('total_percent')?.value || '',
+                totalGrade: document.getElementById('total_grade')?.value || ''
             };
             
             scoreIds.forEach(id => {
