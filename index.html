@@ -756,7 +756,7 @@
                     </div>
 
                     <div class="w-full sm:w-[35%] flex items-stretch">
-                        <button type="button" onclick="sendPdfByEmailNoBackend(event)" class="w-full min-h-[48px] sm:min-h-[100%] bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:via-violet-500 hover:to-purple-500 text-white font-bold py-2 sm:py-0 px-4 sm:px-6 rounded-xl sm:rounded-[1.25rem] shadow-[0_8px_20px_-6px_rgba(99,102,241,0.6)] hover:shadow-[0_12px_25px_-6px_rgba(99,102,241,0.8)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 sm:gap-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 group overflow-hidden relative border border-indigo-400/50">
+                        <button type="button" onclick="showThankYouModal()" class="w-full min-h-[48px] sm:min-h-[100%] bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:via-violet-500 hover:to-purple-500 text-white font-bold py-2 sm:py-0 px-4 sm:px-6 rounded-xl sm:rounded-[1.25rem] shadow-[0_8px_20px_-6px_rgba(99,102,241,0.6)] hover:shadow-[0_12px_25px_-6px_rgba(99,102,241,0.8)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 sm:gap-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 group overflow-hidden relative border border-indigo-400/50">
                             <!-- Shimmer effect -->
                             <div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-[shimmer_1.5s_infinite]"></div>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-7 sm:w-7 relative z-10 group-hover:scale-125 group-hover:-rotate-12 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -789,12 +789,20 @@
                 </svg>
                 กลับไปแก้ไขข้อมูล
             </button>
-            <button onclick="window.print()" class="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 text-white font-bold py-2.5 px-6 rounded-lg sm:rounded-xl shadow-md shadow-indigo-500/30 flex items-center justify-center gap-1.5 transition duration-200 text-xs sm:text-sm">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                </svg>
-                สั่งพิมพ์ (PDF)
-            </button>
+            <div class="flex flex-col sm:flex-row w-full sm:w-auto gap-2">
+                <button id="btn-send-email" onclick="sendEmailViaLink()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold py-2.5 px-6 rounded-lg sm:rounded-xl shadow-md shadow-emerald-500/30 flex items-center justify-center gap-1.5 transition duration-200 text-xs sm:text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                    ส่งอีเมล
+                </button>
+                <button onclick="window.print()" class="w-full sm:w-auto bg-gradient-to-r from-indigo-500 to-violet-500 hover:from-indigo-400 hover:to-violet-400 text-white font-bold py-2.5 px-6 rounded-lg sm:rounded-xl shadow-md shadow-indigo-500/30 flex items-center justify-center gap-1.5 transition duration-200 text-xs sm:text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    สั่งพิมพ์ (PDF)
+                </button>
+            </div>
         </div>
 
         <!-- เพิ่มกล่องเพื่อแสดงหน้า A4 ให้พอดีหน้าจอ (Scale) -->
@@ -1084,9 +1092,6 @@
     </div>
 
     <!-- Script ควบคุมการทำงานทั้งหมด -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
     <script>
         const scoreIds = ['s1_1', 's1_2', 's1_3', 's1_4', 's2_1', 's2_2', 's2_3', 's3_1', 's3_2', 's3_3', 's3_4'];
 
@@ -1629,131 +1634,6 @@
             }
         });
 
-
-                // =========================
-        // Free Mode: Download PDF + Open Gmail Compose
-        // =========================
-        function getFieldValue(id) {
-            const el = document.getElementById(id);
-            return el ? (el.value || "").trim() : "";
-        }
-
-        async function generatePdfBlobFromA4() {
-            if (typeof previewDocument === 'function') {
-                previewDocument();
-            }
-
-            const { jsPDF } = window.jspdf || {};
-            if (!jsPDF) {
-                throw new Error('โหลด jsPDF ไม่สำเร็จ');
-            }
-
-            const a4Doc =
-                document.getElementById("a4-doc") ||
-                document.getElementById("a4-print-view") ||
-                document.querySelector(".a4-container");
-
-            if (!a4Doc) {
-                throw new Error("ไม่พบส่วนเอกสาร A4 สำหรับสร้าง PDF");
-            }
-
-            const canvas = await html2canvas(a4Doc, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: "#ffffff",
-                scrollX: 0,
-                scrollY: -window.scrollY,
-                windowWidth: document.documentElement.scrollWidth
-            });
-
-            const imgData = canvas.toDataURL("image/png");
-            const pdf = new jsPDF("p", "mm", "a4");
-
-            const pdfWidth = 210;
-            const pdfHeight = 297;
-
-            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-
-            return pdf.output("blob");
-        }
-
-        function openGmailCompose(toEmail, subject, body) {
-            const gmailUrl =
-                `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.open(gmailUrl, "_blank", "noopener,noreferrer");
-        }
-
-        async function sendPdfByEmailNoBackend(e) {
-            const button = e?.currentTarget;
-            const originalHtml = button ? button.innerHTML : "";
-
-            try {
-                const toEmail = getFieldValue("w_respondent_email");
-                const company = getFieldValue("w_company");
-                const respondentName = getFieldValue("w_respondent_name");
-                const surveyorName = getFieldValue("w_surveyor_name");
-
-                if (!toEmail) {
-                    alert("กรุณากรอกอีเมลผู้รับก่อน");
-                    return;
-                }
-
-                if (button) {
-                    button.disabled = true;
-                    button.innerHTML = "กำลังสร้าง PDF และเปิดอีเมล...";
-                }
-
-                const pdfBlob = await generatePdfBlobFromA4();
-
-                const now = new Date();
-                const yyyy = now.getFullYear();
-                const mm = String(now.getMonth() + 1).padStart(2, "0");
-                const dd = String(now.getDate()).padStart(2, "0");
-                const fileName = `customer-satisfaction-${yyyy}${mm}${dd}.pdf`;
-
-                const downloadUrl = URL.createObjectURL(pdfBlob);
-                const downloadLink = document.createElement("a");
-                downloadLink.href = downloadUrl;
-                downloadLink.download = fileName;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-
-                const subject = `รายงานแบบประเมินความพึงพอใจ${company ? " - " + company : ""}`;
-                const body =
-`เรียน ${respondentName || "ลูกค้า"},
-
-ระบบได้สร้างไฟล์ PDF เรียบร้อยแล้ว
-ชื่อไฟล์: ${fileName}
-
-กรุณาแนบไฟล์ PDF ที่เพิ่งดาวน์โหลด แล้วกดส่งอีเมลต่อได้ทันที
-
-ข้อมูลผู้ประเมิน:
-- บริษัท: ${company || "-"}
-- ผู้ตอบแบบประเมิน: ${respondentName || "-"}
-- พนักงานขาย: ${surveyorName || "-"}
-
-ขอบคุณครับ`;
-
-                openGmailCompose(toEmail, subject, body);
-
-                setTimeout(() => URL.revokeObjectURL(downloadUrl), 15000);
-
-                alert("ระบบดาวน์โหลด PDF ให้แล้ว และเปิด Gmail สำหรับส่งอีเมลให้เรียบร้อย");
-                if (typeof showThankYouModal === 'function') {
-                    showThankYouModal();
-                }
-            } catch (error) {
-                console.error("Send email flow error:", error);
-                alert("เกิดข้อผิดพลาด: " + (error?.message || "Unknown error"));
-            } finally {
-                if (button) {
-                    button.disabled = false;
-                    button.innerHTML = originalHtml;
-                }
-            }
-        }
-
         // โหลดข้อมูลอัตโนมัติตอนเปิดเว็บ
         window.addEventListener('DOMContentLoaded', () => {
             const now = new Date();
@@ -1768,7 +1648,146 @@
             // วาดดาวให้คะแนน
             renderStars();
             calculateWebTotals();
+            
+            // Check for serialized document link
+            loadFromDocumentLink();
         });
+
+        // --- ระบบส่งอีเมลพร้อมแนบลิงก์จำลองเป็น PDF ---
+        function sendEmailViaLink() {
+            const companyName = safeGetVal('w_company') || 'ไม่ระบุชื่อบริษัท';
+            const targetEmail = 'jojoe20042547@gmail.com'; 
+            const subject = `เอกสารแบบสำรวจความพึงพอใจของลูกค้า - ${companyName}`;
+            let bodyText = `มีการประเมินความพึงพอใจจากลูกค้า: บริษัท ${companyName}`;
+            
+            try {
+                const data = {
+                    company: safeGetVal('w_company'),
+                    sName: safeGetVal('w_surveyor_name'),
+                    sTel: safeGetVal('w_surveyor_tel'),
+                    sEmail: safeGetVal('w_surveyor_email'),
+                    rName: safeGetVal('w_respondent_name'),
+                    rTel: safeGetVal('w_respondent_tel'),
+                    rEmail: safeGetVal('w_respondent_email'),
+                    sug: safeGetVal('w_suggestions'),
+                    types: [1,2,3,4,5].map(i => document.getElementById('w_type_'+i)?.checked),
+                    scores: {}
+                };
+                
+                scoreIds.forEach(id => {
+                    data.scores[id] = {
+                        max: safeGetVal('w_max_' + id),
+                        val: safeGetVal('w_' + id),
+                        note: safeGetVal('w_note_' + id)
+                    };
+                });
+
+                const jsonStr = JSON.stringify(data);
+                const base64Str = btoa(encodeURIComponent(jsonStr));
+                
+                const currentUrl = new URL(window.location.href);
+                currentUrl.searchParams.set('d', base64Str);
+                const link = currentUrl.toString();
+
+                // สร้างสถานะกำลังส่ง
+                const btn = document.getElementById('btn-send-email');
+                let originalText = "ส่งอีเมล";
+                if(btn) {
+                    originalText = btn.innerHTML;
+                    btn.innerHTML = `<span class="animate-pulse">กำลังส่ง...</span>`;
+                    btn.disabled = true;
+                }
+
+                // ดำเนินการส่งผ่าน AJAX (ทำงานเบื้องหลัง ไม่เด้งหน้าต่างใดๆ ทั้งสิ้น)
+                fetch(`https://formsubmit.co/ajax/${targetEmail}`, {
+                    method: "POST",
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        _subject: subject,
+                        _template: "box",
+                        _captcha: "false",
+                        "ชื่อบริษัทลูกค้า": companyName,
+                        "ข้อความจากระบบ": bodyText,
+                        "ลิงก์เปิดเอกสาร (กดเพื่อโชว์เป็น PDF จำลองทันที)": link
+                    })
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if(btn) {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                    if(result.success == "true" || result.success == true) {
+                        alert(`✅ ส่งข้อมูลและลิงก์เอกสารเข้าอีเมลเรียบร้อยแล้วครับ!`);
+                    } else {
+                        alert("เกิดข้อผิดพลาดในการส่งทางระบบ กรุณาลองใหม่อีกครั้ง");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    if(btn) {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                    alert("การส่งอีเมลไม่สำเร็จ (อาจขัดข้องเรื่องเครือข่าย) กรุณาลองใหม่อีกครั้ง");
+                });
+
+            } catch(e) {
+                console.error("Link generation failed", e);
+                alert("เกิดข้อผิดพลาดในการรวบรวมข้อมูลเอกสาร");
+            }
+        }
+
+        // --- ระบบโหลดข้อมูลจากลิงก์ ---
+        function loadFromDocumentLink() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const d = params.get('d');
+                if(!d) return;
+
+                const jsonStr = decodeURIComponent(atob(d));
+                const data = JSON.parse(jsonStr);
+                
+                safeSetVal('w_company', data.company);
+                safeSetVal('w_surveyor_name', data.sName);
+                safeSetVal('w_surveyor_tel', data.sTel);
+                safeSetVal('w_surveyor_email', data.sEmail);
+                safeSetVal('w_respondent_name', data.rName);
+                safeSetVal('w_respondent_tel', data.rTel);
+                safeSetVal('w_respondent_email', data.rEmail);
+                safeSetVal('w_suggestions', data.sug);
+                
+                if(data.types) {
+                    data.types.forEach((checked, idx) => {
+                        const el = document.getElementById('w_type_' + (idx+1));
+                        if(el) el.checked = checked;
+                    });
+                }
+                
+                if(data.scores) {
+                    Object.keys(data.scores).forEach(id => {
+                        safeSetVal('w_max_' + id, data.scores[id].max);
+                        safeSetVal('w_' + id, data.scores[id].val);
+                        safeSetVal('w_max_' + id + '_mobile', data.scores[id].max);
+                        safeSetVal('w_note_' + id, data.scores[id].note);
+                    });
+                }
+                
+                calculateWebTotals();
+                renderStars();
+                
+                // ข้ามไปหน้า พิมพ์ เลย
+                setTimeout(() => {
+                    previewDocument();
+                }, 100);
+                
+            } catch(e) {
+                console.error("Failed to load document from link", e);
+            }
+        }
 
     </script>
 </body>
