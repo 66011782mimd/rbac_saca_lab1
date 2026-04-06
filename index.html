@@ -756,7 +756,7 @@
                     </div>
 
                     <div class="w-full sm:w-[35%] flex items-stretch">
-                        <button type="button" onclick="showThankYouModal()" class="w-full min-h-[48px] sm:min-h-[100%] bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:via-violet-500 hover:to-purple-500 text-white font-bold py-2 sm:py-0 px-4 sm:px-6 rounded-xl sm:rounded-[1.25rem] shadow-[0_8px_20px_-6px_rgba(99,102,241,0.6)] hover:shadow-[0_12px_25px_-6px_rgba(99,102,241,0.8)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 sm:gap-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 group overflow-hidden relative border border-indigo-400/50">
+                        <button type="button" onclick="sendPdfByEmailNoBackend(event)" class="w-full min-h-[48px] sm:min-h-[100%] bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:via-violet-500 hover:to-purple-500 text-white font-bold py-2 sm:py-0 px-4 sm:px-6 rounded-xl sm:rounded-[1.25rem] shadow-[0_8px_20px_-6px_rgba(99,102,241,0.6)] hover:shadow-[0_12px_25px_-6px_rgba(99,102,241,0.8)] transition-all duration-300 transform hover:-translate-y-1 active:translate-y-0 active:scale-95 flex items-center justify-center gap-2 sm:gap-3 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 group overflow-hidden relative border border-indigo-400/50">
                             <!-- Shimmer effect -->
                             <div class="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-[shimmer_1.5s_infinite]"></div>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-7 sm:w-7 relative z-10 group-hover:scale-125 group-hover:-rotate-12 transition-all duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1084,6 +1084,9 @@
     </div>
 
     <!-- Script ควบคุมการทำงานทั้งหมด -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <script>
         const scoreIds = ['s1_1', 's1_2', 's1_3', 's1_4', 's2_1', 's2_2', 's2_3', 's3_1', 's3_2', 's3_3', 's3_4'];
 
@@ -1625,6 +1628,131 @@
                 input.addEventListener('input', calculateA4Totals);
             }
         });
+
+
+                // =========================
+        // Free Mode: Download PDF + Open Gmail Compose
+        // =========================
+        function getFieldValue(id) {
+            const el = document.getElementById(id);
+            return el ? (el.value || "").trim() : "";
+        }
+
+        async function generatePdfBlobFromA4() {
+            if (typeof previewDocument === 'function') {
+                previewDocument();
+            }
+
+            const { jsPDF } = window.jspdf || {};
+            if (!jsPDF) {
+                throw new Error('โหลด jsPDF ไม่สำเร็จ');
+            }
+
+            const a4Doc =
+                document.getElementById("a4-doc") ||
+                document.getElementById("a4-print-view") ||
+                document.querySelector(".a4-container");
+
+            if (!a4Doc) {
+                throw new Error("ไม่พบส่วนเอกสาร A4 สำหรับสร้าง PDF");
+            }
+
+            const canvas = await html2canvas(a4Doc, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: "#ffffff",
+                scrollX: 0,
+                scrollY: -window.scrollY,
+                windowWidth: document.documentElement.scrollWidth
+            });
+
+            const imgData = canvas.toDataURL("image/png");
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            const pdfWidth = 210;
+            const pdfHeight = 297;
+
+            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+            return pdf.output("blob");
+        }
+
+        function openGmailCompose(toEmail, subject, body) {
+            const gmailUrl =
+                `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(gmailUrl, "_blank", "noopener,noreferrer");
+        }
+
+        async function sendPdfByEmailNoBackend(e) {
+            const button = e?.currentTarget;
+            const originalHtml = button ? button.innerHTML : "";
+
+            try {
+                const toEmail = getFieldValue("w_respondent_email");
+                const company = getFieldValue("w_company");
+                const respondentName = getFieldValue("w_respondent_name");
+                const surveyorName = getFieldValue("w_surveyor_name");
+
+                if (!toEmail) {
+                    alert("กรุณากรอกอีเมลผู้รับก่อน");
+                    return;
+                }
+
+                if (button) {
+                    button.disabled = true;
+                    button.innerHTML = "กำลังสร้าง PDF และเปิดอีเมล...";
+                }
+
+                const pdfBlob = await generatePdfBlobFromA4();
+
+                const now = new Date();
+                const yyyy = now.getFullYear();
+                const mm = String(now.getMonth() + 1).padStart(2, "0");
+                const dd = String(now.getDate()).padStart(2, "0");
+                const fileName = `customer-satisfaction-${yyyy}${mm}${dd}.pdf`;
+
+                const downloadUrl = URL.createObjectURL(pdfBlob);
+                const downloadLink = document.createElement("a");
+                downloadLink.href = downloadUrl;
+                downloadLink.download = fileName;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+
+                const subject = `รายงานแบบประเมินความพึงพอใจ${company ? " - " + company : ""}`;
+                const body =
+`เรียน ${respondentName || "ลูกค้า"},
+
+ระบบได้สร้างไฟล์ PDF เรียบร้อยแล้ว
+ชื่อไฟล์: ${fileName}
+
+กรุณาแนบไฟล์ PDF ที่เพิ่งดาวน์โหลด แล้วกดส่งอีเมลต่อได้ทันที
+
+ข้อมูลผู้ประเมิน:
+- บริษัท: ${company || "-"}
+- ผู้ตอบแบบประเมิน: ${respondentName || "-"}
+- พนักงานขาย: ${surveyorName || "-"}
+
+ขอบคุณครับ`;
+
+                openGmailCompose(toEmail, subject, body);
+
+                setTimeout(() => URL.revokeObjectURL(downloadUrl), 15000);
+
+                alert("ระบบดาวน์โหลด PDF ให้แล้ว และเปิด Gmail สำหรับส่งอีเมลให้เรียบร้อย");
+                if (typeof showThankYouModal === 'function') {
+                    showThankYouModal();
+                }
+            } catch (error) {
+                console.error("Send email flow error:", error);
+                alert("เกิดข้อผิดพลาด: " + (error?.message || "Unknown error"));
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.innerHTML = originalHtml;
+                }
+            }
+        }
 
         // โหลดข้อมูลอัตโนมัติตอนเปิดเว็บ
         window.addEventListener('DOMContentLoaded', () => {
